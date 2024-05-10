@@ -22,8 +22,8 @@ const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
 };
 
 const route = useRoute();
-
-const tourId = route.params.tourId;
+console.log(route.params);
+const cityId = route.params.cityId;
 
 const trips = ref<SearchTrip[]>([]);
 const categoryGroup = ref([]);
@@ -32,7 +32,7 @@ const { coordinates, centercoordinate } = storeToRefs(useTripPlanStore());
 
 watch(centercoordinate, (center) => {
   if (map.value && center) {
-    // map.value.setBounds(center);
+    map.value.setBounds(center);
   }
 });
 
@@ -54,7 +54,7 @@ const { mutate, isPending: isTripLoading } = useMutation({
 
 const onSubmit = () => {
   trips.value = [];
-  mutate({ query: searchKeyword.value, city: Number(tourId) });
+  mutate({ query: searchKeyword.value, city: Number(cityId) });
 };
 </script>
 

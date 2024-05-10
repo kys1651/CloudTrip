@@ -70,7 +70,7 @@ const plugin = Autoplay({
                   {{ city.name }}
                 </CardTitle>
                 <RouterLink
-                  :to="{ name: 'planning', params: { tripId: city.id } }"
+                  :to="{ name: 'planning', params: { cityId: city.id } }"
                   class="w-full flex justify-center items-center py-2 text-gray-400 hover:text-gray-600 transition-colors duration-400 ease-in-out"
                 >
                   <span class="text-lg">지금 바로 여행가기</span>

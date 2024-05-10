@@ -70,7 +70,7 @@ const router = createRouter({
       component: () => import('@/views/notice/NoticeCreateView.vue')
     },
     {
-      path: '/planning/:tripId',
+      path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')
     }
