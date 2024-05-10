@@ -117,16 +117,28 @@
   
 📌 공지사항 등록
 
+<p align="center">
+    <img src = "https://github.com/sunsuking/trip-client/assets/92447290/2428e8a0-b731-4fc1-87bf-f89566f0c6c1">
+</p>
 
 
 📌 공지사항 수정
-
+<p align="center">
+    <img src = "https://github.com/sunsuking/trip-client/assets/92447290/ee0f837a-2ac9-4103-b8f3-891ffa5ca7db">
+</p>
 
 
 📌 공지사항 삭제
+<p align="center">
+    <img src = "https://github.com/sunsuking/trip-client/assets/92447290/6e75e2d4-1b4a-4eb6-8878-3095952dc6c6">
+</p>
 
 
 📌 공지사항 수정
+
+<p align="center">
+    <img src = "https://github.com/sunsuking/trip-client/assets/92447290/4b9d9def-78a4-437d-84e6-ac60087ec255">
+</p>
 
 - 관리자는 공지사항을 등록할 수 있습니다. 등록된 공지사항은 사용자에게 알림됩니다.
 - 등록된 공지사항은 관리자만이 수정 및 삭제할 수 있습니다.
