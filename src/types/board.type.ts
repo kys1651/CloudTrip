@@ -45,3 +45,18 @@ export interface IReviewComment {
   content: string
   createdAt: string
 }
+
+export interface ReviewCommentForm {
+  reviewId: number
+  userId: number
+  content: string
+}
+
+export interface ReviewCommentDetail {
+  commentId: number
+  userId: number
+  nickname: string
+  content: string
+  createdAt: string
+  profileImage: string
+}

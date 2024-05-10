@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
-import CommonHeader from "@/components/common/CommonHeader.vue";
-import Toaster from "@/components/ui/toast/Toaster.vue";
-import { useAuthenticationStore } from "@/stores/authentication";
-import { storeToRefs } from "pinia";
-import { userDataRequest } from "@/api/user";
-import { useCookies } from "vue3-cookies";
-import { refreshRequest } from "./api/auth";
+import { RouterView } from 'vue-router'
+import CommonHeader from '@/components/common/CommonHeader.vue'
+import Toaster from '@/components/ui/toast/Toaster.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+import { userDataRequest } from '@/api/user'
+import { useCookies } from 'vue3-cookies'
+import { refreshRequest } from './api/auth'
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 
-const authenticationStore = useAuthenticationStore();
-const { isLogin } = storeToRefs(authenticationStore);
+const authenticationStore = useAuthenticationStore()
+const { isLogin } = storeToRefs(authenticationStore)
 
 if (!isLogin.value) {
-  if (sessionStorage.getItem("accessToken")) {
-    authenticationStore.setAccessToken(sessionStorage.getItem("accessToken")!);
-    userDataRequest();
+  if (sessionStorage.getItem('accessToken')) {
+    authenticationStore.setAccessToken(sessionStorage.getItem('accessToken')!)
+    userDataRequest()
   } else {
     refreshRequest().then(() => {
-      userDataRequest();
-    });
+      userDataRequest()
+    })
   }
 }
 </script>
@@ -27,4 +28,5 @@ if (!isLogin.value) {
   <CommonHeader />
   <RouterView />
   <Toaster />
+  <VueQueryDevtools />
 </template>

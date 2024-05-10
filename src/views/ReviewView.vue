@@ -5,10 +5,15 @@
         <h2 class="text-4xl font-bold mb-3">여행지 리뷰</h2>
       </div>
       <div class="flex flex-col my-6 items-center w-full space-y-4">
-        <Button v-if="isLogin" variant="default">
-          <router-link :to="{ name: 'reviewWrite' }">리뷰 작성</router-link>
-        </Button>
-        <div v-if="reviews.length == 0">
+        <div class="flex w-full max-w-sm items-center gap-1.5">
+          <Input id="email" type="email" placeholder="Email" />
+          <Button type="submit"> Subscribe </Button>
+          <Button v-if="isLogin" variant="default">
+            <router-link :to="{ name: 'reviewWrite' }">리뷰 작성</router-link>
+          </Button>
+        </div>
+
+        <div v-if="!reviews">
           <h2 class="text-4xl font-bold mt-10">현재 리뷰가 존재하지 않습니다.</h2>
         </div>
         <ReviewCard v-for="review in reviews" :key="review.reviewId" :review="review" />
@@ -22,36 +27,20 @@
 <script setup lang="ts">
 import ReviewCard from '@/components/review/ReviewCard.vue'
 import ReviewSide from '@/components/review/ReviewSide.vue'
-import { useAuthenticationStore } from '@/stores/authentication'
 import { Button } from '@/components/ui/button'
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { reviewsRequest } from '@/api/review'
 import { onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import type { ReviewDetail } from '@/types/board.type'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 
-const authenticationStore = useAuthenticationStore()
-const { isLogin } = storeToRefs(authenticationStore)
+const authentication = useAuthenticationStore()
+const { isLogin } = storeToRefs(authentication)
 
-const reviews = ref<ReviewDetail[]>([])
-
-const { mutate } = useMutation({
-  mutationKey: ['review-list'],
-  mutationFn: reviewsRequest,
-  onSuccess: (data) => {
-    reviews.value = data
-  },
-  onError: (error: any) => {
-    const {
-      response: {
-        data: { message }
-      }
-    } = error
-    alert(error)
-  }
-})
-onMounted(() => {
-  mutate()
+const { data: reviews, isLoading } = useQuery({
+  queryKey: ['reviews'],
+  queryFn: reviewsRequest
 })
 </script>
 
