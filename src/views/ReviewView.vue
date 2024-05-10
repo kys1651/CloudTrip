@@ -4,15 +4,30 @@
       <div class="flex flex-col my-6 items-center w-full">
         <h2 class="text-4xl font-bold mb-3">여행지 리뷰</h2>
       </div>
+
       <div class="flex flex-col my-6 items-center w-full space-y-4">
-        <div class="flex w-full max-w-sm items-center gap-1.5">
-          <Input id="email" type="email" placeholder="Email" />
-          <Button type="submit"> Subscribe </Button>
+        <div class="flex items-center space-x-2 bg-white p-4 shadow-md rounded-lg">
+          <!-- 셀렉트 박스 -->
+          <select
+            class="border border-gray-300 text-gray-700 py-2 px-4 rounded leading-tight focus:outline-none focus:border-blue-500"
+          >
+            <option>--선택하세요--</option>
+            <option value="option1">작성자</option>
+            <option value="option2">위치</option>
+            <option value="option3">날짜</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="검색어 입력"
+            class="flex-1 border border-gray-300 py-2 px-4 rounded focus:outline-none focus:border-blue-500"
+          />
+
+          <Button type="submit"> 검색 </Button>
           <Button v-if="isLogin" variant="default">
-            <router-link :to="{ name: 'reviewWrite' }">리뷰 작성</router-link>
+            <router-link :to="{ name: 'reviewWrite' }">리뷰 작성 바로가기</router-link>
           </Button>
         </div>
-
         <div v-if="!reviews">
           <h2 class="text-4xl font-bold mt-10">현재 리뷰가 존재하지 않습니다.</h2>
         </div>
