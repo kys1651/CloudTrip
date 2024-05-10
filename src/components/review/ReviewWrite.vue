@@ -67,15 +67,14 @@ import type { ReviewForm } from '@/types/board.type'
 import { reviewWriteRequest } from '@/api/review'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQueryClient } from '@tanstack/vue-query'
 
 const router = useRouter()
 const toast = useToast()
 
-import { useQueryClient } from '@tanstack/vue-query'
-
 const queryClient = useQueryClient()
 const { mutate } = useMutation({
-  mutationKey: ['review-write'],
+  mutationKey: ['reviews', 'create'],
   mutationFn: reviewWriteRequest,
   onSuccess: () => {
     toast.toast({
@@ -84,7 +83,7 @@ const { mutate } = useMutation({
       duration: 2000,
       variant: 'success'
     })
-    queryClient.invalidateQueries(['review-list'])
+    queryClient.invalidateQueries(['reviews'])
     router.push({ name: 'review' })
   },
   onError: (error: any) => {
