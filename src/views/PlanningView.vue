@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "@tanstack/vue-query";
 import { Search } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
 
 const map = ref<kakao.maps.Map>();
@@ -19,6 +20,10 @@ const map = ref<kakao.maps.Map>();
 const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
   map.value = mapRef;
 };
+
+const route = useRoute();
+
+const tourId = route.params.tourId;
 
 const trips = ref<SearchTrip[]>([]);
 const categoryGroup = ref([]);
@@ -49,7 +54,7 @@ const { mutate, isPending: isTripLoading } = useMutation({
 
 const onSubmit = () => {
   trips.value = [];
-  mutate({ query: searchKeyword.value, city: "서울" });
+  mutate({ query: searchKeyword.value, city: Number(tourId) });
 };
 </script>
 
