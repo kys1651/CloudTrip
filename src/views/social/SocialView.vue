@@ -1,52 +1,11 @@
 <script setup lang="ts">
-import BoardList from '@/components/social/BoardList.vue'
-import SocialBox from '@/components/social/SocialBox.vue'
 import SocialHeader from '@/components/social/SocialHeader.vue'
-import SocialBody from '@/components/social/SocialBody.vue'
-import type { BoardListProps } from '@/types/board.type'
-
-import { ref } from 'vue'
-// const categories = ref<BoardListProps[]>([
-//   {
-//     title: '자유게시판'
-//   },
-//   {
-//     title: '질문게시판'
-//   },
-//   {
-//     title: '정보게시판'
-//   },
-//   {
-//     title: '공지사항'
-//   },
-//   {
-//     title: '자료실'
-//   },
-//   {
-//     title: '프로젝트'
-//   }
-// ])
-
-const meetings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-const verticalScroll = ref<HTMLElement | null>(null)
-const verticalScrollLeft = () => {
-  if (verticalScroll.value) {
-    verticalScroll.value.scrollLeft -= 100
-  }
-}
-const verticalScrollRight = () => {
-  if (verticalScroll.value) {
-    verticalScroll.value.scrollLeft += 100
-  }
-}
+import SocialDetail from '@/components/social/SocialDetail.vue'
 </script>
 
 <template>
-  <div class="container justify-center flex flex-col my-6 items-start">
+  <div class="container justify-center flex flex-col my-6">
     <SocialHeader />
-    <SocialBody />
-    <!-- <div class="w-full grid grid-cols-2 gap-12 mt-6">
-      <BoardList v-for="(category, index) in categories" :key="index" :title="category.title" />
-    </div> -->
+    <SocialDetail />>
   </div>
 </template>

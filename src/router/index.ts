@@ -17,6 +17,11 @@ const router = createRouter({
     {
       path: '/social',
       name: 'social',
+      component: () => import('@/views/social/SocialListView.vue')
+    },
+    {
+      path: '/social/:socialId',
+      name: 'social-detail',
       component: () => import('@/views/social/SocialView.vue')
     },
     {

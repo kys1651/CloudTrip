@@ -4,6 +4,14 @@ import { Input } from '@/components/ui/input'
 import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
 import { CardContent, Card } from '@/components/ui/card'
 import SocialCard from '@/components/social/SocialCard.vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const goSocialDetail = () => {
+  router.push({ name: 'social-detail' })
+}
 </script>
 
 <template>
@@ -29,7 +37,9 @@ import SocialCard from '@/components/social/SocialCard.vue'
       <h2 className="text-lg font-semibold">소식 103</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <SocialCard />
+          <div @click="goSocialDetail">
+            <SocialCard />
+          </div>
           <Card className="col-span-1 shadow-md">
             <CardContent>
               <div className="flex items-center space-x-3">
