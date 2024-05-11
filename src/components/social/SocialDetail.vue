@@ -2,6 +2,18 @@
 import { Button } from '@/components/ui/button'
 import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar'
 import Comment from '@/components/social/Comment.vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const goSocialList = () => {
+  router.push({ name: 'social' })
+}
+
+const goSocialUpdate = () => {
+  router.push({ name: 'social-modify', params: { socialId: 1 } })
+}
 </script>
 
 <template>
@@ -24,22 +36,16 @@ import Comment from '@/components/social/Comment.vue'
       <p class="mt-5">본문내용2</p>
       <div className="flex justify-end gap-4 mt-20">
         <Button
+          @click="goSocialList"
           className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-          href="#"
         >
           목록으로
         </Button>
         <Button
+          @click="goSocialUpdate"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          href="#"
         >
-          글 수정
-        </Button>
-        <Button
-          className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-          variant="destructive"
-        >
-          글 삭제
+          글 수정하기
         </Button>
       </div>
     </article>

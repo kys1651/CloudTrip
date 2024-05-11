@@ -25,6 +25,16 @@ const router = createRouter({
       component: () => import('@/views/social/SocialView.vue')
     },
     {
+      path: '/social/:socialId',
+      name: 'social-modify',
+      component: () => import('@/views/social/SocialUpdateView.vue')
+    },
+    {
+      path: '/social/create',
+      name: 'social-create',
+      component: () => import('@/views/social/SocialCreateView.vue')
+    },
+    {
       path: '/notice',
       name: 'notice',
       component: () => import('@/views/notice/NoticeListView.vue')
