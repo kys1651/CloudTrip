@@ -7,9 +7,14 @@ import SocialCard from '@/components/social/SocialCard.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const router = useRouter()
+
+const authentication = useAuthenticationStore()
+const { isLogin } = storeToRefs(authentication)
 
 const goSocialCreate = () => {
   router.push({ name: 'social-create' })
@@ -57,6 +62,7 @@ onMounted(() => {
         </div>
       </div>
       <button
+        v-if="isLogin"
         @click="goSocialCreate"
         class="mt-5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md"
       >

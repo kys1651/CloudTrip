@@ -21,7 +21,7 @@
             />
           </Avatar>
           <a class="font-semibold text-sm ms-3" href="#">
-            {{ review.nickname ?? 'AK47맞고사랑한성민이' }}
+            {{ review.nickname ?? '임시 닉네임' + review.reviewId }}
           </a>
           <span class="text-gray-400 dark:text-gray-500 ms-4">{{ review.tourId }}</span>
         </div>
