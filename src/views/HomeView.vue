@@ -35,7 +35,7 @@ const metrics = ref<MetricProps[]>(
               <p
                 class="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
               >
-                저희 트리플랜에서는 짧고 굵은 2박 3일 여행 플랜을 추천해드립니다.
+                저희 트리플랜에서는 짧고 굵은 2박 3일 여행지 혹은 계획을 추천해드립니다.
               </p>
             </div>
             <div class="flex flex-col gap-2 min-[400px]:flex-row">
@@ -54,7 +54,7 @@ const metrics = ref<MetricProps[]>(
             </div>
           </div>
           <img
-            src="https://generated.vusercontent.net/placeholder.svg"
+            src="http://tong.visitkorea.or.kr/cms2/website/74/3108474.jpg"
             width="550"
             height="550"
             alt="Travel Recommendations"
