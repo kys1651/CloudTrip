@@ -66,9 +66,7 @@ const search = async () => {
   params.append('key', searchForm.value.key)
   params.append('keyword', searchForm.value.keyword)
   const searchedReviews = await searchReviews(params)
-  console.log(searchedReviews)
   queryClient.setQueryData(['reviews'], searchedReviews)
-  console.log(reviews.value)
 }
 
 const { data: reviews, isLoading } = useQuery({
