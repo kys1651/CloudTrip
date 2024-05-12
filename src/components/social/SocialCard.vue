@@ -1,7 +1,5 @@
 <script setup>
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
+import { AvatarFallback, Avatar } from '@/components/ui/avatar'
 import { CardContent, Card } from '@/components/ui/card'
 
 import { useRoute, useRouter } from 'vue-router'
@@ -10,8 +8,12 @@ const route = useRoute()
 const router = useRouter()
 
 const goSocialDetail = () => {
-  router.push({ name: 'social-detail', params: { socialId: 1 } })
+  router.push({ name: 'social-detail', params: { socialId: props.socialInfo.socialId } })
 }
+
+const props = defineProps({
+  socialInfo: Object
+})
 </script>
 
 <template>
@@ -22,14 +24,13 @@ const goSocialDetail = () => {
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <p className="font-medium">딘지</p>
-          <span className="text-sm text-gray-500">게시물 · 2022.08.26</span>
+          <p className="font-medium">{{ socialInfo.socialId }}</p>
+          <span className="text-sm text-gray-500">[글 작성일]</span>
+          <span className="text-sm text-gray-500">{{ socialInfo.createdAt }}</span>
         </div>
       </div>
       <div className="mt-2 text-sm" @click="goSocialDetail">
-        Si 언제적에 프로필에디트를 작업하더라며
-        <br />
-        뭘 궁금하게 쓸까요
+        {{ socialInfo.content }}
       </div>
     </CardContent>
   </Card>

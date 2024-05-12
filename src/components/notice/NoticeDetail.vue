@@ -27,6 +27,7 @@ onMounted(() => {
   axios
     .get(addr)
     .then((response) => {
+      console.log(response)
       notice.value = response.data
     })
     .catch((error) => {

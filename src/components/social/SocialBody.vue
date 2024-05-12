@@ -5,6 +5,8 @@ import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
 import { CardContent, Card } from '@/components/ui/card'
 import SocialCard from '@/components/social/SocialCard.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,6 +14,20 @@ const router = useRouter()
 const goSocialCreate = () => {
   router.push({ name: 'social-create' })
 }
+
+const addr = `http://localhost:8080/api/v1/social/list`
+const socials = ref([])
+onMounted(() => {
+  axios
+    .get(addr)
+    .then((response) => {
+      console.log(response)
+      socials.value = response.data
+    })
+    .catch((error) => {
+      console.log('전체 조회 실패', error)
+    })
+})
 </script>
 
 <template>
@@ -37,14 +53,7 @@ const goSocialCreate = () => {
       <h2 className="text-lg font-semibold">소식 103</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <SocialCard />
-          <SocialCard />
-          <SocialCard />
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <SocialCard />
-          <SocialCard />
-          <SocialCard />
+          <SocialCard :social-info="social" v-for="social in socials" :key="social.socialId" />
         </div>
       </div>
       <button

@@ -25,8 +25,5 @@ const verticalScrollRight = () => {
   <div class="container justify-center flex flex-col my-6 items-start">
     <SocialHeader />
     <SocialBody />
-    <!-- <div class="w-full grid grid-cols-2 gap-12 mt-6">
-      <BoardList v-for="(category, index) in categories" :key="index" :title="category.title" />
-    </div> -->
   </div>
 </template>

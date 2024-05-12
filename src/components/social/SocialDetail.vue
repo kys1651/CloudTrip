@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar'
 import Comment from '@/components/social/Comment.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,28 +14,44 @@ const goSocialList = () => {
 }
 
 const goSocialUpdate = () => {
-  router.push({ name: 'social-modify', params: { socialId: 1 } })
+  router.push({ name: 'social-modify', params: { socialId: socialId } })
 }
+
+const socialId = route.params.socialId
+const addr = `http://localhost:8080/api/v1/social/${socialId}`
+const articleInfo = ref([])
+onMounted(() => {
+  axios
+    .get(addr)
+    .then((response) => {
+      console.log('글 상세보기 성공')
+      articleInfo.value = response.data
+    })
+    .catch((error) => {
+      console.log('글 상세보기 실패', error)
+    })
+})
 </script>
 
 <template>
   <div className="px-4 py-6 md:px-6 md:py-12 lg:py-16">
     <article className="prose prose-gray mx-auto max-w-6xl dark:prose-invert">
       <div className="space-y-4 not-prose">
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">게시글 제목</h1>
+        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+          {{ articleInfo.title }}
+        </h1>
         <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400">
           <div class="mb-3">
-            <span className="font-medium">@글 작성자</span>
+            <span className="font-medium">@ {{ articleInfo.userId }}</span>
             <span className="mx-2">•</span>
-            <span>글 작성시기</span>
+            <span>{{ articleInfo.createdAt }}</span>
             <span className="mx-2">•</span>
-            <span>조회수</span>
+            <span>{{ articleInfo.viewCount }}</span>
           </div>
         </div>
       </div>
       <hr />
-      <p class="mt-5">본문내용1</p>
-      <p class="mt-5">본문내용2</p>
+      <p class="mt-5">{{ articleInfo.content }}</p>
       <div className="flex justify-end gap-4 mt-20">
         <Button
           @click="goSocialList"
