@@ -16,6 +16,11 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import type { INotice } from '@/types/board.type'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+
+const authentication = useAuthenticationStore()
+const { isLogin } = storeToRefs(authentication)
 
 const meetings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const verticalScroll = ref<HTMLElement | null>(null)
@@ -103,6 +108,7 @@ const goCreateNotice = () => {
       </Table>
       <div class="mt-5 flex justify-center">
         <button
+          v-if="isLogin"
           type="button"
           @click="goCreateNotice"
           class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"

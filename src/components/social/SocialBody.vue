@@ -5,9 +5,14 @@ import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
 import { CardContent, Card } from '@/components/ui/card'
 import SocialCard from '@/components/social/SocialCard.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const router = useRouter()
+
+const authentication = useAuthenticationStore()
+const { isLogin } = storeToRefs(authentication)
 
 const goSocialCreate = () => {
   router.push({ name: 'social-create' })
@@ -48,6 +53,7 @@ const goSocialCreate = () => {
         </div>
       </div>
       <button
+        v-if="isLogin"
         @click="goSocialCreate"
         class="mt-5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md"
       >
