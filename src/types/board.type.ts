@@ -60,3 +60,8 @@ export interface ReviewCommentDetail {
   createdAt: string
   profileImage: string
 }
+
+export interface SearchCondition {
+  key: string
+  keyword: string
+}
