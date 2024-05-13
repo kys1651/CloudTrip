@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import NoticeTextarea from '@/components/notice/NoticeTextarea.vue'
 
 const route = useRoute()
 const router = useRouter()

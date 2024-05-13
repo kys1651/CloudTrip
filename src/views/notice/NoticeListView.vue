@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, onUpdated } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import type { INotice } from '@/types/board.type'
@@ -27,6 +27,9 @@ import {
 
 const authentication = useAuthenticationStore()
 const { isLogin } = storeToRefs(authentication)
+
+const route = useRoute()
+const router = useRouter()
 
 const meetings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const verticalScroll = ref<HTMLElement | null>(null)
@@ -47,37 +50,48 @@ onMounted(() => {
   axios
     .get(addr)
     .then((response) => {
-      console.log(response)
       notices.value = response.data
+      console.log(route.query.page)
+      if (!route.query.page) {
+        router.push({name: 'notice', query: {page:1}})
+      }
     })
     .catch((error) => {
       console.log('공지사항 조회 오류', error)
     })
 })
 
-const route = useRoute()
-const router = useRouter()
-// const viewNotice = (id: number) => {
-//   router.push({
-//     name: 'notice-view',
-//     params: { noticeId: id }
-//   })
+onUpdated(() => {
+  pageNumber.value = Number(route.query.page)
+})
+
+
+const pageNumber = ref<number>(1)
+
+// const goCreateNotice = () => {
+//   router.push({ name: 'notice-create' })
 // }
 
-const goCreateNotice = () => {
-  router.push({ name: 'notice-create' })
+const goUpdate = (curNoticeId: number) => {
+  console.log(curNoticeId)
+  router.push({ name: 'notice-modify', params:{noticeId:curNoticeId} })
 }
 
-const currentPage = ref(1)
 const postsPerPage = ref(6)
-const updateCurrentPage = (curIndex: number) => {
-  currentPage.value = curIndex
+
+const updateCurrentPage = (pageIdx: number) => {
+  router.push({name: 'notice', query: {page:pageIdx}})
 }
 
 const displayedPosts = computed(() => {
-  const startIndex = (currentPage.value - 1) * postsPerPage.value
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value
   const endIndex = startIndex + postsPerPage.value
   return notices.value.slice(startIndex, endIndex)
+})
+
+const totalPages = computed(() => {
+  console.log(notices.value.length + " " + postsPerPage.value)
+  return Math.ceil(notices.value.length / postsPerPage.value)
 })
 </script>
 
@@ -113,11 +127,19 @@ const displayedPosts = computed(() => {
       >
         <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
         <AccordionContent>
-          {{ notice.content }}
+          <div class="flex justify-between">
+            <p>{{ notice.content }}</p>
+            <button
+            @click='goUpdate(notice.noticeId)'
+              class="text-blue-500 font-semibold mr-6 border rounded-full border-blue-600 px-3 py-1"
+            >
+              수정하기
+            </button>
+          </div>
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-    <div class="w-5/6 mx-12 mt-5 flex justify-center">
+    <div class="w-full flex justify-center items-center mt-5">
       <!-- v-if="isLogin" 추가 해야함 -->
       <button
         type="button"
@@ -127,8 +149,12 @@ const displayedPosts = computed(() => {
         공지사항 작성하기
       </button>
     </div>
-    <div class="w-5/6 mt-6 mx-12 flex justify-center">
-      <Pagination @page-number="updateCurrentPage" />
+    <div class="w-full mt-6 flex justify-center">
+      <Pagination 
+      @page-number="updateCurrentPage" 
+      :total-page='totalPages' 
+      :total-post='notices.length' 
+      :items-per-page='postsPerPage'/>
     </div>
   </div>
 </template>
