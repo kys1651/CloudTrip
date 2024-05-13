@@ -10,11 +10,18 @@ export interface INotice {
 }
 
 export interface IReview {
-  reviewId: number
-  authorId: string
-  content: string
-  location: string
-  photoUrls: string[]
+  reviewId: number;
+  user: {
+    userId: number;
+    nickname: string;
+    profileImage: string;
+  };
+  isLiked: boolean;
+  images: string[];
+  content: string;
+  tourId: number;
+  address: string;
+  createdAt: number;
 }
 
 export interface ReviewDetail {
@@ -33,7 +40,6 @@ export interface ReviewDetail {
 export interface ReviewForm {
   content: string
   tourId: number
-  imgUrls: string[]
 }
 
 export interface ReviewCardProps {
@@ -61,7 +67,9 @@ export interface ReviewCommentDetail {
   profileImage: string
 }
 
-export interface SearchCondition {
-  key: string
-  keyword: string
+export interface ReviewForm {
+  name: string
+  tourId: number
+  content: string
+  images: File[]
 }

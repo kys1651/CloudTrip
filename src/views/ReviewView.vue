@@ -1,86 +1,76 @@
+<script setup lang="ts">
+import { reviewsRequest } from "@/api/review";
+import ReviewCard from "@/components/review/ReviewCardV2.vue";
+import { useInfiniteQuery } from "@tanstack/vue-query";
+import { useInfiniteScroll } from "@vueuse/core";
+import { ref } from "vue";
+
+const scrollRef = ref<HTMLElement | null>(null);
+
+const { data: pages, fetchNextPage } = useInfiniteQuery({
+  queryKey: ["reviews"],
+  queryFn: reviewsRequest,
+  getNextPageParam: (lastPage) => lastPage.nextCursor + 1,
+  initialPageParam: 0,
+});
+
+useInfiniteScroll(
+  scrollRef,
+  async () => {
+    if (!pages.value?.pages[pages.value.pages.length - 1].hasNext) return;
+    await fetchNextPage();
+  },
+  {
+    distance: 10,
+  }
+);
+</script>
+
 <template>
-  <div class="container">
-    <div class="content flex flex-col my-6 items-start w-full">
-      <div class="flex flex-col my-6 items-center w-full">
-        <h2 class="text-4xl font-bold mb-3">여행지 리뷰</h2>
-      </div>
-
-      <div class="flex flex-col my-6 items-center w-full space-y-4">
-        <div class="flex items-center space-x-2 bg-white p-4 shadow-md rounded-lg">
-          <!-- 셀렉트 박스 -->
-          <select
-            v-model="searchForm.key"
-            class="border border-gray-300 text-gray-700 py-2 px-4 rounded leading-tight focus:outline-none focus:border-blue-500"
-          >
-            <option value="">--선택하세요--</option>
-            <option value="nickname">작성자</option>
-            <option value="tour_id">위치</option>
-            <option value="created_at">날짜</option>
-          </select>
-
-          <input
-            v-model="searchForm.keyword"
-            type="text"
-            placeholder="검색어 입력"
-            class="flex-1 border border-gray-300 py-2 px-4 rounded focus:outline-none focus:border-blue-500"
+  <div class="container flex flex-col items-start w-full">
+    <div class="flex flex-col my-6 items-center w-full">
+      <h2 class="text-4xl font-bold mb-3">여행지 리뷰</h2>
+    </div>
+    <div class="flex flex-col items-center justify-center h-[90vh] w-full">
+      <div
+        class="justify-center grid grid-cols-3 gap-10 m-auto overflow-scroll scrollbar-hide px-10"
+        ref="scrollRef"
+      >
+        <template v-for="(page, index) in pages?.pages" :key="index">
+          <ReviewCard
+            v-for="review in page.contents"
+            :key="review.reviewId"
+            :review="review"
           />
-
-          <Button type="submit" @click.prevent="search"> 검색 </Button>
-          <Button v-if="isLogin" variant="default">
-            <router-link :to="{ name: 'reviewWrite' }">리뷰 작성 바로가기</router-link>
-          </Button>
-        </div>
-        <div v-if="!reviews || reviews.length == 0">
-          <h2 class="text-4xl font-bold mt-10">현재 리뷰가 존재하지 않습니다.</h2>
-        </div>
-        <ReviewCard v-for="review in reviews" :key="review.reviewId" :review="review" />
+        </template>
       </div>
     </div>
-
-    <ReviewSide />
   </div>
+
+  <!-- <ReviewSide /> -->
 </template>
 
 <script setup lang="ts">
-import ReviewCard from '@/components/review/ReviewCard.vue'
-import ReviewSide from '@/components/review/ReviewSide.vue'
-import { Button } from '@/components/ui/button'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { reviewsRequest, searchReviews } from '@/api/review'
-import { onMounted, ref } from 'vue'
-import type { SearchCondition } from '@/types/board.type'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
+import ReviewCard from "@/components/review/ReviewCard.vue";
+import ReviewSide from "@/components/review/ReviewSide.vue";
+import { Button } from "@/components/ui/button";
+import { useMutation, useQuery } from "@tanstack/vue-query";
+import { reviewsRequest } from "@/api/review";
+import { onMounted, ref } from "vue";
+import type { ReviewDetail } from "@/types/board.type";
+import { useAuthenticationStore } from "@/stores/authentication";
+import { storeToRefs } from "pinia";
 
-const authentication = useAuthenticationStore()
-const { isLogin } = storeToRefs(authentication)
-
-const searchForm = ref<SearchCondition>({
-  key: '',
-  keyword: ''
-})
-
-const queryClient = useQueryClient()
-const search = async () => {
-  const params = new URLSearchParams()
-  params.append('key', searchForm.value.key)
-  params.append('keyword', searchForm.value.keyword)
-  const searchedReviews = await searchReviews(params)
-  queryClient.setQueryData(['reviews'], searchedReviews)
-}
+const authentication = useAuthenticationStore();
+const { isLogin } = storeToRefs(authentication);
 
 const { data: reviews, isLoading } = useQuery({
-  queryKey: ['reviews'],
-  queryFn: reviewsRequest
-})
+  queryKey: ["reviews"],
+  queryFn: reviewsRequest,
+});
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-}
 .content {
   width: calc(100% - 240px);
 }
