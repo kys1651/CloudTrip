@@ -12,12 +12,18 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import type { INotice } from '@/types/board.type'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 
 const authentication = useAuthenticationStore()
 const { isLogin } = storeToRefs(authentication)
@@ -51,16 +57,28 @@ onMounted(() => {
 
 const route = useRoute()
 const router = useRouter()
-const viewNotice = (id: number) => {
-  router.push({
-    name: 'notice-view',
-    params: { noticeId: id }
-  })
-}
+// const viewNotice = (id: number) => {
+//   router.push({
+//     name: 'notice-view',
+//     params: { noticeId: id }
+//   })
+// }
 
 const goCreateNotice = () => {
   router.push({ name: 'notice-create' })
 }
+
+const currentPage = ref(1)
+const postsPerPage = ref(6)
+const updateCurrentPage = (curIndex: number) => {
+  currentPage.value = curIndex
+}
+
+const displayedPosts = computed(() => {
+  const startIndex = (currentPage.value - 1) * postsPerPage.value
+  const endIndex = startIndex + postsPerPage.value
+  return notices.value.slice(startIndex, endIndex)
+})
 </script>
 
 <template>
@@ -87,39 +105,30 @@ const goCreateNotice = () => {
         />
       </div>
     </div>
-    <div class="w-5/6 mt-6 mx-12">
-      <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="bold text-left">글 번호</TableHead>
-            <TableHead className="bold text-left">작성자</TableHead>
-            <TableHead className="bold text-left">글 제목</TableHead>
-            <TableHead className="text-right">글 작성시기</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow v-for="notice in notices" :key="notice.noticeId">
-            <TableCell className="font-medium">{{ notice.noticeId }}</TableCell>
-            <TableCell>Admin</TableCell>
-            <TableCell @click="viewNotice(notice.noticeId)">{{ notice.title }}</TableCell>
-            <TableCell className="text-right">{{ notice.createdAt }}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <div class="mt-5 flex justify-center">
-        <button
-          v-if="isLogin"
-          type="button"
-          @click="goCreateNotice"
-          class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          공지사항 작성하기
-        </button>
-      </div>
-      <div class="mt-10 flex justify-center">
-        <Pagination />
-      </div>
+    <Accordion type="multiple" class="w-full" collapsible>
+      <AccordionItem
+        v-for="notice in displayedPosts"
+        :key="notice.noticeId"
+        :value="notice.content"
+      >
+        <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
+        <AccordionContent>
+          {{ notice.content }}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+    <div class="w-5/6 mx-12 mt-5 flex justify-center">
+      <!-- v-if="isLogin" 추가 해야함 -->
+      <button
+        type="button"
+        @click="goCreateNotice"
+        class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+      >
+        공지사항 작성하기
+      </button>
+    </div>
+    <div class="w-5/6 mt-6 mx-12 flex justify-center">
+      <Pagination @page-number="updateCurrentPage" />
     </div>
   </div>
 </template>
