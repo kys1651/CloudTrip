@@ -93,6 +93,11 @@ const router = createRouter({
       path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: () => import('@/components/mypage/Account.vue')
     }
   ]
 })
