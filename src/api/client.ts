@@ -89,4 +89,10 @@ export interface BaseResponse<T> {
   errors: object[]
 }
 
+export interface PageResponse<T> {
+  contents: T[]
+  nextCursor: number
+  hasNext: boolean
+}
+
 export default instance

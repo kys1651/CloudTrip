@@ -1,5 +1,5 @@
-import client, { type BaseResponse } from '@/api/client'
-import type { ReviewForm, ReviewDetail } from '@/types/board.type'
+import client, { type BaseResponse, type PageResponse } from '@/api/client';
+import type { IReview, ReviewDetail, ReviewForm } from '@/types/board.type';
 
 export const reviewWriteRequest = async (review: ReviewForm) => {
   const {
@@ -8,12 +8,31 @@ export const reviewWriteRequest = async (review: ReviewForm) => {
   if (!isSuccess) throw new Error(message)
 }
 
-export const reviewsRequest = async (): Promise<ReviewDetail[]> => {
+export const reviewsRequest = async ({ pageParam = 0 }: { pageParam: number }): Promise<PageResponse<IReview>> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<ReviewDetail[]>>(`/review`)
+  } = await client.get<BaseResponse<PageResponse<IReview>>>(`/review`, { params: { page: pageParam } })
   if (!isSuccess) throw new Error(message)
   return data
+}
+
+export const reviewCreateRequest = async (review: ReviewForm, images: File[]) => {
+  const formData = new FormData();
+  images.forEach((image) => {
+    formData.append("images", image);
+  });
+  formData.append("content", review.content);
+  formData.append("tourId", review.tourId.toString());
+  
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/review`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (!isSuccess) throw new Error(message);
+  return isSuccess;
 }
 
 export const reviewRequest = async (id: number): Promise<ReviewDetail> => {
@@ -22,4 +41,19 @@ export const reviewRequest = async (id: number): Promise<ReviewDetail> => {
   } = await client.get<BaseResponse<ReviewDetail>>(`/review/${id}`)
   if (!isSuccess) throw new Error(message)
   return data
+}
+
+
+export const reviewLikeRequest = async (id: number) => {
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/review/${id}/like`)
+  if (!isSuccess) throw new Error(message)
+}
+
+export const reviewDisLikeRequest = async (id: number) => {
+  const {
+    data: { isSuccess, message }
+  } = await client.delete<BaseResponse<void>>(`/review/${id}/like`)
+  if (!isSuccess) throw new Error(message)
 }
