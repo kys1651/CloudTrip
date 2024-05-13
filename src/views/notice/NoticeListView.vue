@@ -68,9 +68,10 @@ onUpdated(() => {
 
 const pageNumber = ref<number>(1)
 
-// const goCreateNotice = () => {
-//   router.push({ name: 'notice-create' })
-// }
+const goCreateNotice = () => {
+  // router.push({ name: 'notice-create' })
+  router.push({name: 'notice-create-quill'})
+}
 
 const goUpdate = (curNoticeId: number) => {
   console.log(curNoticeId)
@@ -141,6 +142,7 @@ const totalPages = computed(() => {
     </Accordion>
     <div class="w-full flex justify-center items-center mt-5">
       <!-- v-if="isLogin" 추가 해야함 -->
+      <!-- @click="goCreateNotice" 관리자 페이지에 추가 -->
       <button
         type="button"
         @click="goCreateNotice"

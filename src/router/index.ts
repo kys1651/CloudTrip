@@ -90,6 +90,11 @@ const router = createRouter({
       component: () => import('@/views/notice/NoticeCreateView.vue')
     },
     {
+      path: '/notice/create/',
+      name: 'notice-create-quill',
+      component: () => import('@/views/notice/NoticeCreateQuillView.vue')
+    },
+    {
       path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')

@@ -16,6 +16,7 @@
     "@radix-icons/vue": "^1.0.0",
     "@tanstack/vue-query": "^5.34.2",
     "@tanstack/vue-query-devtools": "^5.35.2",
+    "@vueup/vue-quill": "^1.2.0",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
@@ -38,6 +39,7 @@
     "vue-router": "^4.3.0",
     "vue3-cookies": "^1.0.6",
     "vue3-kakao-maps": "^2.3.1",
+    "vue3-quill": "^0.3.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {
