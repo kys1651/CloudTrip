@@ -49,29 +49,3 @@ useInfiniteScroll(
 
   <!-- <ReviewSide /> -->
 </template>
-
-<script setup lang="ts">
-import ReviewCard from "@/components/review/ReviewCard.vue";
-import ReviewSide from "@/components/review/ReviewSide.vue";
-import { Button } from "@/components/ui/button";
-import { useMutation, useQuery } from "@tanstack/vue-query";
-import { reviewsRequest } from "@/api/review";
-import { onMounted, ref } from "vue";
-import type { ReviewDetail } from "@/types/board.type";
-import { useAuthenticationStore } from "@/stores/authentication";
-import { storeToRefs } from "pinia";
-
-const authentication = useAuthenticationStore();
-const { isLogin } = storeToRefs(authentication);
-
-const { data: reviews, isLoading } = useQuery({
-  queryKey: ["reviews"],
-  queryFn: reviewsRequest,
-});
-</script>
-
-<style scoped>
-.content {
-  width: calc(100% - 240px);
-}
-</style>
