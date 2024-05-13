@@ -47,17 +47,17 @@ const router = createRouter({
     {
       path: '/review',
       name: 'review',
-      component: () => import('@/views/ReviewView.vue')
+      component: () => import('@/views/reviews/ReviewView.vue')
     },
     {
       path: '/review/create',
       name: 'review-create',
-      component: () => import('@/views/ReviewCreateView.vue')
+      component: () => import('@/views/reviews/ReviewCreateView.vue')
     },
     {
-      path: '/reviewDetail/:id',
-      name: 'reviewDetail',
-      component: () => import('@/components/review/ReviewDetail.vue')
+      path: '/review/:id',
+      name: 'review-detail',
+      component: () => import('@/views/reviews/ReviewDetailView.vue')
     },
     {
       path: '/reviewWrite',

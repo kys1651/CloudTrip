@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@internationalized/date": "^3.5.3",
     "@radix-icons/vue": "^1.0.0",
     "@tanstack/vue-query": "^5.34.2",
     "@tanstack/vue-query-devtools": "^5.35.2",
@@ -25,6 +26,7 @@
     "embla-carousel-vue": "^8.0.4",
     "lucide-react": "^0.378.0",
     "lucide-vue-next": "^0.377.0",
+    "moment": "^2.30.1",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "radix-vue": "^1.7.3",

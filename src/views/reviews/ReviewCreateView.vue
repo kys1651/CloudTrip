@@ -208,10 +208,13 @@ const changeImage = (event: Event) => {
         class="flex flex-row space-x-4 overflow-x-scroll w-full flex-nowrap scrollbar-hide"
       >
         <div
-          class="w-24 h-24 border border-gray-400 rounded-md overflow-hidden flex flex-col items-center justify-center space-y-2 cursor-pointer flex-shrink-0"
+          class="w-24 h-24 border rounded-md overflow-hidden flex flex-col items-center justify-center space-y-2 cursor-pointer flex-shrink-0"
           v-for="(image, index) in imageSrcs"
           :key="index"
-          :class="{ 'border-blue-500 border-2': imageIndex === index }"
+          :class="{
+            'border-blue-500 border-2': imageIndex === index,
+            'border-gray-400': imageIndex !== index,
+          }"
           @click="imageIndex = index"
         >
           <img :src="image" />

@@ -24,19 +24,6 @@ export interface IReview {
   createdAt: number;
 }
 
-export interface ReviewDetail {
-  reviewId: number
-  content: string
-  tourId: number
-  createdAt: string
-  updatedAt: string
-  likeCount: number
-  imgUrls: string[]
-  userId: number
-  nickname: string
-  profileImage: string
-}
-
 export interface ReviewForm {
   content: string
   tourId: number
@@ -72,4 +59,32 @@ export interface ReviewForm {
   tourId: number
   content: string
   images: File[]
+}
+
+export interface ReviewDetail {
+  reviewId: number
+  content: string
+  tourId: number
+  createdAt: number
+  updatedAt: number
+  likeCount: number
+  address: string
+  isLiked: boolean
+  images: string[]
+  user: {
+    userId: number
+    nickname: string
+    profileImage: string
+  }
+}
+
+export interface IComment {
+  commentId: number
+  user: {
+    userId: number
+    nickname: string
+    profileImage: string
+  }
+  content: string
+  createdAt: string
 }

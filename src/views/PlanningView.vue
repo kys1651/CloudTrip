@@ -2,18 +2,40 @@
 import { categoryRequest, searchTripRequest } from "@/api/trip";
 import TripPlanCard from "@/components/card/TripPlanCard.vue";
 import TripManageBox from "@/components/trip/TripManageBox.vue";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { RangeCalendar } from '@/components/ui/range-calendar';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useTripPlanStore } from "@/stores/trip-plan";
 import type { SearchQuery, SearchTrip } from "@/types/trip.type";
+import { getLocalTimeZone, today } from '@internationalized/date';
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { Search } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
+import type { DateRange } from 'radix-vue';
+import { type Ref, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
+
+const start = today(getLocalTimeZone())
+const end = start.add({ days: 21 })
+
+const isOpen = ref<boolean>(true);
+
+const value = ref({
+  start,
+  end,
+}) as Ref<DateRange>
 
 const map = ref<kakao.maps.Map>();
 
@@ -22,7 +44,6 @@ const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
 };
 
 const route = useRoute();
-console.log(route.params);
 const cityId = route.params.cityId;
 
 const trips = ref<SearchTrip[]>([]);
@@ -56,9 +77,30 @@ const onSubmit = () => {
   trips.value = [];
   mutate({ query: searchKeyword.value, city: Number(cityId) });
 };
+
+const handleCalendar = () => {
+  isOpen.value = false;
+}
 </script>
 
 <template>
+  <Dialog :open="isOpen">
+    <DialogContent class="max-w-2xl">
+      <DialogHeader>
+        <DialogTitle>일정 선택하기</DialogTitle>
+        <DialogDescription>
+          계획하고자 하는 여행의 일정을 선택해주세요. 여행 일정은 최대 5일까지 가능합니다.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="flex flex-row space-x-10 py-5 m-auto">
+        <RangeCalendar :locale="'ko-kr'" v-model="value" class="rounded-md border" />
+        <RangeCalendar :locale="'ko-kr'" v-model="value" class="rounded-md border" />
+      </div>
+      <DialogFooter>
+        <Button class="w-24 flex flex-end mx-5" @click="handleCalendar">선택 완료</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
   <div class="flex flex-row max-h-screen h-screen overflow-hidden">
     <div class="w-[400px] h-full flex flex-col px-3 py-5">
       <h2 class="text-black text-2xl font-bold">제주</h2>
