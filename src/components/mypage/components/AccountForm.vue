@@ -34,6 +34,7 @@ const open = ref(false)
 const dateValue = ref()
 const fileInput = ref<HTMLInputElement | null>(null)
 
+// TODO : 디비에서 정보 받아오기
 const region = [
   { label: '광주', value: 1 },
   { label: '서울', value: 2 },
