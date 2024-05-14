@@ -53,7 +53,7 @@ onMounted(() => {
       notices.value = response.data
       console.log(route.query.page)
       if (!route.query.page) {
-        router.push({name: 'notice', query: {page:1}})
+        router.push({ name: 'notice', query: { page: 1 } })
       }
     })
     .catch((error) => {
@@ -65,23 +65,22 @@ onUpdated(() => {
   pageNumber.value = Number(route.query.page)
 })
 
-
 const pageNumber = ref<number>(1)
 
 const goCreateNotice = () => {
-  // router.push({ name: 'notice-create' })
-  router.push({name: 'notice-create-quill'})
+  router.push({ name: 'notice-create' })
+  // router.push({name: 'notice-create-quill'})
 }
 
 const goUpdate = (curNoticeId: number) => {
   console.log(curNoticeId)
-  router.push({ name: 'notice-modify', params:{noticeId:curNoticeId} })
+  router.push({ name: 'notice-modify', params: { noticeId: curNoticeId } })
 }
 
 const postsPerPage = ref(6)
 
 const updateCurrentPage = (pageIdx: number) => {
-  router.push({name: 'notice', query: {page:pageIdx}})
+  router.push({ name: 'notice', query: { page: pageIdx } })
 }
 
 const displayedPosts = computed(() => {
@@ -91,7 +90,7 @@ const displayedPosts = computed(() => {
 })
 
 const totalPages = computed(() => {
-  console.log(notices.value.length + " " + postsPerPage.value)
+  console.log(notices.value.length + ' ' + postsPerPage.value)
   return Math.ceil(notices.value.length / postsPerPage.value)
 })
 </script>
@@ -128,11 +127,11 @@ const totalPages = computed(() => {
       >
         <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
         <AccordionContent>
-          <div class="flex justify-between">
-            <p>{{ notice.content }}</p>
+          <div class="flex justify-between items-center">
+            <p class="flex-grow">{{ notice.content }}</p>
             <button
-            @click='goUpdate(notice.noticeId)'
-              class="text-blue-500 font-semibold mr-6 border rounded-full border-blue-600 px-3 py-1"
+              @click="goUpdate(notice.noticeId)"
+              class="text-blue-500 font-semibold mr-6 border rounded-full border-blue-600 px-3 py-1 text-xs ml-4"
             >
               수정하기
             </button>
@@ -152,11 +151,12 @@ const totalPages = computed(() => {
       </button>
     </div>
     <div class="w-full mt-6 flex justify-center">
-      <Pagination 
-      @page-number="updateCurrentPage" 
-      :total-page='totalPages' 
-      :total-post='notices.length' 
-      :items-per-page='postsPerPage'/>
+      <Pagination
+        @page-number="updateCurrentPage"
+        :total-page="totalPages"
+        :total-post="notices.length"
+        :items-per-page="postsPerPage"
+      />
     </div>
   </div>
 </template>

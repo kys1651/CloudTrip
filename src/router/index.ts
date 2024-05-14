@@ -95,6 +95,11 @@ const router = createRouter({
       component: () => import('@/views/notice/NoticeCreateQuillView.vue')
     },
     {
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/user/UserListView.vue')
+    },
+    {
       path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')
