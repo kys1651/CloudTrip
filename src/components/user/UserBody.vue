@@ -31,6 +31,20 @@ onMounted(() => {
     users.value = response.data
   })
 })
+
+const updateAddr = `http://localhost:8080/api/v1/user/update/`
+const changeStatus = (user: Object) => {
+  // view에 활성 상태 변경
+  user.locked = !user.locked
+  // 서버로 상태 변경 업데이트
+  axios.patch(updateAddr + user.userId)
+  .then((response) => {
+    console.log(response)
+  })
+  .catch((error) => {
+    console.log("활성 상태 변경 실패", error)
+  })
+}
 </script>
 
 <template>
@@ -50,32 +64,35 @@ onMounted(() => {
         <TableCell>
           <Checkbox id="task-8782" />
         </TableCell>
-        <TableCell className="font-medium">{{ user.userId }}</TableCell>
+        <TableCell className="font-medium">{{ user.email }}</TableCell>
         <TableCell>{{ user.username }}</TableCell>
         <TableCell>
-          <Badge variant="secondary">{{ user.username }} {{ user.isLocked }}</Badge>
+          <Badge :variant="user.locked ? 'secondary' : ''"  >{{ user.locked ? '비활성화' : '활성화'}}</Badge>
         </TableCell>
         <TableCell>{{ user.roleType }}</TableCell>
         <TableCell>
           <DotIcon className="w-5 h-5" />
         </TableCell>
-      </TableRow>
-      <TableRow>
         <TableCell>
-          <Checkbox id="task-7878" />
-        </TableCell>
-        <TableCell className="font-medium">TASK-7878</TableCell>
-        <TableCell>Documentation</TableCell>
-        <TableCell>
-          <Badge>Backlog</Badge>
-        </TableCell>
-        <TableCell>Medium</TableCell>
-        <TableCell>
-          <DotIcon className="w-5 h-5" />
+          <Button @click="changeStatus(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
       </TableRow>
+
     </TableBody>
   </Table>
 </template>
 
-<style scoped></style>
+<style scoped>
+.delete-button {
+  background-color: rgb(248, 81, 81);
+  color: white;
+  border-radius: 9999px; /* Fully rounded */
+  padding: 0.5rem 1rem;
+  border: none; /* Remove default border */
+  /* cursor: pointer; Pointer cursor on hover */
+}
+
+.delete-button:hover{
+  background-color: darkred;
+}
+</style>
