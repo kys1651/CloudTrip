@@ -1,4 +1,4 @@
-import type { AUthentication, Profile } from '@/types/user.type'
+import type { AUthentication, IMyPage, Profile } from '@/types/user.type'
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
 
@@ -14,10 +14,11 @@ export const userDataRequest = async () => {
   return data
 }
 
-export const userDataModifyRequest = async (update: any) => {
+export const userDataModifyRequest = async (update: IMyPage) => {
   const formData = new FormData()
   formData.append('nickname', update.nickname)
-  formData.append('cityCode', update.city)
+  formData.append('cityCode', update.cityCode.toString())
+  formData.append('townCode', update.townCode.toString())
   const {
     data: { isSuccess, message }
   } = await client.patch<BaseResponse<void>>('/user/me', formData, {
@@ -30,11 +31,12 @@ export const userDataModifyRequest = async (update: any) => {
   return isSuccess
 }
 
-export const userDataModifyImageRequest = async (update: any, image: File) => {
+export const userDataModifyImageRequest = async (update: IMyPage, image: File) => {
   const formData = new FormData()
   formData.append('profileImage', image)
   formData.append('nickname', update.nickname)
-  console.log(formData.get('image'))
+  formData.append('cityCode', update.cityCode.toString())
+  formData.append('townCode', update.townCode.toString())
   const {
     data: { isSuccess, message }
   } = await client.patch<BaseResponse<void>>('/user/me', formData, {

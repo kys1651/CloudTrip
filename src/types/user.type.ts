@@ -11,12 +11,14 @@ export interface Profile {
   profileImage?: string
   roleType: string
   isEmailVerified: boolean
+  cityCode: number
+  townCode: number
 }
 
 export interface IMyPage {
   username: string
   nickname: string
-  city: number
-  town: number
+  cityCode: number
+  townCode: number
   birth: string | undefined
 }

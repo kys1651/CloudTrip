@@ -48,26 +48,38 @@ const formSchema = yup.object({
   image: yup.string()
 })
 
-const selectedCity = ref(0)
+const selectedCity = ref(profile.value?.cityCode)
 const { handleSubmit, setFieldValue } = useForm<IMyPage>({
   validationSchema: formSchema,
   initialValues: {
     username: profile.value?.username,
     nickname: profile.value?.nickname,
-    city: selectedCity.value,
+    cityCode: profile.value?.cityCode,
+    townCode: profile.value?.townCode,
     birth: ''
   }
 })
 
 const towns = ref<ITown[]>()
+if (profile.value?.townCode) {
+  selectedCity.value = profile.value.cityCode
+}
+// 선택된 도시의 마을 리스트를 불러오고, 초기 선택을 설정
 watch(selectedCity, async (newCityCode) => {
-  console.log('상세 도시 불러오기')
   if (newCityCode) {
     towns.value = await townsRequest(newCityCode)
+    if (
+      profile.value?.townCode &&
+      towns.value.some((town) => town.townCode === profile.value?.townCode)
+    ) {
+      setFieldValue('townCode', profile.value.townCode)
+    } else {
+      setFieldValue('townCode', 0) // 적합한 초기값 없음
+    }
   } else {
     towns.value = []
+    setFieldValue('townCode', 0)
   }
-  console.log(towns.value)
 })
 
 const triggerFileInput = () => {
@@ -97,7 +109,6 @@ const deleteImage = () => {
 }
 
 const onSubmit = handleSubmit(async (values) => {
-  console.log(values)
   let isSuccess = false
   if (image.value) {
     isSuccess = await userDataModifyImageRequest(values, image.value)
@@ -117,6 +128,30 @@ const onSubmit = handleSubmit(async (values) => {
       description: '회원 정보 수정이 실패했습니다. 다시 시도해주세요.',
       variant: 'destructive'
     })
+  }
+})
+
+// 초기 렌더링을 위한 onMounted
+onMounted(async () => {
+  if (selectedCity.value) {
+    try {
+      const fetchedTowns = await townsRequest(selectedCity.value)
+      towns.value = fetchedTowns
+
+      // 초기 town
+      if (
+        profile.value?.townCode &&
+        fetchedTowns.some((town) => town.townCode === profile.value?.townCode)
+      ) {
+        setFieldValue('townCode', profile.value?.townCode)
+      } else {
+        // 해당하는 townCode가 없을 때 기본적으로 첫 번째 town 선택 또는 선택 초기화
+        setFieldValue('townCode', fetchedTowns.length > 0 ? fetchedTowns[0].townCode : 0)
+      }
+    } catch (error) {
+      console.error('Error loading towns:', error)
+      towns.value = [] // 오류 발생 시 towns 초기화
+    }
   }
 })
 </script>
@@ -222,7 +257,7 @@ const onSubmit = handleSubmit(async (values) => {
         <input type="hidden" v-bind="field" />
       </FormField>
 
-      <FormField v-slot="{ value }" name="city">
+      <FormField v-slot="{ value }" name="cityCode">
         <FormItem class="flex flex-col">
           <FormLabel class="text-xl font-semibold">지역 설정</FormLabel>
           <Popover v-model:open="open">
@@ -256,7 +291,7 @@ const onSubmit = handleSubmit(async (values) => {
                       @select="
                         () => {
                           selectedCity = city.cityCode
-                          setFieldValue('city', city.cityCode)
+                          setFieldValue('cityCode', city.cityCode)
                           open = false
                         }
                       "
@@ -277,7 +312,7 @@ const onSubmit = handleSubmit(async (values) => {
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ value }" name="town">
+      <FormField v-slot="{ value }" name="townCode">
         <FormItem class="flex flex-col">
           <Popover>
             <PopoverTrigger as-child>
@@ -309,7 +344,7 @@ const onSubmit = handleSubmit(async (values) => {
                       :value="town.name"
                       @select="
                         () => {
-                          setFieldValue('town', town.townCode)
+                          setFieldValue('townCode', town.townCode)
                           open = false
                         }
                       "
