@@ -18,14 +18,14 @@ const ROUTES: { pathname: string; name: string; title: string }[] = [
     title: '계정 관리'
   },
   {
-    pathname: '/mypage',
-    name: 'mypage',
-    title: '작성한 댓글'
+    pathname: '/myReview',
+    name: 'myReview',
+    title: '내가 작성한 글'
   },
   {
-    pathname: '/mypage',
-    name: 'mypage',
-    title: '좋아요한 게시글'
+    pathname: '/myComment',
+    name: 'myComment',
+    title: '나의 댓글'
   },
   {
     pathname: '/mypage',

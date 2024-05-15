@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import FormsLayout from './layouts/FormsLayout.vue'
-import ProfileForm from './components/ProfileForm.vue'
+import MyReviewForm from './components/MyReviewForm.vue'
 </script>
 
 <template>
-  <FormsLayout>
-    <ProfileForm />
-  </FormsLayout>
+  <FormsLayout><MyReviewForm /> </FormsLayout>
 </template>
