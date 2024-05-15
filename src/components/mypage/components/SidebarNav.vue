@@ -10,12 +10,12 @@ const ROUTES: { pathname: string; name: string; title: string }[] = [
   {
     pathname: '/mypage',
     name: 'mypage',
-    title: '계정 관리'
+    title: '내 정보 관리'
   },
   {
-    pathname: '/mypage',
-    name: 'mypage',
-    title: '작성한 글'
+    pathname: '/account',
+    name: 'account',
+    title: '계정 관리'
   },
   {
     pathname: '/mypage',

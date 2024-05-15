@@ -22,3 +22,8 @@ export interface IMyPage {
   townCode: number
   birth: string | undefined
 }
+
+export interface ChangePwForm {
+  password: string
+  passwordConfirm: string
+}

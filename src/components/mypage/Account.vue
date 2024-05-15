@@ -4,7 +4,5 @@ import AccountForm from './components/AccountForm.vue'
 </script>
 
 <template>
-  <FormsLayout>
-    <AccountForm />
-  </FormsLayout>
+  <FormsLayout><AccountForm /> </FormsLayout>
 </template>

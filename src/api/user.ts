@@ -1,4 +1,4 @@
-import type { AUthentication, IMyPage, Profile } from '@/types/user.type'
+import type { AUthentication, ChangePwForm, IMyPage, Profile } from '@/types/user.type'
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
 
@@ -47,4 +47,24 @@ export const userDataModifyImageRequest = async (update: IMyPage, image: File) =
   if (!isSuccess) throw new Error(message)
   userDataRequest()
   return isSuccess
+}
+
+export const changePasswordRequest = async (password: string) => {
+  const {
+    data: { isSuccess, message }
+  } = await client.patch<BaseResponse<void>>('/user/updatePassword', {
+    password: password
+  })
+  if (!isSuccess) throw new Error(message)
+  return isSuccess
+}
+
+export const deleteRequest = async (userId: number) => {
+  const {
+    data: { code }
+  } = await client.delete<BaseResponse<void>>(`/user/${userId}`)
+  if (code === 204) {
+    return false
+  }
+  return true
 }
