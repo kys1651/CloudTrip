@@ -37,13 +37,14 @@ const changeStatus = (user: Object) => {
   // view에 활성 상태 변경
   user.locked = !user.locked
   // 서버로 상태 변경 업데이트
-  axios.patch(updateAddr + user.userId)
-  .then((response) => {
-    console.log(response)
-  })
-  .catch((error) => {
-    console.log("활성 상태 변경 실패", error)
-  })
+  axios
+    .patch(updateAddr + user.userId)
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((error) => {
+      console.log('활성 상태 변경 실패', error)
+    })
 }
 </script>
 
@@ -64,10 +65,12 @@ const changeStatus = (user: Object) => {
         <TableCell>
           <Checkbox id="task-8782" />
         </TableCell>
-        <TableCell className="font-medium">{{ user.email }}</TableCell>
-        <TableCell>{{ user.username }}</TableCell>
+        <TableCell className="font-medium">{{ user.username }}</TableCell>
+        <TableCell>{{ user.nickname }}</TableCell>
         <TableCell>
-          <Badge :variant="user.locked ? 'secondary' : ''"  >{{ user.locked ? '비활성화' : '활성화'}}</Badge>
+          <Badge :variant="user.locked ? 'secondary' : ''">{{
+            user.locked ? '비활성화' : '활성화'
+          }}</Badge>
         </TableCell>
         <TableCell>{{ user.roleType }}</TableCell>
         <TableCell>
@@ -77,7 +80,6 @@ const changeStatus = (user: Object) => {
           <Button @click="changeStatus(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
       </TableRow>
-
     </TableBody>
   </Table>
 </template>
@@ -92,7 +94,7 @@ const changeStatus = (user: Object) => {
   /* cursor: pointer; Pointer cursor on hover */
 }
 
-.delete-button:hover{
+.delete-button:hover {
   background-color: darkred;
 }
 </style>
