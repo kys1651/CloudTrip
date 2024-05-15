@@ -1,13 +1,14 @@
-type Point = {
+export interface Point {
   latitude: number;
   longitude: number;
-};
+  tourId: number;
+}
 
 function toRadians(degrees: number): number {
   return degrees * Math.PI / 180;
 }
 
-function calculateDistance(pointA: Point, pointB: Point): number {
+export const calculateDistance = (pointA: Point, pointB: Point): number => {
   const earthRadiusKm = 6371;
 
   const dLat = toRadians(pointB.latitude - pointA.latitude);

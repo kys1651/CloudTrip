@@ -42,3 +42,16 @@ export interface SearchTrip {
   latitude: number;
   longitude: number;
 }
+
+export interface ICity {
+  cityId: number
+  name: string
+  latitude: number
+  longitude: number
+}
+
+export enum TripStep {
+  CALENDAR = 1,
+  PLAN = 2,
+  REVIEW = 3,
+}
