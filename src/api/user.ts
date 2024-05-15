@@ -14,8 +14,20 @@ export const userDataRequest = async () => {
   return data
 }
 
-export const userDataModifyRequest = async (updataData: any) => {
-  return true
+export const userDataModifyRequest = async (update: any) => {
+  const formData = new FormData()
+  formData.append('nickname', update.nickname)
+  formData.append('cityCode', update.city)
+  const {
+    data: { isSuccess, message }
+  } = await client.patch<BaseResponse<void>>('/user/me', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (!isSuccess) throw new Error(message)
+  userDataRequest()
+  return isSuccess
 }
 
 export const userDataModifyImageRequest = async (update: any, image: File) => {
@@ -31,5 +43,6 @@ export const userDataModifyImageRequest = async (update: any, image: File) => {
     }
   })
   if (!isSuccess) throw new Error(message)
+  userDataRequest()
   return isSuccess
 }

@@ -33,12 +33,22 @@ export interface SearchQuery {
 }
 
 export interface SearchTrip {
-  tourId: number;
-  contentType: string;
-  name: string;
-  address: string;
-  backgroundImage?: string;
-  description: string;
-  latitude: number;
-  longitude: number;
+  tourId: number
+  contentType: string
+  name: string
+  address: string
+  backgroundImage?: string
+  description: string
+  latitude: number
+  longitude: number
+}
+
+export interface ICity {
+  cityCode: number
+  name: string
+}
+
+export interface ITown {
+  townCode: number
+  name: string
 }

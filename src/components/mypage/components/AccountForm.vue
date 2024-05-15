@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, onMounted, onUpdated, ref } from 'vue'
+import { h, onMounted, onUpdated, ref, watch } from 'vue'
 import * as yup from 'yup'
 import { toDate } from 'radix-vue/date'
 import { Check, ChevronsUpDown, Calendar } from 'lucide-vue-next'
@@ -25,21 +25,22 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import { useToast } from '@/components/ui/toast'
 import { userDataModifyImageRequest, userDataModifyRequest } from '@/api/user'
+import { useQuery } from '@tanstack/vue-query'
+import { citiesRequest, townsRequest } from '@/api/trip'
+import { type ITown } from '@/types/trip.type'
+import type { IMyPage } from '@/types/user.type'
 
 const authenticationStore = useAuthenticationStore()
 const { isLogin, profile } = storeToRefs(authenticationStore)
-const authentication = useAuthenticationStore()
 
 const open = ref(false)
 const dateValue = ref()
 const fileInput = ref<HTMLInputElement | null>(null)
 
-// TODO : 디비에서 정보 받아오기
-const region = [
-  { label: '광주', value: 1 },
-  { label: '서울', value: 2 },
-  { label: '인천', value: 3 }
-]
+const { data: cities, isLoading } = useQuery({
+  queryKey: ['cities'],
+  queryFn: citiesRequest
+})
 
 const formSchema = yup.object({
   username: yup.string().required(),
@@ -47,19 +48,26 @@ const formSchema = yup.object({
   image: yup.string()
 })
 
-const { handleSubmit, setFieldValue } = useForm<{
-  username: string
-  nickname: string
-  region: number
-  birth: string
-}>({
+const selectedCity = ref(0)
+const { handleSubmit, setFieldValue } = useForm<IMyPage>({
   validationSchema: formSchema,
   initialValues: {
     username: profile.value?.username,
     nickname: profile.value?.nickname,
-    region: 0,
+    city: selectedCity.value,
     birth: ''
   }
+})
+
+const towns = ref<ITown[]>()
+watch(selectedCity, async (newCityCode) => {
+  console.log('상세 도시 불러오기')
+  if (newCityCode) {
+    towns.value = await townsRequest(newCityCode)
+  } else {
+    towns.value = []
+  }
+  console.log(towns.value)
 })
 
 const triggerFileInput = () => {
@@ -89,6 +97,7 @@ const deleteImage = () => {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  console.log(values)
   let isSuccess = false
   if (image.value) {
     isSuccess = await userDataModifyImageRequest(values, image.value)
@@ -102,7 +111,6 @@ const onSubmit = handleSubmit(async (values) => {
       description: '회원 정보 수정이 완료되었습니다.',
       variant: 'success'
     })
-    authentication.clearAuthentication()
   } else {
     toast({
       title: '회원 정보 수정 실패',
@@ -178,15 +186,13 @@ const onSubmit = handleSubmit(async (values) => {
                   variant="outline"
                   :class="
                     cn(
-                      'w-[240px] justify-start text-left font-normal',
+                      'w-[280px] justify-start text-left font-normal',
                       !value && 'text-muted-foreground'
                     )
                   "
                 >
-                  <Calendar class="mr-2 h-4 w-4 opacity-50" />
-                  <span>{{
-                    value ? df.format(toDate(dateValue, getLocalTimeZone())) : 'Pick a date'
-                  }}</span>
+                  <CalendarIcon class="mr-2 h-4 w-4" />
+                  {{ value ? df.format(value.toDate(getLocalTimeZone())) : 'Pick a date' }}
                 </Button>
               </FormControl>
             </PopoverTrigger>
@@ -216,7 +222,7 @@ const onSubmit = handleSubmit(async (values) => {
         <input type="hidden" v-bind="field" />
       </FormField>
 
-      <FormField v-slot="{ value }" name="region">
+      <FormField v-slot="{ value }" name="city">
         <FormItem class="flex flex-col">
           <FormLabel class="text-xl font-semibold">지역 설정</FormLabel>
           <Popover v-model:open="open">
@@ -229,8 +235,8 @@ const onSubmit = handleSubmit(async (values) => {
                   :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
                 >
                   {{
-                    value
-                      ? region.find((regionItem) => regionItem.value === value)?.label
+                    value && cities
+                      ? cities.find((city) => city.cityCode === value)?.name
                       : '-- 지역 선택 --'
                   }}
                   <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -244,22 +250,76 @@ const onSubmit = handleSubmit(async (values) => {
                 <CommandList>
                   <CommandGroup>
                     <CommandItem
-                      v-for="regionItem in region"
-                      :key="regionItem.value"
-                      :value="regionItem.label"
+                      v-for="city in cities"
+                      :key="city.cityCode"
+                      :value="city.name"
                       @select="
                         () => {
-                          setFieldValue('region', region.value)
+                          selectedCity = city.cityCode
+                          setFieldValue('city', city.cityCode)
                           open = false
                         }
                       "
                     >
                       <Check
                         :class="
-                          cn('mr-2 h-4 w-4', value === region.value ? 'opacity-100' : 'opacity-0')
+                          cn('mr-2 h-4 w-4', value === city.cityCode ? 'opacity-100' : 'opacity-0')
                         "
                       />
-                      {{ region.label }}
+                      {{ city.name }}
+                    </CommandItem>
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ value }" name="town">
+        <FormItem class="flex flex-col">
+          <Popover>
+            <PopoverTrigger as-child>
+              <FormControl>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  :aria-expanded="open"
+                  :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
+                >
+                  {{
+                    value && towns
+                      ? towns.find((town) => town.townCode === value)?.name
+                      : '-- 상세 지역 선택 --'
+                  }}
+                  <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent class="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="상세지역검색" />
+                <CommandEmpty>상세지역을 찾지 못했습니다.</CommandEmpty>
+                <CommandList>
+                  <CommandGroup>
+                    <CommandItem
+                      v-for="town in towns"
+                      :key="town.townCode"
+                      :value="town.name"
+                      @select="
+                        () => {
+                          setFieldValue('town', town.townCode)
+                          open = false
+                        }
+                      "
+                    >
+                      <Check
+                        :class="
+                          cn('mr-2 h-4 w-4', value === town.townCode ? 'opacity-100' : 'opacity-0')
+                        "
+                      />
+                      {{ town.name }}
                     </CommandItem>
                   </CommandGroup>
                 </CommandList>
