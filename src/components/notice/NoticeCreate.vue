@@ -13,44 +13,80 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import NoticeCreateBody from './NoticeCreateBody.vue'
 import axios from 'axios'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
+import { Files } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
-
-const noticeId = route.params.noticeId
-const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`
 
 const notice = ref({
   title: '',
   content: ''
 })
 
+
 let quill: Quill
 
 onMounted(() => {
   quill = new Quill('#editor', {
     theme: 'snow',
-    placeholder: '내용을 입력해주세요.'
+    placeholder: '내용을 입력해주세요.',
+    modules: {
+      toolbar: [
+        [{header: [1, 2, false]}],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        [{'color': []}, {'background' : []}],
+        ['image', 'link'],
+      ],
+    }
   })
 
   quill.on('text-change', () => {
     notice.value.content = quill.root.innerHTML
   })
 
-  axios
-    .get(addr)
-    .then((response) => {
-      notice.value = response.data
-      quill.root.innerHTML = notice.value.content
-    })
-    .catch((error) => {
-      console.log('공지사항 조회 오류 발생', error)
-    })
+  quill.getModule('toolbar').addHandler('image', () => {
+    getLocalImage();
+  })
+
 })
+
+const images = ref<File[]>([])
+const imageSrcs = ref<string[]>([])
+
+const getLocalImage = () => {
+  const fileInput = document.createElement('input');
+  fileInput.setAttribute('type', 'file');
+  fileInput.setAttribute('accept', 'image/*');
+
+  fileInput.click();
+  
+  fileInput.onchange = () => {
+    const files = fileInput.files;
+    if (files && files.length > 0) {
+      for (let i=0; i<files.length; i++) {
+          const file = files[i];
+          images.value = [...images.value, file]
+          const reader = new FileReader()
+
+          reader.onload = (e) => {
+            const base64ImageSrc = e.target!.result as string
+            imageSrcs.value = [...imageSrcs.value, base64ImageSrc]
+            const range = quill.getSelection()
+            quill.insertEmbed(range!.index, 'image', base64ImageSrc)
+          }
+
+          reader.readAsDataURL(file)
+      }
+    }
+
+    
+  }
+}
 
 const goHome = () => {
   router.push({ name: 'notice' })
@@ -59,10 +95,24 @@ const goHome = () => {
 const createAddr = `http://localhost:8080/api/v1/notice/create`
 const createNotice = () => {
   notice.value.content = quill.root.innerHTML
+  const key = "image-replace-key"
+  imageSrcs.value.forEach((src, index) => {
+    notice.value.content = notice.value.content.replace(src, `${key}-${index + 1}`)
+  })
+  console.log(notice.value.content)
+
+  const form = new FormData()
+  images.value.forEach((image) => {
+    form.append('images', image)
+  })
+  form.append('title', notice.value.title)
+  form.append('content', notice.value.content)
+
   axios
-    .post(createAddr, {
-      title: notice.value.title,
-      content: notice.value.content
+    .post(createAddr, form, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
     })
     .then((response) => {
       console.log('등록 성공')
@@ -72,6 +122,7 @@ const createNotice = () => {
       console.log('등록 실패', error)
     })
 }
+
 </script>
 
 <template>
@@ -96,7 +147,7 @@ const createNotice = () => {
           </div>
 
           <Label for="name">내용</Label>
-          <div id="editor-container" class="h-[400px] mb-5">
+          <div id="editor-container" class="h-[400px] mb-5 mt-2">
             <div id="editor"></div>
           </div>
         </form>

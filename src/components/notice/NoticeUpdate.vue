@@ -31,7 +31,17 @@ const notice = ref({
 let quill: Quill
 onMounted(() => {
   quill = new Quill('#editor', {
-    theme: 'snow'
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{header: [1, 2, false]}],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        [{'color': []}, {'background' : []}],
+        ['image', 'link'],
+      ],
+    }
   })
 
   axios
@@ -43,7 +53,36 @@ onMounted(() => {
     .catch((error) => {
       console.log('공지사항 조회 오류 발생', error)
     })
+
+  quill.on('text-change', () => {
+    notice.value.content = quill.root.innerHTML
+  })
+
+  quill.getModule('toolbar').addHandler('image', () => {
+    getLocalImage();
+  })
 })
+
+const getLocalImage = () => {
+  const fileInput = document.createElement('input');
+  fileInput.setAttribute('type', 'file');
+  fileInput.setAttribute('accept', 'image/*');
+
+  fileInput.click();
+  
+  fileInput.onchange = () => {
+    const file = fileInput.files![0]
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      const base64ImageSrc = e.target!.result
+      const range = quill.getSelection()
+      quill.insertEmbed(range!.index, 'image', base64ImageSrc)
+    }
+
+    reader.readAsDataURL(file)
+  }
+}
 
 const goDetail = () => {
   router.push({ name: 'notice-view' })
