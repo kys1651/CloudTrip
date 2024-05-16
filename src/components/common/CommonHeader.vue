@@ -103,7 +103,7 @@ const { isLogin, profile } = storeToRefs(authenticationStore)
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <User class="mr-2 h-4 w-4" />
-              <span>Profile</span>
+              <span><RouterLink :to="{ name: 'mypage' }">MyPage</RouterLink></span>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings class="mr-2 h-4 w-4" />

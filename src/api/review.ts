@@ -1,5 +1,11 @@
 import client, { type BaseResponse, type PageResponse } from '@/api/client'
-import type { IReview, ReviewDetail, ReviewForm } from '@/types/board.type'
+import type {
+  IReview,
+  ReviewCommentDetail,
+  ReviewDetail,
+  ReviewForm,
+  SimpleCommentDetail
+} from '@/types/board.type'
 
 export const reviewWriteRequest = async (review: ReviewForm) => {
   const {
@@ -26,6 +32,22 @@ export const myReviewsRequest = async (userId: number): Promise<IReview[]> => {
   const {
     data: { isSuccess, message, data }
   } = await client.get<BaseResponse<IReview[]>>(`/review/${userId}`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const myCommentRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/comment/simple/${userId}`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const LikeReviewRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/review/like/${userId}`)
   if (!isSuccess) throw new Error(message)
   return data
 }

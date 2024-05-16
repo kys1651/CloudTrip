@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
-
-interface Item {
+import { ref } from 'vue'
+interface MenuItem {
+  pathname: string
+  name: string
   title: string
-  href: string
 }
 
-const ROUTES: { pathname: string; name: string; title: string }[] = [
+const ROUTES = ref<MenuItem[]>([
   {
     pathname: '/mypage',
     name: 'mypage',
-    title: '내 정보 관리'
+    title: '프로필 관리'
   },
   {
     pathname: '/account',
@@ -28,11 +29,11 @@ const ROUTES: { pathname: string; name: string; title: string }[] = [
     title: '나의 댓글'
   },
   {
-    pathname: '/mypage',
-    name: 'mypage',
-    title: '관리자 페이지(어드민 계정일 때만 보이게)'
+    pathname: '/likeReview',
+    name: 'likeReview',
+    title: '좋아요한 글'
   }
-]
+])
 </script>
 
 <template>
@@ -47,8 +48,3 @@ const ROUTES: { pathname: string; name: string; title: string }[] = [
     </Button>
   </nav>
 </template>
-
-<!-- cn(
-          'w-full text-left justify-start',
-          $route.path === `${item.href}.html` && 'bg-muted hover:bg-muted'
-        ) -->

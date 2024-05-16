@@ -107,23 +107,33 @@ const router = createRouter({
     {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('@/components/mypage/MyPage.vue')
+      component: () => import('@/views/MyPageView.vue')
     },
     {
       path: '/account',
       name: 'account',
-      component: () => import('@/components/mypage/Account.vue')
+      component: () => import('@/views/MyAccountView.vue')
     },
     {
       path: '/myReview',
       name: 'myReview',
-      component: () => import('@/components/mypage/MyReview.vue')
+      component: () => import('@/views/MyReviewView.vue')
     },
     {
       path: '/myComment',
       name: 'myComment',
-      component: () => import('@/components/mypage/MyComment.vue')
+      component: () => import('@/views/MyCommentView.vue')
+    },
+    {
+      path: '/likeReview',
+      name: 'likeReview',
+      component: () => import('@/views/MyLikeReviewView.vue')
     }
+    // {
+    //   path: '/admin',
+    //   name: 'admin',
+    //   component: () => import('@/components/mypage/Notifications.vue')
+    // }
   ]
 })
 

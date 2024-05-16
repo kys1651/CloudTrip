@@ -84,13 +84,17 @@ const onDelete = async () => {
 <template>
   <div class="container w-full" style="max-width: 1200px; padding: 20px">
     <div>
-      <h3 class="text-3xl font-bold mb-5">비밀번호 변경</h3>
+      <h3 class="text-3xl font-bold mb-5">계정 관리 관리</h3>
+    </div>
+    <Separator />
+    <div>
+      <h3 class="text-xl font-bold mb-5 mt-5">비밀번호 변경</h3>
     </div>
 
     <form @submit.prevent="onSubmit" class="space-y-4">
       <FormField v-slot="{ componentField }" name="password">
         <FormItem class="mt-5">
-          <FormLabel class="text-xl font-semibold">비밀번호</FormLabel>
+          <FormLabel class="text-l font-semibold">비밀번호</FormLabel>
           <FormControl>
             <Input type="password" v-bind="componentField" />
           </FormControl>
@@ -100,7 +104,7 @@ const onDelete = async () => {
 
       <FormField v-slot="{ componentField }" name="passwordConfirm">
         <FormItem class="mt-5">
-          <FormLabel class="text-xl font-semibold">비밀번호 확인</FormLabel>
+          <FormLabel class="text-l font-semibold">비밀번호 확인</FormLabel>
           <FormControl>
             <Input type="password" v-bind="componentField" />
           </FormControl>
@@ -116,7 +120,7 @@ const onDelete = async () => {
 
     <div>
       <div>
-        <h3 class="text-3xl font-bold mb-5 mt-8">계정 탈퇴하기</h3>
+        <h3 class="text-xl font-bold mb-5 mt-8">계정 탈퇴하기</h3>
       </div>
       <Button type="submit" variant="destructive" class="mt-3 mb-5" @click="onDelete">탈퇴</Button>
     </div>

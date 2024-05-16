@@ -5,7 +5,7 @@ import UserFooter from '@/components/user/UserFooter.vue'
 </script>
 
 <template>
-  <div className="container mx-auto my-8 p-6 bg-white shadow rounded-lg">
+  <div className="container w-full mx-auto my-8 p-6 bg-white shadow rounded-lg">
     <UserHeader />
     <UserBody />
     <UserFooter />

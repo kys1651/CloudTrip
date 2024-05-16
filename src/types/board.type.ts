@@ -10,18 +10,18 @@ export interface INotice {
 }
 
 export interface IReview {
-  reviewId: number;
+  reviewId: number
   user: {
-    userId: number;
-    nickname: string;
-    profileImage: string;
-  };
-  isLiked: boolean;
-  images: string[];
-  content: string;
-  tourId: number;
-  address: string;
-  createdAt: number;
+    userId: number
+    nickname: string
+    profileImage: string
+  }
+  isLiked: boolean
+  images: string[]
+  content: string
+  tourId: number
+  address: string
+  createdAt: number
 }
 
 export interface ReviewDetail {
@@ -65,6 +65,14 @@ export interface ReviewCommentDetail {
   content: string
   createdAt: string
   profileImage: string
+}
+
+export interface SimpleCommentDetail {
+  commentId: number
+  reviewId: number
+  createdAt: string
+  content: string
+  simpleReviewContent: string
 }
 
 export interface ReviewForm {
