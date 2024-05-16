@@ -16,6 +16,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { LogOut, Settings, User } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { RouterLink, useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 const authentication = useAuthenticationStore()
 
@@ -54,6 +55,9 @@ const ROUTES: { pathname: string; name: string }[] = [
 ]
 const authenticationStore = useAuthenticationStore()
 const { isLogin, profile } = storeToRefs(authenticationStore)
+
+const searchKeyword = ref('')
+const searchByKeyword = () => {}
 </script>
 
 <template>
@@ -63,6 +67,10 @@ const { isLogin, profile } = storeToRefs(authenticationStore)
   >
     <div class="flex items-center">
       <HomeNavigator />
+    </div>
+    <div class="input-container">
+      <input type="text" placeholder="검색어를 입력하세요." v-model="searchKeyword" />
+      <button @click="searchByKeyword">🔍</button>
     </div>
     <div class="flex items-center space-x-4">
       <nav class="hidden space-x-4 md:flex">
@@ -132,3 +140,27 @@ const { isLogin, profile } = storeToRefs(authenticationStore)
     </div>
   </header>
 </template>
+
+<style scoped>
+.input-container {
+  position: relative;
+  display: inline-block;
+}
+.input-container input[type='text'] {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  outline: none;
+  width: 220px;
+  height: 40px;
+}
+.input-container button {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+</style>
