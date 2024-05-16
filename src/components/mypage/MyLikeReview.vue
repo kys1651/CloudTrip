@@ -5,7 +5,7 @@ import Separator from '@/components/ui/separator/Separator.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import { Button } from '@/components/ui/button'
-import SimpleReviewCard from './SimpleReviewCard.vue'
+import SimpleReviewCard from '../card/SimpleReviewCard.vue'
 
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)

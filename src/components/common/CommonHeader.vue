@@ -28,17 +28,13 @@ const { mutate } = useMutation({
     authentication.clearAuthentication()
     sessionStorage.removeItem('accessToken')
     sessionStorage.removeItem('refreshToken')
-    router.go(0)
+    router.replace('/')
   }
 })
 
 const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'planning']
 
 const ROUTES: { pathname: string; name: string }[] = [
-  {
-    pathname: 'user',
-    name: '회원관리'
-  },
   {
     pathname: 'notice',
     name: '공지사항'

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 interface MenuItem {
@@ -7,6 +9,8 @@ interface MenuItem {
   name: string
   title: string
 }
+const authenticationStore = useAuthenticationStore()
+const { profile } = storeToRefs(authenticationStore)
 const route = useRoute()
 const curPath = ref(route.path)
 const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
@@ -41,6 +45,16 @@ const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
           <RouterLink :to="{ name: route.name }">{{ route.title }}</RouterLink>
         </Button>
       </div>
+    </div>
+    <div v-if="profile?.roleType">
+      <h3 class="text-2xl font-bold mt-4 mb-3">관리자 관리</h3>
+      <Button
+        variant="ghost"
+        class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
+        :class="{ 'text-black': 'user' === curPath }"
+      >
+        <RouterLink :to="{ name: 'user' }">회원 관리</RouterLink>
+      </Button>
     </div>
   </nav>
 </template>

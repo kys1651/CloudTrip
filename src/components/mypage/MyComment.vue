@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/vue-query'
 import Separator from '@/components/ui/separator/Separator.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
-import SimpleCommentCard from './SimpleCommentCard.vue'
+import SimpleCommentCard from '../card/SimpleCommentCard.vue'
 import Button from '../ui/button/Button.vue'
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)

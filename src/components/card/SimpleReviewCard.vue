@@ -34,7 +34,7 @@ const router = useRouter()
           <CarouselNext class="-right-4" />
         </Carousel>
       </CardHeader>
-      <CardContent @click="router.push(`review/${review.reviewId}`)">
+      <CardContent @click="router.push(`/review/${review.reviewId}`)">
         {{ review.content }}
       </CardContent>
     </div>

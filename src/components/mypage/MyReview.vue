@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { myReviewsRequest } from '@/api/review'
+import { userReviewsRequest } from '@/api/review'
 import { useQuery } from '@tanstack/vue-query'
 import Separator from '@/components/ui/separator/Separator.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
-import SimpleReviewCard from './SimpleReviewCard.vue'
+import SimpleReviewCard from '../card/SimpleReviewCard.vue'
 import Button from '../ui/button/Button.vue'
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)
 
 const { data: reviews } = useQuery({
   queryKey: ['reviews', profile.value?.id],
-  queryFn: () => myReviewsRequest(profile.value!.id)
+  queryFn: () => userReviewsRequest(profile.value!.id)
 })
 </script>
 

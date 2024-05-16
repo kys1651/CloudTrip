@@ -1,4 +1,10 @@
-import type { AUthentication, ChangePwForm, IMyPage, Profile } from '@/types/user.type'
+import type {
+  AUthentication,
+  ChangePwForm,
+  IMyPage,
+  Profile,
+  SimpleProfile
+} from '@/types/user.type'
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
 
@@ -70,4 +76,12 @@ export const deleteRequest = async (userId: number) => {
     return false
   }
   return true
+}
+
+export const simpleProfileRequest = async (userId: any): Promise<SimpleProfile> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<SimpleProfile>>(`/user/${userId}`)
+  if (!isSuccess) throw new Error(message)
+  return data
 }

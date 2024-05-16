@@ -28,7 +28,7 @@ export const reviewsRequest = async ({
   return data
 }
 
-export const myReviewsRequest = async (userId: number): Promise<SumaryReview[]> => {
+export const userReviewsRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }
   } = await client.get<BaseResponse<SumaryReview[]>>(`/user/${userId}/reviews`)
@@ -36,7 +36,7 @@ export const myReviewsRequest = async (userId: number): Promise<SumaryReview[]> 
   return data
 }
 
-export const LikeReviewRequest = async (userId: number): Promise<SumaryReview[]> => {
+export const userLikedReviewRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }
   } = await client.get<BaseResponse<SumaryReview[]>>(`/user/${userId}/likes`)
@@ -44,7 +44,7 @@ export const LikeReviewRequest = async (userId: number): Promise<SumaryReview[]>
   return data
 }
 
-export const myCommentRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
+export const userCommentsRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
   const {
     data: { isSuccess, message, data }
   } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/user/${userId}/comments`)
