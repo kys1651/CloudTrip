@@ -33,12 +33,19 @@ export interface SearchQuery {
 }
 
 export interface SearchTrip {
-  tourId: number
-  contentType: string
+  tourId: number;
+  contentType: string;
+  name: string;
+  address: string;
+  backgroundImage?: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface ICity {
+  cityId: number
   name: string
-  address: string
-  backgroundImage?: string
-  description: string
   latitude: number
   longitude: number
 }
@@ -51,4 +58,14 @@ export interface ICity {
 export interface ITown {
   townCode: number
   name: string
+}
+
+export enum TripStep {
+  PLAN = 1,
+  STAY = 2,
+  VEHICLE = 3,
+}
+
+export interface SearchTripWithDistance extends SearchTrip {
+  distance: number;
 }

@@ -4,15 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
 import { imageOrDefault } from "@/lib/image-load";
-import { useTripPlanStore } from "@/stores/trip-plan";
+import { TEXT_COLORS, useTripPlanStore } from "@/stores/trip-plan";
 import { X } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { VueDraggableNext } from "vue-draggable-next";
 
-const { removeTrip } = useTripPlanStore();
-const { pickedTrips, day, dailyTrip } = storeToRefs(useTripPlanStore());
+const emit = defineEmits(["nextStep"]);
 
-const days = Array.from({ length: day.value }, (_, i) => `${i + 1}일차`);
+const { removeTrip, calculateOptimalRoute } = useTripPlanStore();
+const { pickedTrips, dailyTrip } = storeToRefs(useTripPlanStore());
+
+const days = Array.from({ length: pickedTrips.value.length }, (_, i) => `${i + 1}일차`);
 
 const toast = useToast();
 
@@ -27,6 +29,7 @@ const onSubmit = () => {
     });
     return;
   }
+  emit("nextStep");
 };
 </script>
 
@@ -34,6 +37,9 @@ const onSubmit = () => {
   <div
     class="relative flex flex-col space-y-2 my-6 max-h-screen overflow-scroll scrollbar-hide"
   >
+    <Button variant="outline" class="w-full flex" @click="calculateOptimalRoute"
+      >경로 최적화</Button
+    >
     <div
       class="flex flex-col items-start p-1 border-gray-200 rounded-md"
       v-for="(day, index) in days"
@@ -42,9 +48,12 @@ const onSubmit = () => {
         'border ': pickedTrips[index].length === 0,
       }"
     >
-      <div class="flex flex-row w-full px-3 justify-between">
-        <span class="text-gray-400 text-sm mb-1">{{ day }}</span>
-        <span v-if="dailyTrip[index]" class="text-gray-400 text-xs mb-1"
+      <div
+        class="flex flex-row w-full px-3 justify-between"
+        :class="`${TEXT_COLORS[index % TEXT_COLORS.length]}`"
+      >
+        <span class="text-md mb-1 font-bold">{{ day }}</span>
+        <span v-if="dailyTrip[index]" class="text-xs mb-1"
           >총 거리: {{ dailyTrip[index].distance.toFixed(2) }}km</span
         >
       </div>

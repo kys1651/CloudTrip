@@ -28,7 +28,6 @@ instance.interceptors.request.use(
     if (isLogin) {
       config.headers['Authorization'] = `Bearer ${accessToken.value}`
     }
-
     return config
   },
   (error) => {

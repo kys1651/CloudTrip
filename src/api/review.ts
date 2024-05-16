@@ -1,7 +1,6 @@
 import client, { type BaseResponse, type PageResponse } from '@/api/client'
 import type {
   IReview,
-  ReviewCommentDetail,
   ReviewDetail,
   ReviewForm,
   SimpleCommentDetail
@@ -91,4 +90,19 @@ export const reviewDisLikeRequest = async (id: number) => {
     data: { isSuccess, message }
   } = await client.delete<BaseResponse<void>>(`/review/${id}/like`)
   if (!isSuccess) throw new Error(message)
+}
+
+export const commentCreateRequest = async (reviewId: number, content: string) => {
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/review/${reviewId}/comment`, { content })
+  if (!isSuccess) throw new Error(message)
+}
+
+export const commentsRequest  = async (reviewId: number): Promise<IComment[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IComment[]>>(`/review/${reviewId}/comment`)
+  if (!isSuccess) throw new Error(message)
+  return data
 }
