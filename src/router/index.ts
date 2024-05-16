@@ -90,7 +90,7 @@ const router = createRouter({
       component: () => import('@/views/notice/NoticeCreateView.vue')
     },
     {
-      path: '/notice/create/',
+      path: '/notice/create/quill',
       name: 'notice-create-quill',
       component: () => import('@/views/notice/NoticeCreateQuillView.vue')
     },
