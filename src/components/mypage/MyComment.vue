@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { myCommentRequest } from '@/api/review'
+import { userCommentsRequest } from '@/api/review'
 import { useQuery } from '@tanstack/vue-query'
 import Separator from '@/components/ui/separator/Separator.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
@@ -11,7 +11,7 @@ const { profile } = storeToRefs(authenticationStore)
 
 const { data: comments } = useQuery({
   queryKey: ['comments', profile.value?.id],
-  queryFn: () => myCommentRequest(profile.value!.id)
+  queryFn: () => userCommentsRequest(profile.value!.id)
 })
 </script>
 

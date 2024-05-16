@@ -145,6 +145,43 @@ const router = createRouter({
       path: '/likeReview',
       name: 'likeReview',
       component: () => import('@/views/mypage/MyLikeReviewView.vue')
+    },
+    {
+      path: '/custom',
+      name: 'custom',
+      component: () => import('@/components/mypage/custom.vue'),
+      children: [
+        {
+          path: '',
+          name: 'customMyPage',
+          component: () => import('@/components/mypage/MyPage.vue')
+        },
+        {
+          path: 'account',
+          name: 'customAccount',
+          component: () => import('@/components/mypage/MyAccount.vue')
+        },
+        {
+          path: 'reviews',
+          name: 'customReviews',
+          component: () => import('@/components/mypage/MyReview.vue')
+        },
+        {
+          path: 'comments',
+          name: 'customComments',
+          component: () => import('@/components/mypage/MyComment.vue')
+        },
+        {
+          path: 'likedReview',
+          name: 'customLikedReview',
+          component: () => import('@/components/mypage/MyLikeReview.vue')
+        },
+        {
+          path: 'user/manage',
+          name: 'userManage',
+          component: () => import('@/views/user/UserListView.vue')
+        }
+      ]
     }
 
     // {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LikeReviewRequest } from '@/api/review'
+import { userLikedReviewRequest } from '@/api/review'
 import { useQuery } from '@tanstack/vue-query'
 import Separator from '@/components/ui/separator/Separator.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
@@ -12,7 +12,7 @@ const { profile } = storeToRefs(authenticationStore)
 
 const { data: reviews } = useQuery({
   queryKey: ['reviews', profile.value?.id],
-  queryFn: () => LikeReviewRequest(profile.value!.id)
+  queryFn: () => userLikedReviewRequest(profile.value!.id)
 })
 </script>
 
