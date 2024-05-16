@@ -53,11 +53,10 @@ const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
 const route = useRoute();
 const cityId = route.params.cityId;
 
-
 const tripStore = useTripPlanStore();
 const { changeRange, disabledDate, setRange, resetRange } = tripStore;
 
-const { coordinates, centercoordinate, range, isRangeSetted } = storeToRefs(useTripPlanStore());
+const { coordinates, centercoordinate, range, isRangeSetted, staies } = storeToRefs(useTripPlanStore());
 
 watch(centercoordinate, (center) => {
   if (map.value && center) {
@@ -112,7 +111,7 @@ onMounted(() => {
     </DialogContent>
   </Dialog>
   <div class="flex flex-row max-h-screen h-screen overflow-hidden">
-    <div class="w-[400px] h-full flex flex-col px-3 py-5">
+    <div class="w-[500px] h-full flex flex-col px-3 py-5">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex flex-row items-center justify-center gap-4">
           <div
@@ -136,7 +135,10 @@ onMounted(() => {
         :cityId="Number(cityId)"
         @next-step="step = TripStep.STAY"
       />
-      <TripStayTab v-else-if="step === TripStep.STAY" />
+      <TripStayTab
+        v-else-if="step === TripStep.STAY"
+        @next-step="step = TripStep.VEHICLE"
+      />
     </div>
     <KakaoMap
       :width="'100vw'"
@@ -151,8 +153,16 @@ onMounted(() => {
         :key="index"
         :lat="coordinate.latitude"
         :lng="coordinate.longitude"
-        :overlay="coordinate.day"
-        :content="`<div class='w-8 h-8 flex justify-center items-center rounded-full ${coordinate.color}'>${coordinate.day}</div>`"
+        :content="`<div class='w-5 h-5 text-sm text-white flex justify-center items-center rounded-full ${coordinate.color}'>${coordinate.day}</div>`"
+      />
+      <KakaoMapCustomOverlay
+        v-for="(stay, index) in staies"
+        :key="`stay-${index}`"
+        :lat="stay?.latitude || 0"
+        :lng="stay?.longitude || 0"
+        :content="`<div class='w-5 h-5 text-sm text-white flex justify-center items-center rounded-full ${
+          coordinates && coordinates[index] && coordinates[index].color
+        }'>S</div>`"
       />
     </KakaoMap>
   </div>

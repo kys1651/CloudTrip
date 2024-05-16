@@ -1,5 +1,5 @@
 import { calculateDistance, calculateSum, type Point } from '@/lib/distance'
-import type { SearchTrip } from '@/types/trip.type'
+import type { SearchTrip, SearchTripWithDistance } from '@/types/trip.type'
 import { CalendarDate, getLocalTimeZone, today, type DateValue } from '@internationalized/date'
 import { defineStore } from 'pinia'
 import type { DateRange } from 'radix-vue'
@@ -32,12 +32,18 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     end: undefined
   })
   const limit = ref(today(getLocalTimeZone()).add({ years: 1 }))
+  const staies = ref<SearchTripWithDistance[] | undefined[]>([])
 
   const isRangeSetted = computed<boolean>(
     () => range.value.start !== undefined && range.value.end !== undefined
   )
 
   const tourIds = computed(() => pickedTrips.value.flat().map((trip) => trip.tourId))
+
+  const existStaies = computed<SearchTripWithDistance[]>(() => {
+    console.log(staies.value)
+    return staies.value.filter((stay) => stay !== undefined) as SearchTripWithDistance[]
+  })
 
   const coordinates = computed(() => {
     return pickedTrips.value
@@ -81,12 +87,17 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     }))
   })
 
+  const setStaies = (day: number, stay: SearchTripWithDistance | undefined) => {
+    staies.value[day - 1] = stay
+  }
+
   // 여행 일정 설정 부분
   const setRange = (dateRange: DateRange) => {
     if (!dateRange.start || !dateRange.end) return
     range.value = dateRange
     const day = dateRange.end!!.compare(dateRange.start!!) + 1
     pickedTrips.value = Array.from({ length: day }, () => [])
+    staies.value = Array.from({ length: day }, () => undefined)
   }
 
   const changeRange = (date: DateValue | undefined) => {
@@ -168,6 +179,8 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     isRangeSetted,
     range,
     centercoordinate,
+    staies,
+    existStaies,
     setRange,
     addTrip,
     removeTrip,
@@ -175,6 +188,7 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     changeRange,
     resetRange,
     disabledDate,
-    calculateOptimalRoute
+    calculateOptimalRoute,
+    setStaies
   }
 })

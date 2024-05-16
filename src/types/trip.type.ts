@@ -51,7 +51,11 @@ export interface ICity {
 }
 
 export enum TripStep {
-  CALENDAR = 1,
-  PLAN = 2,
-  REVIEW = 3,
+  PLAN = 1,
+  STAY = 2,
+  VEHICLE = 3,
+}
+
+export interface SearchTripWithDistance extends SearchTrip {
+  distance: number;
 }

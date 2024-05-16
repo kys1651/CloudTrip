@@ -22,3 +22,9 @@ export const cityRequest = async (cityId: number): Promise<ICity> => {
   if (!isSuccess) throw new Error(message)
   return data;
 }
+
+export const cityStayRequest = async (cityId: number): Promise<SearchTrip[]> => {
+  const { data: { isSuccess, message, data } } = await client.get<BaseResponse<SearchTrip[]>>(`/tour/${cityId}/stay`)
+  if (!isSuccess) throw new Error(message)
+  return data;
+}
