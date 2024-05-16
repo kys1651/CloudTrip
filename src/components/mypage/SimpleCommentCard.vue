@@ -22,9 +22,9 @@ defineProps(['comment'])
     <div class="text-gray-700">
       <p>
         {{
-          comment.simpleReviewContent.length > 50
-            ? comment.simpleReviewContent.substring(0, 50) + '...'
-            : comment.simpleReviewContent
+          comment.reviewContent.length > 50
+            ? comment.reviewContent.substring(0, 50) + '...'
+            : comment.reviewContent
         }}
       </p>
     </div>

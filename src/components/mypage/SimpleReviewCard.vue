@@ -1,23 +1,46 @@
 <script setup>
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { useRouter } from 'vue-router'
+import {
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel'
+import Carousel from '@/components/ui/carousel/Carousel.vue'
 defineProps(['review'])
 const router = useRouter()
 </script>
 
 <template>
-  <Card @click="router.push(`review/${review.reviewId}`)">
+  <Card>
     <div>
       <CardHeader>
-        <div v-if="review.images && review.images.length > 0">
-          <img :src="review.images[0]" alt="Review Image" class="object-cover rounded-lg" />
-        </div>
+        <Carousel>
+          <CarouselContent class="h-full">
+            <CarouselItem
+              v-for="(image, index) in review.images"
+              :key="index"
+              class="flex justify-center items-center w-full h-full"
+            >
+              <img
+                class="rounded-md w-full h-full object-contain"
+                :src="image"
+                alt="Review Image"
+              />
+            </CarouselItem>
+          </CarouselContent>
+          <CarouselPrevious class="-left-4" />
+          <CarouselNext class="-right-4" />
+        </Carousel>
       </CardHeader>
-      <CardContent> {{ review.content }} </CardContent>
+      <CardContent @click="router.push(`review/${review.reviewId}`)">
+        {{ review.content }}
+      </CardContent>
     </div>
     <div class="flex flex-col items-center mb-3">
       <CardDescription class="text-center">
-        {{ review.createdAt.toString().substring(0, 10) }}
+        {{ review.createdAt }}
       </CardDescription>
     </div>
   </Card>
