@@ -84,7 +84,7 @@ const onDelete = async () => {
 <template>
   <div class="container w-full" style="max-width: 1200px; padding: 20px">
     <div>
-      <h3 class="text-3xl font-bold mb-5">계정 관리 관리</h3>
+      <h3 class="text-3xl font-bold mb-5">계정 관리</h3>
     </div>
     <Separator />
     <div>
