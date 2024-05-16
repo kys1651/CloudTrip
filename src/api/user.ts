@@ -31,9 +31,12 @@ export const userDataModifyRequest = async (update: IMyPage) => {
   return isSuccess
 }
 
-export const userDataModifyImageRequest = async (update: IMyPage, image: File) => {
+export const userDataModifyImageRequest = async (update: IMyPage, image: File | null) => {
   const formData = new FormData()
-  formData.append('profileImage', image)
+  if (image) {
+    formData.append('profileImage', image)
+  }
+  formData.append('defaultImage', update.isDefault.toString())
   formData.append('nickname', update.nickname)
   formData.append('cityCode', update.cityCode.toString())
   formData.append('townCode', update.townCode.toString())

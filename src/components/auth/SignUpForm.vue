@@ -67,7 +67,7 @@ const formSchema = yup.object({
     .string()
     .required()
     .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.'),
-  nickname: yup.string().required(),
+  nickname: yup.string(),
   email: yup.string().required().email()
 })
 
@@ -126,7 +126,7 @@ const onSubmit = handleSubmit((values) => {
           <FormControl>
             <Input
               id="nickname"
-              placeholder="닉네임을 입력해주세요."
+              placeholder="닉네임을 입력해주세요.(선택)"
               type="text"
               v-bind="componentField"
               auto-capitalize="none"

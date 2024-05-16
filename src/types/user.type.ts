@@ -21,6 +21,7 @@ export interface IMyPage {
   cityCode: number
   townCode: number
   birth: string | undefined
+  isDefault: boolean
 }
 
 export interface ChangePwForm {

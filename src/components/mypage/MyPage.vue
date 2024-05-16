@@ -52,7 +52,8 @@ const { handleSubmit, setFieldValue } = useForm<IMyPage>({
     nickname: profile.value?.nickname,
     cityCode: profile.value?.cityCode,
     townCode: profile.value?.townCode,
-    birth: ''
+    birth: '',
+    isDefault: false
   }
 })
 
@@ -96,21 +97,20 @@ const changeImage = (event: Event) => {
       }
     }
     reader.readAsDataURL(file)
+    setFieldValue('isDefault', false)
   }
 }
 
 const deleteImage = () => {
-  imageSrc.value = ''
+  imageSrc.value =
+    'https://trip-media-server.s3.ap-northeast-2.amazonaws.com/28f83eeb-6noProfile.png'
   image.value = null
+  setFieldValue('isDefault', true)
 }
 
 const onSubmit = handleSubmit(async (values) => {
   let isSuccess = false
-  if (image.value) {
-    isSuccess = await userDataModifyImageRequest(values, image.value)
-  } else {
-    isSuccess = await userDataModifyRequest(values)
-  }
+  isSuccess = await userDataModifyImageRequest(values, image.value)
 
   if (isSuccess) {
     toast({
