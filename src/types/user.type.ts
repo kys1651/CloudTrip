@@ -1,6 +1,6 @@
 export interface AUthentication {
-  isLogin: boolean;
-  profile?: Profile;
+  isLogin: boolean
+  profile?: Profile
 }
 
 export interface Profile {
@@ -11,4 +11,19 @@ export interface Profile {
   profileImage?: string
   roleType: string
   isEmailVerified: boolean
+  cityCode: number
+  townCode: number
+}
+
+export interface IMyPage {
+  username: string
+  nickname: string
+  cityCode: number
+  townCode: number
+  birth: string | undefined
+}
+
+export interface ChangePwForm {
+  password: string
+  passwordConfirm: string
 }

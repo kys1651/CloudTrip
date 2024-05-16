@@ -36,8 +36,6 @@ const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', '
 
 const ROUTES: { pathname: string; name: string }[] = [
   {
-    // pathname: "social",
-    // name: "소셜",
     pathname: 'user',
     name: '회원관리'
   },

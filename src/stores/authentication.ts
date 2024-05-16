@@ -6,14 +6,16 @@ export const useAuthenticationStore = defineStore('authentication', () => {
   const accessToken = ref<string | undefined>(undefined)
   const profile = ref<Profile | undefined>(undefined)
 
-  const isLogin = computed(() => accessToken.value !== undefined && accessToken.value.length > 0 && profile) 
+  const isLogin = computed(
+    () => accessToken.value !== undefined && accessToken.value.length > 0 && profile
+  )
 
   const setAccessToken = (newAccessToken: string) => {
-    accessToken.value = newAccessToken;
+    accessToken.value = newAccessToken
   }
 
   const clearAuthentication = () => {
-    accessToken.value = undefined;
+    accessToken.value = undefined
   }
 
   const updateProfile = (newProfile: Profile) => {

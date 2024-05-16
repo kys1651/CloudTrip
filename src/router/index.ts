@@ -103,6 +103,26 @@ const router = createRouter({
       path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: () => import('@/components/mypage/MyPage.vue')
+    },
+    {
+      path: '/account',
+      name: 'account',
+      component: () => import('@/components/mypage/Account.vue')
+    },
+    {
+      path: '/myReview',
+      name: 'myReview',
+      component: () => import('@/components/mypage/MyReview.vue')
+    },
+    {
+      path: '/myComment',
+      name: 'myComment',
+      component: () => import('@/components/mypage/MyComment.vue')
     }
   ]
 })
