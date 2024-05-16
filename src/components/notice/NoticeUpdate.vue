@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,12 +23,22 @@ const router = useRouter()
 const noticeId = route.params.noticeId
 const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`
 
-const notice = ref([])
+const notice = ref({
+  title: '',
+  content: ''
+})
+
+let quill: Quill
 onMounted(() => {
+  quill = new Quill('#editor', {
+    theme: 'snow'
+  })
+
   axios
     .get(addr)
     .then((response) => {
       notice.value = response.data
+      quill.root.innerHTML = notice.value.content
     })
     .catch((error) => {
       console.log('공지사항 조회 오류 발생', error)
@@ -39,6 +51,7 @@ const goDetail = () => {
 
 const updateAddr = `http://localhost:8080/api/v1/notice/modify/${noticeId}`
 const updateNotice = () => {
+  notice.value.content = quill.root.innerHTML
   axios
     .put(updateAddr, {
       title: notice.value.title,
@@ -74,7 +87,7 @@ const deleteNotice = () => {
 
 <template>
   <div class="flex items-center justify-center h-screen">
-    <Card class="w-[600px] h-[500px]">
+    <Card class="w-[1200px] h-[800px]">
       <CardHeader>
         <CardTitle>공지사항 수정</CardTitle>
         <CardDescription>글 작성자 : Admin</CardDescription>
@@ -92,19 +105,19 @@ const deleteNotice = () => {
               />
             </div>
             <Label for="name">내용</Label>
-            <Input
+            <div id="editor-container" class="h-[400px] mb-5">
+              <div id="editor"></div>
+            </div>
+            <!-- <Input
               class="h-[150px]"
               id="name"
               placeholder="Name of your project"
               v-model="notice.content"
-            />
-            <div class="flex flex-col space-y-1.5">
-              <Label for="framework">#공지사항</Label>
-            </div>
+            /> -->
           </div>
         </form>
       </CardContent>
-      <CardFooter class="flex justify-between px-6 pb-6">
+      <CardFooter class="flex justify-between px-6 pb-6 mt-10">
         <Button variant="outline" @click="goDetail"> 취소 </Button>
         <Button
           @click="deleteNotice"
