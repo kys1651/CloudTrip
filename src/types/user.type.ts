@@ -1,3 +1,4 @@
+import { Profile } from '@/types/user.type'
 export interface AUthentication {
   isLogin: boolean
   profile?: Profile
@@ -20,11 +21,19 @@ export interface IMyPage {
   nickname: string
   cityCode: number
   townCode: number
-  birth: string | undefined
   isDefault: boolean
 }
 
 export interface ChangePwForm {
   password: string
   passwordConfirm: string
+}
+
+export interface SimpleProfile {
+  userId: number
+  email: string
+  nickname: string
+  profileImage: string
+  city: string
+  town: string
 }

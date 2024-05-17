@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { reviewDisLikeRequest, reviewLikeRequest } from "@/api/review";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { reviewDisLikeRequest, reviewLikeRequest } from '@/api/review'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+  CarouselPrevious
+} from '@/components/ui/carousel'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useReview } from "@/stores/review";
-import type { IReview } from "@/types/board.type";
-import { useMutation } from "@tanstack/vue-query";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { useReview } from '@/stores/review'
+import type { IReview } from '@/types/board.type'
+import { useMutation } from '@tanstack/vue-query'
 import {
   Bookmark,
   Ellipsis,
@@ -26,44 +26,47 @@ import {
   MapPin,
   MessageCircle,
   Send,
-  Star,
-} from "lucide-vue-next";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import CommonAvatar from "../common/CommonAvatar.vue";
-import Carousel from "../ui/carousel/Carousel.vue";
+  Star
+} from 'lucide-vue-next'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import CommonAvatar from '../common/CommonAvatar.vue'
+import Carousel from '../ui/carousel/Carousel.vue'
 
 const props = defineProps<{
-  review: IReview;
-}>();
+  review: IReview
+}>()
 
-const reviewStore = useReview();
+const reviewStore = useReview()
 
-const router = useRouter();
+const router = useRouter()
 
-const isLiked = ref<boolean>(props.review.isLiked);
+const isLiked = ref<boolean>(props.review.isLiked)
 
 const { mutate } = useMutation({
-  mutationKey: ["reviews", "like", props.review.reviewId],
+  mutationKey: ['reviews', 'like', props.review.reviewId],
   mutationFn: () =>
     isLiked.value
       ? reviewDisLikeRequest(props.review.reviewId)
       : reviewLikeRequest(props.review.reviewId),
   onSuccess: () => {
-    isLiked.value = !isLiked.value;
-  },
-});
+    isLiked.value = !isLiked.value
+  }
+})
 
 const pushRouter = () => {
-  reviewStore.updateReview(props.review);
-  router.push({ name: "review-detail", params: { id: props.review.reviewId } });
-};
+  reviewStore.updateReview(props.review)
+  router.push({ name: 'review-detail', params: { id: props.review.reviewId } })
+}
 </script>
 
 <template>
   <Card class="rounded-md shadow border w-full max-w-[500px] border-gray-200">
     <CardHeader class="p-4 flex flex-row items-center justify-between">
-      <a class="flex items-center gap-2 text-sm font-semibold" href="#">
+      <a
+        class="flex items-center gap-2 text-sm font-semibold"
+        @click="router.push(`/user/${review.user.userId}`)"
+      >
         <CommonAvatar :src="review.user.profileImage" :username="review.user.nickname" />
         <span>{{ review.user.nickname }}</span>
       </a>
@@ -100,11 +103,7 @@ const pushRouter = () => {
             class="flex justify-center items-center w-full h-full"
             @click="pushRouter"
           >
-            <img
-              class="rounded-md w-full h-full object-contain"
-              :src="image"
-              alt="Review Image"
-            />
+            <img class="rounded-md w-full h-full object-contain" :src="image" alt="Review Image" />
           </CarouselItem>
         </CarouselContent>
         <CarouselPrevious class="-left-4" />
@@ -136,9 +135,7 @@ const pushRouter = () => {
             <MapPin :size="14" />
             <span class="text-xs text-gray-500">{{ review.address }}</span>
           </div>
-          <span class="text-xs">{{
-            new Date(review.createdAt).toLocaleDateString()
-          }}</span>
+          <span class="text-xs">{{ new Date(review.createdAt).toLocaleDateString() }}</span>
         </div>
       </div>
     </CardFooter>

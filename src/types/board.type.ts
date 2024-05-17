@@ -29,6 +29,13 @@ export interface ReviewForm {
   tourId: number
 }
 
+export interface SumaryReview {
+  reviewId: number
+  content: string
+  createdAt: string
+  images: string
+}
+
 export interface ReviewCardProps {
   review: IReview
 }
@@ -59,7 +66,7 @@ export interface SimpleCommentDetail {
   reviewId: number
   createdAt: string
   content: string
-  simpleReviewContent: string
+  reviewContent: string
 }
 
 export interface ReviewForm {

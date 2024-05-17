@@ -3,7 +3,8 @@ import type {
   IReview,
   ReviewDetail,
   ReviewForm,
-  SimpleCommentDetail
+  SimpleCommentDetail,
+  SumaryReview
 } from '@/types/board.type'
 
 export const reviewWriteRequest = async (review: ReviewForm) => {
@@ -27,26 +28,26 @@ export const reviewsRequest = async ({
   return data
 }
 
-export const myReviewsRequest = async (userId: number): Promise<IReview[]> => {
+export const userReviewsRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<IReview[]>>(`/review/${userId}`)
+  } = await client.get<BaseResponse<SumaryReview[]>>(`/user/${userId}/reviews`)
   if (!isSuccess) throw new Error(message)
   return data
 }
 
-export const myCommentRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
+export const userLikedReviewRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/comment/simple/${userId}`)
+  } = await client.get<BaseResponse<SumaryReview[]>>(`/user/${userId}/likes`)
   if (!isSuccess) throw new Error(message)
   return data
 }
 
-export const LikeReviewRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
+export const userCommentsRequest = async (userId: number): Promise<SimpleCommentDetail[]> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/review/like/${userId}`)
+  } = await client.get<BaseResponse<SimpleCommentDetail[]>>(`/user/${userId}/comments`)
   if (!isSuccess) throw new Error(message)
   return data
 }
@@ -99,7 +100,7 @@ export const commentCreateRequest = async (reviewId: number, content: string) =>
   if (!isSuccess) throw new Error(message)
 }
 
-export const commentsRequest  = async (reviewId: number): Promise<IComment[]> => {
+export const commentsRequest = async (reviewId: number): Promise<IComment[]> => {
   const {
     data: { isSuccess, message, data }
   } = await client.get<BaseResponse<IComment[]>>(`/review/${reviewId}/comment`)

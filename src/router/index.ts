@@ -65,11 +65,6 @@ const router = createRouter({
       component: () => import('@/views/reviews/ReviewDetailView.vue')
     },
     {
-      path: '/reviewWrite',
-      name: 'reviewWrite',
-      component: () => import('@/components/review/ReviewWrite.vue')
-    },
-    {
       path: '/oauth2/redirect',
       name: 'oauth2-redirect',
       component: () => import('@/callback/OAuthRedirect.vue')
@@ -100,6 +95,28 @@ const router = createRouter({
       component: () => import('@/views/user/UserListView.vue')
     },
     {
+      path: '/user/:userId',
+      name: 'userDetail',
+      component: () => import('@/views/UserView.vue'),
+      children: [
+        {
+          path: 'reviews',
+          name: 'userReviews',
+          component: () => import('@/components/user/UserReviews.vue')
+        },
+        {
+          path: 'comments',
+          name: 'userComments',
+          component: () => import('@/components/user/UserComments.vue')
+        },
+        {
+          path: 'liked-reviews',
+          name: 'userLikedReviews',
+          component: () => import('@/components/user/UserLikedReviews.vue')
+        }
+      ]
+    },
+    {
       path: '/planning/:cityId',
       name: 'planning',
       component: () => import('@/views/PlanningView.vue')
@@ -107,28 +124,41 @@ const router = createRouter({
     {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('@/views/MyPageView.vue')
-    },
-    {
-      path: '/account',
-      name: 'account',
-      component: () => import('@/views/MyAccountView.vue')
-    },
-    {
-      path: '/myReview',
-      name: 'myReview',
-      component: () => import('@/views/MyReviewView.vue')
-    },
-    {
-      path: '/myComment',
-      name: 'myComment',
-      component: () => import('@/views/MyCommentView.vue')
-    },
-    {
-      path: '/likeReview',
-      name: 'likeReview',
-      component: () => import('@/views/MyLikeReviewView.vue')
+      component: () => import('@/views/MyPageView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'myProfile',
+          component: () => import('@/components/mypage/Profile.vue')
+        },
+        {
+          path: 'account',
+          name: 'myAccount',
+          component: () => import('@/components/mypage/Account.vue')
+        },
+        {
+          path: 'reviews',
+          name: 'myReviews',
+          component: () => import('@/components/mypage/Review.vue')
+        },
+        {
+          path: 'comments',
+          name: 'myComments',
+          component: () => import('@/components/mypage/Comment.vue')
+        },
+        {
+          path: 'likedReview',
+          name: 'myLikedReview',
+          component: () => import('@/components/mypage/LikedReview.vue')
+        },
+        {
+          path: 'admin/user',
+          name: 'adminUser',
+          component: () => import('@/views/user/UserListView.vue')
+        }
+      ]
     }
+
     // {
     //   path: '/admin',
     //   name: 'admin',
