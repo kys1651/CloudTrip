@@ -124,61 +124,36 @@ const router = createRouter({
     {
       path: '/mypage',
       name: 'mypage',
-      component: () => import('@/views/mypage/MyPageView.vue')
-    },
-    {
-      path: '/account',
-      name: 'account',
-      component: () => import('@/views/mypage/MyAccountView.vue')
-    },
-    {
-      path: '/myReview',
-      name: 'myReview',
-      component: () => import('@/views/mypage/MyReviewView.vue')
-    },
-    {
-      path: '/myComment',
-      name: 'myComment',
-      component: () => import('@/views/mypage/MyCommentView.vue')
-    },
-    {
-      path: '/likeReview',
-      name: 'likeReview',
-      component: () => import('@/views/mypage/MyLikeReviewView.vue')
-    },
-    {
-      path: '/custom',
-      name: 'custom',
-      component: () => import('@/components/mypage/custom.vue'),
+      component: () => import('@/views/MyPageView.vue'),
       children: [
         {
           path: '',
-          name: 'customMyPage',
-          component: () => import('@/components/mypage/MyPage.vue')
+          name: 'myProfile',
+          component: () => import('@/components/mypage/Profile.vue')
         },
         {
           path: 'account',
-          name: 'customAccount',
-          component: () => import('@/components/mypage/MyAccount.vue')
+          name: 'myAccount',
+          component: () => import('@/components/mypage/Account.vue')
         },
         {
           path: 'reviews',
-          name: 'customReviews',
-          component: () => import('@/components/mypage/MyReview.vue')
+          name: 'myReviews',
+          component: () => import('@/components/mypage/Review.vue')
         },
         {
           path: 'comments',
-          name: 'customComments',
-          component: () => import('@/components/mypage/MyComment.vue')
+          name: 'myComments',
+          component: () => import('@/components/mypage/Comment.vue')
         },
         {
           path: 'likedReview',
-          name: 'customLikedReview',
-          component: () => import('@/components/mypage/MyLikeReview.vue')
+          name: 'myLikedReview',
+          component: () => import('@/components/mypage/LikedReview.vue')
         },
         {
-          path: 'user/manage',
-          name: 'userManage',
+          path: 'admin/user',
+          name: 'adminUser',
           component: () => import('@/views/user/UserListView.vue')
         }
       ]

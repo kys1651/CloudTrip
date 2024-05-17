@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { userCommentsRequest } from '@/api/review'
 import { useQuery } from '@tanstack/vue-query'

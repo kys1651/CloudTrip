@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
@@ -17,16 +18,16 @@ const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
   {
     label: '사용자 관리',
     items: [
-      { pathname: '/custom', name: 'customMyPage', title: '프로필 관리' },
-      { pathname: '/custom/account', name: 'customAccount', title: '커스텀 계정 관리' }
+      { pathname: '/mypage', name: 'myProfile', title: '프로필 관리' },
+      { pathname: '/mypage/account', name: 'myAccount', title: '계정 관리' }
     ]
   },
   {
     label: '사용자 활동',
     items: [
-      { pathname: '/custom/reviews', name: 'customReviews', title: '내가 작성한 글' },
-      { pathname: '/custom/comments', name: 'customComments', title: '나의 댓글' },
-      { pathname: '/custom/likedReview', name: 'customLikedReview', title: '좋아요한 글' }
+      { pathname: '/mypage/reviews', name: 'myReviews', title: '내가 작성한 글' },
+      { pathname: '/mypage/comments', name: 'myComments', title: '나의 댓글' },
+      { pathname: '/custom/likedReview', name: 'myLikedReview', title: '좋아요한 글' }
     ]
   }
 ])
@@ -59,9 +60,9 @@ watch(
       <Button
         variant="ghost"
         class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
-        :class="{ 'text-black': 'user' === curPath }"
+        :class="{ 'text-black': '/mypage/admin/user' === curPath }"
       >
-        <RouterLink :to="{ name: 'userManage' }">회원 관리</RouterLink>
+        <RouterLink :to="{ name: 'adminUser' }">회원 관리</RouterLink>
       </Button>
     </div>
   </nav>

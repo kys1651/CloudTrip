@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import customSidebar from './customSidebar.vue'
 import Separator from '@/components/ui/separator/Separator.vue'
+import Sidebar from '@/components/mypage/Sidebar.vue'
 
 const title = ref('마이페이지')
 const changeTitle = (newTitle: string) => {
@@ -17,7 +17,7 @@ const changeTitle = (newTitle: string) => {
     <Separator class="my-6" />
     <div class="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
       <aside class="-mx-4 lg:w-1/5">
-        <customSidebar @changeTitle="changeTitle" />
+        <Sidebar @changeTitle="changeTitle" />
       </aside>
       <div class="flex-1">
         <div class="space-y-6">
