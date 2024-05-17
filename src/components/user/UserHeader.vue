@@ -11,13 +11,8 @@ import { AvatarImage, AvatarFallback, Avatar } from '@/components/ui/avatar'
       <p className="text-gray-600">회원들을 관리할 수 있습니다.</p>
     </div>
     <div className="flex items-center space-x-4">
-      <Input className="w-64 border rounded-md" placeholder="회원 검색" />
-      <Button variant="outline">Status</Button>
-      <Button variant="outline">Priority</Button>
-      <Avatar>
-        <AvatarImage alt="User avatar" src="/placeholder.svg?height=32&width=32" />
-        <AvatarFallback>U</AvatarFallback>
-      </Avatar>
+      <Input className="w-64 border rounded-md p-2" placeholder="회원 검색" />
+      <Button variant="outline">검색</Button>
     </div>
   </div>
 </template>
