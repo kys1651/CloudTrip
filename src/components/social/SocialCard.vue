@@ -8,11 +8,11 @@ const route = useRoute()
 const router = useRouter()
 
 const goSocialDetail = () => {
-  router.push({ name: 'social-detail', params: { socialId: props.socialInfo.socialId } })
+  router.push({ name: 'social-detail', params: { socialId: props.userInfo.userId } })
 }
 
 const props = defineProps({
-  socialInfo: Object
+  userInfo: Object
 })
 </script>
 
@@ -24,13 +24,13 @@ const props = defineProps({
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <p className="font-medium">{{ socialInfo.socialId }}</p>
-          <span className="text-sm text-gray-500">[글 작성일]</span>
-          <span className="text-sm text-gray-500">{{ socialInfo.createdAt }}</span>
+          <p className="font-medium">{{ userInfo.nickname }}</p>
+          <span className="text-sm text-gray-500">[이메일]</span>
+          <span className="text-sm text-gray-500">{{ userInfo.email }}</span>
         </div>
       </div>
       <div className="mt-2 text-sm" @click="goSocialDetail">
-        {{ socialInfo.content }}
+        {{ userInfo.content }}
       </div>
     </CardContent>
   </Card>

@@ -7,9 +7,20 @@ import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
+import ReviewCard from '@/components/review/ReviewCard.vue'
 
 const route = useRoute()
 const router = useRouter()
+
+// const props = defineProps({
+//   searchKeyword: String
+// })
 
 const authentication = useAuthenticationStore()
 const { isLogin } = storeToRefs(authentication)
@@ -41,7 +52,11 @@ onMounted(() => {
     })
 })
 
-watch(datas, () => {})
+const isATagExists = (content: string) => {
+  const htmlElement = document.createElement('div')
+  htmlElement.innerHTML = content
+  return htmlElement.querySelector('a') !== null
+}
 </script>
 
 <template>
@@ -65,11 +80,7 @@ watch(datas, () => {})
       <h2 className="text-lg font-semibold">여행 리뷰</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <SocialCard
-            :social-info="review"
-            v-for="review in datas.reviews"
-            :key="review.reviewId"
-          />
+          <ReviewCard v-for="review in datas.reviews" :key="review.reviewId" :review="review" />
         </div>
       </div>
       <!-- v-if="isLogin" 추가 해야 함 -->
@@ -83,18 +94,29 @@ watch(datas, () => {})
       </div>
       <h2 className="text-lg font-semibold mt-10">공지사항</h2>
       <div className="grid gap-6 mt-4">
-        <div className="grid grid-cols-3 gap-4">
-          <SocialCard
-            :social-info="notice"
+        <Accordion type="multiple" class="w-full" collapsible>
+          <AccordionItem
             v-for="notice in datas.notices"
             :key="notice.noticeId"
-          />
-        </div>
+            :value="notice.content"
+          >
+            <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
+            <AccordionContent>
+              <div class="flex justify-between items-center">
+                <p
+                  class="flex-grow"
+                  :class="{ aTag: isATagExists(notice.content) }"
+                  v-html="notice.content"
+                ></p>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
       <h2 className="text-lg font-semibold mt-10">프로필</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <SocialCard :social-info="user" v-for="user in datas.users" :key="user.userId" />
+          <SocialCard :user-info="user" v-for="user in datas.users" :key="user.userId" />
         </div>
       </div>
     </div>

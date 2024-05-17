@@ -5,7 +5,14 @@ import SocialHeader from '@/components/social/SocialHeader.vue'
 import SocialBody from '@/components/social/SocialBody.vue'
 import type { BoardListProps } from '@/types/board.type'
 
-import { ref } from 'vue'
+import { onMounted, onUpdated, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+watch(route, () => {
+  console.log(route.query.keyword)
+})
 
 const meetings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const verticalScroll = ref<HTMLElement | null>(null)
@@ -19,6 +26,7 @@ const verticalScrollRight = () => {
     verticalScroll.value.scrollLeft += 100
   }
 }
+onUpdated(() => {})
 </script>
 
 <template>
