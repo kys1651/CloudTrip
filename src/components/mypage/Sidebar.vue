@@ -4,7 +4,7 @@ import Button from '@/components/ui/button/Button.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 interface MenuItem {
   pathname: string
   name: string
@@ -13,6 +13,7 @@ interface MenuItem {
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)
 const route = useRoute()
+const router = useRouter()
 const curPath = ref(route.path)
 const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
   {

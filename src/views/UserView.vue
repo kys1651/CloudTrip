@@ -3,6 +3,11 @@ import { simpleProfileRequest } from '@/api/user'
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import Label from '@/components/ui/label/Label.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+
+const authenticationStore = useAuthenticationStore()
+const { profile } = storeToRefs(authenticationStore)
 
 const route = useRoute()
 const userId = route.params.userId

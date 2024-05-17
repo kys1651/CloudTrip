@@ -60,11 +60,6 @@ const router = createRouter({
       component: () => import('@/views/reviews/ReviewDetailView.vue')
     },
     {
-      path: '/reviewWrite',
-      name: 'reviewWrite',
-      component: () => import('@/components/review/ReviewWrite.vue')
-    },
-    {
       path: '/oauth2/redirect',
       name: 'oauth2-redirect',
       component: () => import('@/callback/OAuthRedirect.vue')
