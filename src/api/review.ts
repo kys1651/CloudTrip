@@ -58,7 +58,7 @@ export const reviewRecommendRequest = async (
 ): Promise<string> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.post<BaseResponse<String>>(`/gpt/review`, {
+  } = await client.post<BaseResponse<string>>(`/gpt/review`, {
     content: content,
     location: location
   })
@@ -73,7 +73,7 @@ export const reviewCreateRequest = async (review: ReviewForm, images: File[]) =>
   })
   formData.append('content', review.content)
   formData.append('tourId', review.tourId.toString())
-
+  formData.append('rating', review.rating.toString())
   const {
     data: { isSuccess, message }
   } = await client.post<BaseResponse<void>>(`/review`, formData, {

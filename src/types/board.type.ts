@@ -74,6 +74,7 @@ export interface ReviewForm {
   tourId: number
   content: string
   images: File[]
+  rating: number
 }
 
 export interface ReviewDetail {

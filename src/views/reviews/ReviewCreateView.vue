@@ -30,6 +30,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
+import CreateRating from '@/components/review/CreateRating.vue'
 
 const imageIndex = ref<number>(-1)
 const images = ref<File[]>([])
@@ -61,7 +62,8 @@ const { mutate: searchLocation } = useMutation({
 const formSchema = yup.object({
   name: yup.string().required('방문한 주소를 적어주세요.'),
   tourId: yup.number(),
-  content: yup.string().required('방문 후기를 작성해주세요.')
+  content: yup.string().required('방문 후기를 작성해주세요.'),
+  rating: yup.number().required('별점을 입력해주세요').min(1, '별점을 입력해주세요.')
 })
 
 const { handleSubmit, setFieldValue, values } = useForm<ReviewForm>({
@@ -153,6 +155,8 @@ const initContent = () => {
   responseContent.value = ''
   isRecommend.value = false
 }
+
+const currentRating = ref(0)
 </script>
 
 <template>
@@ -161,60 +165,78 @@ const initContent = () => {
       <h2 class="text-2xl font-bold">여행 후기 작성</h2>
       <Button class="w-24 h-10" variant="outline" type="submit">작성하기</Button>
     </div>
-    <div class="border border-gray-400 flex flex-row items-center rounded-md px-4 py-2">
-      <Dialog>
-        <DialogTrigger>
-          <FormField v-slot="{ componentField }" name="name">
-            <FormItem>
-              <FormLabel
-                for="name"
-                class="text-lg font-semibold flex flex-row items-center cursor-pointer space-x-3 py-1 w-full"
-                ><Locate :size="20" class="text-gray-500 dark:text-gray-400" />
-                <FormControl>
-                  <Input
-                    id="name"
-                    class="ml-4 w-full col-span-3 border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
-                    autocomplete="off"
-                    placeholder="방문한 주소를 적어주세요."
-                    v-bind="componentField"
-                  />
-                </FormControl>
-              </FormLabel>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogTitle>위치 검색</DialogTitle>
-          <DialogDescription>방문하신 위치를 검색해 입력해주세요.</DialogDescription>
-          <div class="grid gap-4">
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Input
-                class="col-span-4"
-                placeholder="Search location..."
-                @keyup.enter="searchLocation($event.target.value)"
-              />
+    <div class="flex flex-row space-x-4">
+      <!-- 위치 선택 부분 -->
+      <div class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2">
+        <Dialog>
+          <DialogTrigger>
+            <FormField v-slot="{ componentField }" name="name">
+              <FormItem>
+                <FormLabel
+                  for="name"
+                  class="text-lg font-semibold flex flex-row items-center cursor-pointer space-x-3 py-1 w-full"
+                >
+                  <Locate :size="20" class="text-gray-500 dark:text-gray-400" />
+                  <FormControl>
+                    <Input
+                      id="name"
+                      class="ml-4 w-full border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+                      autocomplete="off"
+                      placeholder="방문한 주소를 적어주세요."
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                </FormLabel>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>위치 검색</DialogTitle>
+            <DialogDescription>방문하신 위치를 검색해 입력해주세요.</DialogDescription>
+            <div class="grid gap-4">
+              <div class="grid grid-cols-4 items-center gap-4">
+                <Input
+                  class="col-span-4"
+                  placeholder="Search location..."
+                  @keyup.enter="searchLocation($event.target.value)"
+                />
+              </div>
             </div>
-          </div>
-          <div class="grid gap-4">
-            <div class="flex flex-col space-y-2 h-96 overflow-scroll scrollbar-hide">
-              <div
-                class="flex gap-2 text-gray-500 dark:text-gray-600 hover:bg-gray-100 p-1 rounded-md cursor-pointer flex-col"
-                v-for="(tour, index) in tours"
-                :key="index"
-                @click="pickAddress(tour.name, tour.tourId)"
-              >
-                <span class="text-sm text-black">{{ tour.name }}</span>
-                <div class="flex flex-row space-x-2 items-center">
-                  <MapPin :size="14" />
-                  <span class="text-xs">{{ tour.address }}</span>
+            <div class="grid gap-4">
+              <div class="flex flex-col space-y-2 h-96 overflow-scroll scrollbar-hide">
+                <div
+                  class="flex gap-2 text-gray-500 dark:text-gray-600 hover:bg-gray-100 p-1 rounded-md cursor-pointer flex-col"
+                  v-for="(tour, index) in tours"
+                  :key="index"
+                  @click="pickAddress(tour.name, tour.tourId)"
+                >
+                  <span class="text-sm text-black">{{ tour.name }}</span>
+                  <div class="flex flex-row space-x-2 items-center">
+                    <MapPin :size="14" />
+                    <span class="text-xs">{{ tour.address }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <!-- 별점 출력 부분 -->
+      <div
+        class="flex items-center space-x-2 border border-gray-400 rounded-md mx-4 px-4 py-2 flex-grow"
+      >
+        <FormField v-slot="{ componentField }" name="rating">
+          <FormItem>
+            <FormControl>
+              <CreateRating v-model="currentRating" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
     </div>
+    <!-- 이미지 미리보기 -->
     <div class="border border-gray-400 flex flex-row items-center rounded-md px-4 py-2 h-96">
       <div
         class="w-full h-full justify-center bg-contain bg-center bg-no-repeat"
@@ -222,6 +244,7 @@ const initContent = () => {
         :style="{ backgroundImage: `url(${image})` }"
       />
     </div>
+    <!-- 이미지 출력 -->
     <div class="flex flex-row">
       <div
         class="w-24 h-24 border border-gray-400 rounded-md overflow-hidden flex flex-col items-center justify-center space-y-2 flex-shrink-0 mr-4"
@@ -257,7 +280,9 @@ const initContent = () => {
         </div>
       </div>
     </div>
-    <!-- 이부분 -->
+    <!-- 이미지 출력 종료 -->
+
+    <!-- AI글 추천 작성 -->
     <div class="flex justify-end">
       <AlertDialog>
         <AlertDialogTrigger @click.prevent="reviewRecomment"
@@ -280,6 +305,7 @@ const initContent = () => {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    <!-- AI글 추천 작성 종료 -->
     <div class="flex flex-col border border-gray-400 rounded-md px-4 py-2 h-52">
       <FormField v-slot="{ componentField }" name="content">
         <FormItem>
