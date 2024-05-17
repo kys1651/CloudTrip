@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
-import { CardContent, Card } from '@/components/ui/card'
 import SocialCard from '@/components/social/SocialCard.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
@@ -20,31 +18,40 @@ const goSocialCreate = () => {
   router.push({ name: 'social-create' })
 }
 
-const addr = `http://localhost:8080/api/v1/social/list`
-const socials = ref([])
+const datas = ref([])
+const reviewLen = ref()
+const noticeLen = ref()
+const userLen = ref()
 onMounted(() => {
+  const keyword = route.query.keyword
+  console.log(keyword)
+  const addr = `http://localhost:8080/api/v1/search?searchKeyword=${keyword}`
+
   axios
     .get(addr)
     .then((response) => {
       console.log(response)
-      socials.value = response.data
+      datas.value = response.data
+      reviewLen.value = datas.value.reviews.length
+      noticeLen.value = datas.value.notices.length
+      userLen.value = datas.value.users.length
     })
     .catch((error) => {
       console.log('전체 조회 실패', error)
     })
 })
+
+watch(datas, () => {})
 </script>
 
 <template>
-  <div className="max-w-4xl mx-auto p-6">
-    <div className="flex justify-between">
+  <div className="w-full px-10">
+    <div className="flex justify-between ">
       <div className="flex space-x-2 text-sm">
         <Badge variant="default">전체</Badge>
-        <Badge>포스팅(99+)</Badge>
-        <Badge>회사(5)</Badge>
-        <Badge>커리어(76)</Badge>
-        <Badge>소식(99+)</Badge>
-        <Badge>프로필(0)</Badge>
+        <Badge>여행 리뷰 {{ reviewLen }}</Badge>
+        <Badge>공지사항 {{ noticeLen }}</Badge>
+        <Badge>프로필 {{ userLen }}</Badge>
       </div>
       <div className="flex items-center">
         <Input
@@ -55,19 +62,41 @@ onMounted(() => {
       </div>
     </div>
     <div className="mt-4">
-      <h2 className="text-lg font-semibold">소식 103</h2>
+      <h2 className="text-lg font-semibold">여행 리뷰</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <SocialCard :social-info="social" v-for="social in socials" :key="social.socialId" />
+          <SocialCard
+            :social-info="review"
+            v-for="review in datas.reviews"
+            :key="review.reviewId"
+          />
         </div>
       </div>
-      <button
-        v-if="isLogin"
-        @click="goSocialCreate"
-        class="mt-5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md"
-      >
-        글 작성하기
-      </button>
+      <!-- v-if="isLogin" 추가 해야 함 -->
+      <div class="flex justify-end mt-5">
+        <button
+          @click="goSocialCreate"
+          class="mt-5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md"
+        >
+          글 작성하기
+        </button>
+      </div>
+      <h2 className="text-lg font-semibold mt-10">공지사항</h2>
+      <div className="grid gap-6 mt-4">
+        <div className="grid grid-cols-3 gap-4">
+          <SocialCard
+            :social-info="notice"
+            v-for="notice in datas.notices"
+            :key="notice.noticeId"
+          />
+        </div>
+      </div>
+      <h2 className="text-lg font-semibold mt-10">프로필</h2>
+      <div className="grid gap-6 mt-4">
+        <div className="grid grid-cols-3 gap-4">
+          <SocialCard :social-info="user" v-for="user in datas.users" :key="user.userId" />
+        </div>
+      </div>
     </div>
   </div>
 </template>

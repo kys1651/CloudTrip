@@ -57,7 +57,9 @@ const authenticationStore = useAuthenticationStore()
 const { isLogin, profile } = storeToRefs(authenticationStore)
 
 const searchKeyword = ref('')
-const searchByKeyword = () => {}
+const searchByKeyword = () => {
+  router.push({ name: 'search', query: { keyword: searchKeyword.value } })
+}
 </script>
 
 <template>

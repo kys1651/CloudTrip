@@ -26,7 +26,6 @@ const notice = ref({
   content: ''
 })
 
-
 let quill: Quill
 
 onMounted(() => {
@@ -35,13 +34,13 @@ onMounted(() => {
     placeholder: '내용을 입력해주세요.',
     modules: {
       toolbar: [
-        [{header: [1, 2, false]}],
+        [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
-        [{'list': 'ordered'}, {'list': 'bullet'}],
-        [{'color': []}, {'background' : []}],
-        ['image', 'link'],
-      ],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ color: [] }, { background: [] }],
+        ['image', 'link']
+      ]
     }
   })
 
@@ -50,41 +49,38 @@ onMounted(() => {
   })
 
   quill.getModule('toolbar').addHandler('image', () => {
-    getLocalImage();
+    getLocalImage()
   })
-
 })
 
 const images = ref<File[]>([])
 const imageSrcs = ref<string[]>([])
 
 const getLocalImage = () => {
-  const fileInput = document.createElement('input');
-  fileInput.setAttribute('type', 'file');
-  fileInput.setAttribute('accept', 'image/*');
+  const fileInput = document.createElement('input')
+  fileInput.setAttribute('type', 'file')
+  fileInput.setAttribute('accept', 'image/*')
 
-  fileInput.click();
-  
+  fileInput.click()
+
   fileInput.onchange = () => {
-    const files = fileInput.files;
+    const files = fileInput.files
     if (files && files.length > 0) {
-      for (let i=0; i<files.length; i++) {
-          const file = files[i];
-          images.value = [...images.value, file]
-          const reader = new FileReader()
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        images.value = [...images.value, file]
+        const reader = new FileReader()
 
-          reader.onload = (e) => {
-            const base64ImageSrc = e.target!.result as string
-            imageSrcs.value = [...imageSrcs.value, base64ImageSrc]
-            const range = quill.getSelection()
-            quill.insertEmbed(range!.index, 'image', base64ImageSrc)
-          }
+        reader.onload = (e) => {
+          const base64ImageSrc = e.target!.result as string
+          imageSrcs.value = [...imageSrcs.value, base64ImageSrc]
+          const range = quill.getSelection()
+          quill.insertEmbed(range!.index, 'image', base64ImageSrc)
+        }
 
-          reader.readAsDataURL(file)
+        reader.readAsDataURL(file)
       }
     }
-
-    
   }
 }
 
@@ -95,7 +91,7 @@ const goHome = () => {
 const createAddr = `http://localhost:8080/api/v1/notice/create`
 const createNotice = () => {
   notice.value.content = quill.root.innerHTML
-  const key = "image-replace-key"
+  const key = 'image-replace-key'
   imageSrcs.value.forEach((src, index) => {
     notice.value.content = notice.value.content.replace(src, `${key}-${index + 1}`)
   })
@@ -111,18 +107,17 @@ const createNotice = () => {
   axios
     .post(createAddr, form, {
       headers: {
-        "Content-Type": "multipart/form-data"
+        'Content-Type': 'multipart/form-data'
       }
     })
     .then((response) => {
-      console.log('등록 성공')
+      console.log('등록 성공', response)
       router.push({ name: 'notice' })
     })
     .catch((error) => {
       console.log('등록 실패', error)
     })
 }
-
 </script>
 
 <template>
