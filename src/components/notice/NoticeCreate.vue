@@ -5,73 +5,72 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+  CardTitle,
+} from "@/components/ui/card";
 
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import NoticeCreateBody from './NoticeCreateBody.vue'
-import axios from 'axios'
-import Quill from 'quill'
-import 'quill/dist/quill.snow.css'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const noticeId = route.params.noticeId
-const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`
+const noticeId = route.params.noticeId;
+const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`;
 
 const notice = ref({
-  title: '',
-  content: ''
-})
+  title: "",
+  content: "",
+});
 
-let quill: Quill
+let quill: Quill;
 
 onMounted(() => {
-  quill = new Quill('#editor', {
-    theme: 'snow',
-    placeholder: '내용을 입력해주세요.'
-  })
+  quill = new Quill("#editor", {
+    theme: "snow",
+    placeholder: "내용을 입력해주세요.",
+  });
 
-  quill.on('text-change', () => {
-    notice.value.content = quill.root.innerHTML
-  })
+  quill.on("text-change", () => {
+    notice.value.content = quill.root.innerHTML;
+  });
 
   axios
     .get(addr)
     .then((response) => {
-      notice.value = response.data
-      quill.root.innerHTML = notice.value.content
+      notice.value = response.data;
+      quill.root.innerHTML = notice.value.content;
     })
     .catch((error) => {
-      console.log('공지사항 조회 오류 발생', error)
-    })
-})
+      console.log("공지사항 조회 오류 발생", error);
+    });
+});
 
 const goHome = () => {
-  router.push({ name: 'notice' })
-}
+  router.push({ name: "notice" });
+};
 
-const createAddr = `http://localhost:8080/api/v1/notice/create`
+const createAddr = `http://localhost:8080/api/v1/notice/create`;
 const createNotice = () => {
-  notice.value.content = quill.root.innerHTML
+  notice.value.content = quill.root.innerHTML;
   axios
     .post(createAddr, {
       title: notice.value.title,
-      content: notice.value.content
+      content: notice.value.content,
     })
     .then((response) => {
-      console.log('등록 성공')
-      router.push({ name: 'notice' })
+      console.log("등록 성공");
+      router.push({ name: "notice" });
     })
     .catch((error) => {
-      console.log('등록 실패', error)
-    })
-}
+      console.log("등록 실패", error);
+    });
+};
 </script>
 
 <template>

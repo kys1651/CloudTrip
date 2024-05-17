@@ -40,6 +40,7 @@
     "vee-validate": "^4.12.8",
     "vue": "^3.4.21",
     "vue-draggable-next": "^2.2.1",
+    "vue-intl": "^6.5.0",
     "vue-router": "^4.3.0",
     "vue3-cookies": "^1.0.6",
     "vue3-kakao-maps": "^2.3.1",
