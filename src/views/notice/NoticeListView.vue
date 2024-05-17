@@ -78,7 +78,6 @@ const isATagExists = (content: string) => {
 
 <template>
   <div class="container justify-center flex flex-col my-6 items-start">
-    <NoticeHeader />
     <Accordion type="multiple" class="w-full" collapsible>
       <AccordionItem
         v-for="notice in displayedPosts"

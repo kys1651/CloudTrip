@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UserHeader from '@/components/user/UserHeader.vue'
 import UserBody from '@/components/user/UserBody.vue'
 import UserFooter from '@/components/user/UserFooter.vue'
 </script>
