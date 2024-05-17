@@ -112,6 +112,7 @@ const createNotice = () => {
     })
     .then((response) => {
       console.log('등록 성공', response)
+
       router.push({ name: 'notice' })
     })
     .catch((error) => {
