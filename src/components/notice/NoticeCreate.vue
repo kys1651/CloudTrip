@@ -85,7 +85,7 @@ const getLocalImage = () => {
 }
 
 const goHome = () => {
-  router.push({ name: 'notice' })
+  router.push({ name: 'adminNotice' })
 }
 
 const createAddr = `http://localhost:8080/api/v1/notice/create`
@@ -112,8 +112,7 @@ const createNotice = () => {
     })
     .then((response) => {
       console.log('등록 성공', response)
-
-      router.push({ name: 'notice' })
+      router.push({ name: 'adminNotice' })
     })
     .catch((error) => {
       console.log('등록 실패', error)

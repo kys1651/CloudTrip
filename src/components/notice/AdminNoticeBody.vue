@@ -13,122 +13,148 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUpdated, watch } from 'vue'
 import { useAuthenticationStore } from '@/stores/authentication'
-import {toast} from '@/components/ui/toast'
+import { toast } from '@/components/ui/toast'
+import Pagination from '../common/Pagination.vue'
 
 const route = useRoute()
 const router = useRouter()
 const authentication = useAuthenticationStore()
 
-const addr = `http://localhost:8080/api/v1/user/list`
-const users = ref([])
+const addr = `http://localhost:8080/api/v1/notice/list`
+const notices = ref([])
 onMounted(() => {
-  axios.get(addr).then((response) => {
-    console.log(response)
-    users.value = response.data
-  })
+  axios
+    .get(addr)
+    .then((response) => {
+      console.log(response)
+      notices.value = response.data
+      if (!route.query.page) {
+        router.push({ name: 'adminNotice', query: { page: 1 } })
+      }
+    })
+    .catch((error) => {
+      console.log('공지사항 조회 오류', error)
+    })
 })
 
-const updateAddr = `http://localhost:8080/api/v1/user/update/`
-const changeStatus = (user: Object) => {
-  // view에 활성 상태 변경
-  user.locked = !user.locked
+// onUpdated(() => {
+//   pageNumber.value = Number(route.query.page)
+// })
+
+watch(
+  () => route.query.page,
+  (newPage) => {
+    pageNumber.value = Number(newPage) || 1
+  }
+)
+
+const updateAddr = `http://localhost:8080/api/v1/notice/modify/`
+const changeStatus = (notice: Object) => {
   // 서버로 상태 변경 업데이트
   axios
-    .patch(updateAddr + user.userId)
+    .patch(updateAddr + notice.noticeId)
     .then((response) => {
       console.log(response)
     })
     .catch((error) => {
-      console.log('활성 상태 변경 실패', error)
+      console.log('공지사항 수정 실패', error)
     })
 }
 
-const deleteAddr = `http://localhost:8080/api/v1/user/delete/`
-const dropUser = (user: Object) => {
-  if (confirm('정말 탈퇴하시겠습니까?') && confirm('확인을 누르시면 탈퇴가 완료됩니다.')) {
-    axios
-  .delete(deleteAddr + user.userId)
-  .then((response) => {
-    console.log(response)
-    toast({
-        title: '회원 탈퇴',
-        description: '회원이 탈퇴되었습니다.',
-        variant: 'success'
-      })
-  }).catch((error) => {
-    console.log("회원 탈퇴 실패", error)
-  })
-  }
-  
-  router.go(0)
+const deleteAddr = `http://localhost:8080/api/v1/notice/delete/`
+const modifyNotice = (notice: Object) => {
+  router.push({ name: 'notice-modify', params: { noticeId: notice.noticeId } })
 }
 
 const searchKeyword = ref('')
-const findByKeywordAddr = `http://localhost:8080/api/v1/user?keyword=`
-const searchUser = () => {
-  axios.get(findByKeywordAddr + searchKeyword.value)
-  .then((response) => {
-    console.log(response)
-    users.value = response.data
-  })
-  .catch((error) => {
-    console.log("특정 회원 조회 실패", error)
-  })
+const findByKeywordAddr = `http://localhost:8080/api/v1/notice?keyword=`
+const searchNotices = () => {
+  axios
+    .get(findByKeywordAddr + searchKeyword.value)
+    .then((response) => {
+      console.log(response)
+      notices.value = response.data
+    })
+    .catch((error) => {
+      console.log('특정 공지사항 조회 실패', error)
+    })
 }
+
+const makeNotice = () => {
+  router.push({ name: 'notice-create' })
+}
+
+// Paging
+const pageNumber = ref<number>(1)
+const postsPerPage = ref(10)
+
+const updateCurrentPage = (pageIdx: number) => {
+  router.push({ name: 'adminNotice', query: { page: pageIdx } })
+}
+
+const displayedPosts = computed(() => {
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value
+  const endIndex = startIndex + postsPerPage.value
+  return notices.value.slice(startIndex, endIndex)
+})
+
+const totalPages = computed(() => {
+  console.log(notices.value.length + ' ' + postsPerPage.value)
+  return Math.ceil(notices.value.length / postsPerPage.value)
+})
 </script>
 
 <template>
   <div className="flex items-center justify-between mb-6">
     <div>
-      <h1 className="text-2xl font-semibold">회원관리</h1>
-      <p className="text-gray-600">회원들을 관리할 수 있습니다.</p>
+      <h1 className="text-2xl font-semibold">공지사항 관리</h1>
+      <p className="text-gray-600">공지사항을 관리할 수 있습니다.</p>
     </div>
     <div className="flex items-center space-x-4">
-      <Input className="w-64 border rounded-md p-2" placeholder="회원 검색" v-model="searchKeyword" />
-      <Button variant="outline" @click="searchUser">검색</Button>
+      <Input
+        class="border border-black w-64"
+        className="w-64 border rounded-md p-2"
+        placeholder="공지사항 검색"
+        v-model="searchKeyword"
+      />
+      <Button class="border border-black" variant="outline" @click="searchNotices">검색</Button>
+      <Button class="border border-black" variant="outline" @click="makeNotice"
+        >공지사항 등록하기</Button
+      >
     </div>
   </div>
   <Table>
     <TableHeader>
       <TableRow>
         <TableHead className="w-[50px]" />
-        <TableHead className="text-left">회원 ID </TableHead>
-        <TableHead>회원 이름</TableHead>
-        <TableHead>상태</TableHead>
-        <TableHead>역할</TableHead>
+        <TableHead className="text-left">공지사항 ID </TableHead>
+        <TableHead>공지사항 제목</TableHead>
         <TableHead className="w-[50px]" />
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="user in users" :key="user.userId">
+      <TableRow v-for="notice in displayedPosts" :key="notice.noticeId">
         <TableCell>
           <Checkbox id="task-8782" />
         </TableCell>
-        <TableCell className="font-medium">{{ user.username }}</TableCell>
-        <TableCell>{{ user.nickname }}</TableCell>
+        <TableCell className="font-medium">{{ notice.noticeId }}</TableCell>
+        <TableCell className="font-medium">{{ notice.title }}</TableCell>
         <TableCell>
-          <Badge :variant="user.locked ? 'secondary' : ''">{{
-            user.locked ? '비활성화' : '활성화'
-          }}</Badge>
-        </TableCell>
-        <TableCell>{{ user.roleType }}</TableCell>
-        <TableCell>
-          <DotIcon className="w-5 h-5" />
-        </TableCell>
-        <TableCell>
-          <Button 
-            @click="changeStatus(user)" 
-            class="mx-2"
-            :class="user.locked ? 'activate-button' : 'deactivate-button' " >
-          {{ user.locked ? '활성화' : '비활성화' }}
-        </Button>
-          <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
+          <Button @click="modifyNotice(notice)" class="modify-button">공지사항 수정</Button>
         </TableCell>
       </TableRow>
     </TableBody>
   </Table>
+  <div class="w-full mt-6 flex justify-center">
+    <Pagination
+      @page-number="updateCurrentPage"
+      :total-page="totalPages"
+      :total-post="notices.length"
+      :items-per-page="postsPerPage"
+    />
+  </div>
 </template>
 
 <style scoped>
@@ -158,17 +184,16 @@ const searchUser = () => {
   background-color: darkgreen;
 }
 
-
-.delete-button {
-  background-color: rgb(248, 81, 81);
-  color: white;
+.modify-button {
+  background-color: white;
+  color: rgb(81, 112, 248);
   border-radius: 9999px; /* Fully rounded */
   padding: 0.5rem 1rem;
-  border: none; /* Remove default border */
+  border: solid 1px; /* Remove default border */
   height: 25px;
 }
 
-.delete-button:hover {
-  background-color: darkred;
+.modify-button:hover {
+  background-color: rgb(67, 78, 126);
 }
 </style>

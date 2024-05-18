@@ -15,7 +15,7 @@ import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { useAuthenticationStore } from '@/stores/authentication'
-import {toast} from '@/components/ui/toast'
+import { toast } from '@/components/ui/toast'
 
 const route = useRoute()
 const router = useRouter()
@@ -49,33 +49,35 @@ const deleteAddr = `http://localhost:8080/api/v1/user/delete/`
 const dropUser = (user: Object) => {
   if (confirm('정말 탈퇴하시겠습니까?') && confirm('확인을 누르시면 탈퇴가 완료됩니다.')) {
     axios
-  .delete(deleteAddr + user.userId)
-  .then((response) => {
-    console.log(response)
-    toast({
-        title: '회원 탈퇴',
-        description: '회원이 탈퇴되었습니다.',
-        variant: 'success'
+      .delete(deleteAddr + user.userId)
+      .then((response) => {
+        console.log(response)
+        toast({
+          title: '회원 탈퇴',
+          description: '회원이 탈퇴되었습니다.',
+          variant: 'success'
+        })
       })
-  }).catch((error) => {
-    console.log("회원 탈퇴 실패", error)
-  })
+      .catch((error) => {
+        console.log('회원 탈퇴 실패', error)
+      })
   }
-  
+
   router.go(0)
 }
 
 const searchKeyword = ref('')
 const findByKeywordAddr = `http://localhost:8080/api/v1/user?keyword=`
 const searchUser = () => {
-  axios.get(findByKeywordAddr + searchKeyword.value)
-  .then((response) => {
-    console.log(response)
-    users.value = response.data
-  })
-  .catch((error) => {
-    console.log("특정 회원 조회 실패", error)
-  })
+  axios
+    .get(findByKeywordAddr + searchKeyword.value)
+    .then((response) => {
+      console.log(response)
+      users.value = response.data
+    })
+    .catch((error) => {
+      console.log('특정 회원 조회 실패', error)
+    })
 }
 </script>
 
@@ -86,7 +88,11 @@ const searchUser = () => {
       <p className="text-gray-600">회원들을 관리할 수 있습니다.</p>
     </div>
     <div className="flex items-center space-x-4">
-      <Input className="w-64 border rounded-md p-2" placeholder="회원 검색" v-model="searchKeyword" />
+      <Input
+        className="w-64 border rounded-md p-2"
+        placeholder="회원 검색"
+        v-model="searchKeyword"
+      />
       <Button variant="outline" @click="searchUser">검색</Button>
     </div>
   </div>
@@ -118,12 +124,13 @@ const searchUser = () => {
           <DotIcon className="w-5 h-5" />
         </TableCell>
         <TableCell>
-          <Button 
-            @click="changeStatus(user)" 
+          <Button
+            @click="changeStatus(user)"
             class="mx-2"
-            :class="user.locked ? 'activate-button' : 'deactivate-button' " >
-          {{ user.locked ? '활성화' : '비활성화' }}
-        </Button>
+            :class="user.locked ? 'activate-button' : 'deactivate-button'"
+          >
+            {{ user.locked ? '활성화' : '비활성화' }}
+          </Button>
           <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
       </TableRow>
@@ -157,7 +164,6 @@ const searchUser = () => {
 .activate-button:hover {
   background-color: darkgreen;
 }
-
 
 .delete-button {
   background-color: rgb(248, 81, 81);
