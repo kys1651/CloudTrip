@@ -52,20 +52,6 @@ export const userCommentsRequest = async (userId: number): Promise<SimpleComment
   return data
 }
 
-export const reviewRecommendRequest = async (
-  location: string,
-  content: string
-): Promise<string> => {
-  const {
-    data: { isSuccess, message, data }
-  } = await client.post<BaseResponse<string>>(`/gpt/review`, {
-    content: content,
-    location: location
-  })
-  if (!isSuccess) throw new Error(message)
-  return data
-}
-
 export const reviewCreateRequest = async (review: ReviewForm, images: File[]) => {
   const formData = new FormData()
   images.forEach((image) => {

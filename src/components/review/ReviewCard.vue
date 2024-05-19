@@ -32,7 +32,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonAvatar from '../common/CommonAvatar.vue'
 import Carousel from '../ui/carousel/Carousel.vue'
-
+import IconReviewRating from '../icons/IconReviewRating.vue'
 const props = defineProps<{
   review: IReview
 }>()
@@ -122,6 +122,17 @@ const pushRouter = () => {
         <Button size="icon" variant="ghost">
           <Send :size="20" />
         </Button>
+        <!-- 별점 일단 두고 추후 변경 -->
+        <div class="flex items-center text-xs text-gray-500">
+          <IconReviewRating
+            :filled="true"
+            class="ml-2"
+            :stroke="'black'"
+            :stroke-width="0.8"
+            :size="20"
+          />
+          ({{ review.rating }})
+        </div>
         <Button class="ml-auto" size="icon" variant="ghost">
           <Bookmark :size="20" />
         </Button>
@@ -131,10 +142,11 @@ const pushRouter = () => {
           {{ review.content }}
         </p>
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
-          <div class="flex flex-row space-x-1">
+          <div class="flex flex-row">
             <MapPin :size="14" />
             <span class="text-xs text-gray-500">{{ review.address }}</span>
           </div>
+
           <span class="text-xs">{{ new Date(review.createdAt).toLocaleDateString() }}</span>
         </div>
       </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reviewCreateRequest, reviewRecommendRequest } from '@/api/review'
+import { reviewCreateRequest } from '@/api/review'
+import { reviewRecommendRequest } from '@/api/chat'
 import { searchTripRequest } from '@/api/trip'
 import Button from '@/components/ui/button/Button.vue'
 import Dialog from '@/components/ui/dialog/Dialog.vue'

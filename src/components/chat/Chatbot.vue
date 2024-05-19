@@ -1,88 +1,114 @@
 <template>
   <div>
+    <!-- 챗봇 창이 열려 있을 때 표시되는 부분 -->
     <div
-      v-if="!isChatbotOpen"
-      class="fixed bottom-4 right-4 flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-lg cursor-pointer"
-      @click="toggleChatbot"
+      v-if="isOpen"
+      class="fixed bottom-10 right-10 w-[600px] h-[800px] bg-white border border-gray-300 shadow-lg flex flex-col"
     >
-      <svg
-        class="w-8 h-8 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+      <!-- 챗봇 창의 헤더 부분 -->
+      <ChatHeader :toggleChat="toggleChat" />
+      <!-- 채팅 메시지 섹션 -->
+      <!-- <ChatMessage v-if="isLogin && profile" :messages="messages" /> -->
+      <ChatMessage v-if="isLogin && profile && messages.length > 0" :messages="messages" />
+      <div
+        v-else-if="isLogin && profile && messages.length == 0"
+        class="flex flex-1 items-center justify-center text-xl text-gray-700"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-        />
-      </svg>
+        현재 기록된 채팅이 존재하지 않습니다. <br />
+        챗봇에게 인사를하여 채팅을 시작해보세요!
+      </div>
+      <div v-else class="flex flex-1 items-center justify-center text-xl text-gray-700">
+        로그인 후 이용해주세요
+      </div>
+
+      <!-- 입력 창 섹션 -->
+      <ChatInput v-if="isLogin && profile" @send-message="sendMessage" />
     </div>
-
     <div
-      v-if="isChatbotOpen"
-      class="fixed inset-0 bg-opacity-50 z-40"
-      @click.self="closeChatbot"
-    ></div>
-
-    <div
-      v-if="isChatbotOpen"
-      class="fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg z-50"
+      v-else
+      class="fixed bottom-10 right-10 w-20 h-20 cursor-pointer flex items-center justify-center text-white rounded-full shadow-lg bg-gradient-to-r from-blue-400 to-blue-600"
+      @click="toggleChat"
     >
-      <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold">Chatbot</h2>
-      </div>
-      <div class="p-4 h-64 overflow-y-auto">
-        <p class="text-gray-700">Welcome! How can I assist you today?</p>
-        <!-- 채팅 메시지 및 입력 필드 등을 여기에 추가 -->
-      </div>
-      <div class="p-4 border-t">
-        <input
-          type="text"
-          class="w-full p-2 border rounded"
-          placeholder="Type a message..."
-          v-model="userMessage"
-          @keydown.enter="sendMessage"
-        />
+      <div class="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-inner">
+        <div
+          class="flex items-center justify-center w-full h-full rounded-full border-2 border-gray-300"
+        >
+          <Bot class="w-10 h-10 text-blue-500" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watchEffect } from 'vue'
+import ChatHeader from './ChatHeader.vue'
+import ChatInput from './ChatInput.vue'
+import ChatMessage from './ChatMessage.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+import type { IChatBotMessage } from '@/types/chat.type'
+import { aiResponseRequest, deleteChatReqeust, userChatBotRequest } from '@/api/chat'
+import { Bot } from 'lucide-vue-next'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
 
-const isChatbotOpen = ref(false)
-const userMessage = ref('')
+// 챗봇 창이 열려 있는지 여부를 저장하는 상태 변수
+const isOpen = ref(false)
 
-const toggleChatbot = () => {
-  isChatbotOpen.value = !isChatbotOpen.value
-}
+// 메시지를 저장하는 상태 변수
+const messages = ref<IChatBotMessage[]>([])
 
-const closeChatbot = () => {
-  isChatbotOpen.value = false
-}
+// Query Client 인스턴스 생성
+const queryClient = useQueryClient()
 
-const sendMessage = () => {
-  // 메시지를 전송하는 로직을 여기에 추가
-  console.log('User message:', userMessage.value)
-  userMessage.value = ''
-}
-
-onMounted(() => {
-  document.addEventListener('click', (event) => {
-    const chatbotElement = document.querySelector(
-      '.fixed.bottom-4.right-4.flex.items-center.justify-center.w-16.h-16.bg-blue-500.rounded-full.shadow-lg.cursor-pointer'
-    )
-    if (chatbotElement && !chatbotElement.contains(event.target as Node) && isChatbotOpen.value) {
-      closeChatbot()
-    }
-  })
+// useQuery를 통해 데이터를 가져오고, 가져온 데이터가 변경될 때마다 messages를 업데이트
+const { data: savedMessages } = useQuery({
+  queryKey: ['messages', profile.value?.id],
+  queryFn: () => userChatBotRequest()
 })
-</script>
 
-<style scoped>
-/* 추가적인 스타일을 여기에 정의할 수 있습니다. */
-</style>
+// watchEffect로 savedMessages가 변경될 때마다 messages를 업데이트
+watchEffect(() => {
+  if (savedMessages.value) {
+    messages.value = savedMessages.value
+  }
+})
+
+// 챗봇 창을 열고 닫는 함수
+const toggleChat = () => {
+  isOpen.value = !isOpen.value
+}
+
+// 사용자 메시지를 보내는 함수
+const sendMessage = async (userInput: string) => {
+  if (userInput.trim().length === 0) {
+    return
+  }
+
+  // IChatBotMessage 인터페이스를 따르는 새 메시지 객체 생성
+  const newMessage = ref<IChatBotMessage>({
+    userRequest: userInput,
+    aiResponse: ''
+  })
+
+  if (userInput == '/clear') {
+    newMessage.value.aiResponse =
+      '알겠습니다. 지금까지의 모든 채팅 내역을 삭제하겠습니다. 채팅 내역 청소중🧹💬'
+    messages.value = [newMessage.value]
+    await deleteChatReqeust()
+    return
+  }
+
+  // 응답 받기 전에 메시지를 추가
+  messages.value = [...messages.value, newMessage.value]
+
+  // // AI 응답을 요청하고 백엔드에 메시지 저장
+  const response = await aiResponseRequest(userInput)
+  newMessage.value.aiResponse = response
+
+  // useQuery에서 사용하는 캐시를 지워줌
+  queryClient.invalidateQueries(['messages', profile.value?.id])
+}
+</script>

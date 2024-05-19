@@ -6,6 +6,7 @@ import {
   reviewLikeRequest,
   reviewRequest
 } from '@/api/review'
+import IconReviewRating from '@/components/icons/IconReviewRating.vue'
 import Avatar from '@/components/ui/avatar/Avatar.vue'
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
 import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
@@ -78,6 +79,7 @@ const { data: review, isLoading } = useQuery({
     },
     isLiked: storedReview.value.isLiked,
     likeCount: 0,
+    rating: 0,
     createdAt: storedReview.value.createdAt,
     updatedAt: 0
   }
@@ -97,9 +99,15 @@ const { data: comments } = useQuery({
 <template>
   <div class="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto py-8 px-4">
     <div class="flex-1">
-      <div class="mb-4 text-sm text-gray-500 dark:text-gray-400">
-        <MapPin class="w-4 h-4 mr-1 inline" />
-        <span>{{ review.address }}</span>
+      <div class="flex justify-between mb-4 text-sm text-gray-500 dark:text-gray-400">
+        <div>
+          <MapPin class="w-4 h-4 mr-1 inline" />
+          <span>{{ review.address }}</span>
+        </div>
+        <div class="flex items-center">
+          <IconReviewRating :filled="true" />
+          ({{ review.rating }})
+        </div>
       </div>
       <div class="grid gap-4">
         <Carousel class="w-full h-[70vh] m-auto flex justify-center flex-shrink">
@@ -147,9 +155,10 @@ const { data: comments } = useQuery({
             <AvatarFallback>{{ review.user.userId }}</AvatarFallback>
           </Avatar>
           <div>
-            <h4 class="font-medium">{{ review.user.nickname || '' }}</h4>
+            <h4 class="font-medium">{{ review.user.nickname }}</h4>
           </div>
         </div>
+        <div class="m-4">{{ review.content }}</div>
       </div>
       <div
         class="px-4 py-2 max-h-[520px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"

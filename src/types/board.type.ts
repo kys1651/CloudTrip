@@ -22,6 +22,7 @@ export interface IReview {
   tourId: number
   address: string
   createdAt: number
+  rating: number
 }
 
 export interface ReviewForm {
@@ -84,6 +85,7 @@ export interface ReviewDetail {
   createdAt: number
   updatedAt: number
   likeCount: number
+  rating: number
   address: string
   isLiked: boolean
   images: string[]
