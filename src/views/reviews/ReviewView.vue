@@ -29,8 +29,9 @@ useInfiniteScroll(
 </script>
 
 <template>
-  <div class="container flex flex-col items-start w-full py-10 relative">
-    <div class="fixed right-5 top-20">
+  <div class="container flex flex-col items-center w-full py-7 relative">
+    <h2 class="text-4xl font-bold mb-3">여행지 후기</h2>
+    <div class="flex justify-center mb-4">
       <Button variant="outline" class="rounded-xl" @click="$router.push({ name: 'review-create' })">
         <Pencil class="mr-2 h-4 w-4" />
         신규 글 작성

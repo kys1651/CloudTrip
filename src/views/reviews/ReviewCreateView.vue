@@ -37,6 +37,8 @@ const imageIndex = ref<number>(-1)
 const images = ref<File[]>([])
 const imageSrcs = ref<string[]>([])
 const image = computed(() => imageSrcs.value[imageIndex.value])
+const MAX_IMAGES = 5 // 업로드 가능한 최대 이미지 개수 설정
+
 const tours = ref<
   {
     tourId: number
@@ -105,9 +107,19 @@ const pickAddress = (name: string, tourId: number) => {
   setFieldValue('tourId', tourId)
 }
 
+// 이미지가 추가 된 경우 호출하는 메서드
 const changeImage = (event: Event) => {
   const files = (event.target as HTMLInputElement).files
   if (files && files.length > 0) {
+    if (images.value.length + files.length > MAX_IMAGES) {
+      toast.toast({
+        title: '이미지 업로드 개수 제한',
+        description: `최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다.`,
+        variant: 'destructive'
+      })
+      return
+    }
+
     ;[...files].forEach((file: File) => {
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -117,6 +129,15 @@ const changeImage = (event: Event) => {
       }
       reader.readAsDataURL(file)
     })
+  }
+}
+
+// 이미지 삭제 기능
+const removeImage = (index: number) => {
+  images.value.splice(index, 1)
+  imageSrcs.value.splice(index, 1)
+  if (imageIndex.value >= imageSrcs.value.length) {
+    imageIndex.value = imageSrcs.value.length - 1
   }
 }
 
@@ -278,6 +299,10 @@ const currentRating = ref(0)
           @click="imageIndex = index"
         >
           <img :src="image" />
+          <Button size="icon" variant="ghost" @click.stop="removeImage(index)">
+            <span class="sr-only">Remove image</span>
+            &times;
+          </Button>
         </div>
       </div>
     </div>

@@ -122,7 +122,6 @@ const pushRouter = () => {
         <Button size="icon" variant="ghost">
           <Send :size="20" />
         </Button>
-        <!-- 별점 일단 두고 추후 변경 -->
         <div class="flex items-center text-xs text-gray-500">
           <IconReviewRating
             :filled="true"
@@ -144,9 +143,8 @@ const pushRouter = () => {
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
           <div class="flex flex-row">
             <MapPin :size="14" />
-            <span class="text-xs text-gray-500">{{ review.address }}</span>
+            <span class="text-xs text-gray-500"> {{ review.tourName }} - {{ review.address }}</span>
           </div>
-
           <span class="text-xs">{{ new Date(review.createdAt).toLocaleDateString() }}</span>
         </div>
       </div>

@@ -20,6 +20,7 @@ export interface IReview {
   images: string[]
   content: string
   tourId: number
+  tourName: string
   address: string
   createdAt: number
   rating: number
@@ -81,6 +82,7 @@ export interface ReviewForm {
 export interface ReviewDetail {
   reviewId: number
   content: string
+  tourName: string
   tourId: number
   createdAt: number
   updatedAt: number

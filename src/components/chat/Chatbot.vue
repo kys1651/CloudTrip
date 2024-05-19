@@ -8,7 +8,6 @@
       <!-- 챗봇 창의 헤더 부분 -->
       <ChatHeader :toggleChat="toggleChat" />
       <!-- 채팅 메시지 섹션 -->
-      <!-- <ChatMessage v-if="isLogin && profile" :messages="messages" /> -->
       <ChatMessage v-if="isLogin && profile && messages.length > 0" :messages="messages" />
       <div
         v-else-if="isLogin && profile && messages.length == 0"

@@ -37,30 +37,6 @@ const authenticationStore = useAuthenticationStore()
 const { profile, isLogin } = storeToRefs(authenticationStore)
 const queryClient = useQueryClient()
 
-const isLiked = ref<boolean>(storedReview.value.isLiked)
-
-const { mutate: mutateLike } = useMutation({
-  mutationKey: ['reviews', 'like', reviewId],
-  mutationFn: () => (isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId)),
-  onSuccess: () => {
-    isLiked.value = !isLiked.value
-  }
-})
-
-const { mutate: mutateComment } = useMutation({
-  mutationKey: ['reviews', 'comments', reviewId],
-  mutationFn: (content: string) => commentCreateRequest(reviewId, content),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['reviews', reviewId, 'comments'] })
-    comment.value = ''
-  }
-})
-
-const onSubmit = () => {
-  if (comment.value.length === 0) return
-  mutateComment(comment.value)
-}
-
 const comment = ref<string>('')
 
 const { data: review, isLoading } = useQuery({
@@ -69,6 +45,7 @@ const { data: review, isLoading } = useQuery({
   initialData: {
     reviewId: storedReview.value.reviewId,
     content: storedReview.value.content,
+    tourName: storedReview.value.tourName,
     tourId: storedReview.value.tourId,
     address: storedReview.value.address,
     images: storedReview.value.images,
@@ -85,31 +62,63 @@ const { data: review, isLoading } = useQuery({
   }
 })
 
-watch(review, (newReview) => {
-  isLiked.value = newReview.isLiked
-})
-
 const { data: comments } = useQuery({
   queryKey: ['reviews', reviewId, 'comments'],
   queryFn: () => commentsRequest(reviewId),
   initialData: []
 })
+
+const isLiked = ref<boolean>(storedReview.value.isLiked)
+
+watch(review, (newReview) => {
+  isLiked.value = newReview.isLiked
+})
+
+const { mutate: mutateLike } = useMutation({
+  mutationKey: ['reviews', 'like', reviewId],
+  mutationFn: () => (isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId)),
+  onSuccess: () => {
+    isLiked.value = !isLiked.value
+    review.value.likeCount += isLiked.value ? 1 : -1
+  },
+  onSettled: () => {
+    queryClient.invalidateQueries(['reviews', reviewId])
+  }
+})
+
+const { mutate: mutateComment } = useMutation({
+  mutationKey: ['reviews', 'comments', reviewId],
+  mutationFn: (content: string) => commentCreateRequest(reviewId, content),
+  onSuccess: () => {
+    queryClient.invalidateQueries(['reviews', reviewId, 'comments'])
+    comment.value = ''
+  }
+})
+
+const onSubmit = () => {
+  if (comment.value.length === 0) return
+  mutateComment(comment.value)
+}
 </script>
 
 <template>
+  <!-- 전체 컨테이너 -->
   <div class="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto py-8 px-4">
     <div class="flex-1">
       <div class="flex justify-between mb-4 text-sm text-gray-500 dark:text-gray-400">
+        <!-- 주소 및 위치 출력 -->
         <div>
           <MapPin class="w-4 h-4 mr-1 inline" />
-          <span>{{ review.address }}</span>
+          <span>{{ review.tourName }} - {{ review.address }}</span>
         </div>
         <div class="flex items-center">
           <IconReviewRating :filled="true" />
           ({{ review.rating }})
         </div>
       </div>
-      <div class="grid gap-4">
+      <!-- 디테일 뷰 좌측 부분 -->
+      <div class="grid gap-6">
+        <!-- 사진 출력 -->
         <Carousel class="w-full h-[70vh] m-auto flex justify-center flex-shrink">
           <CarouselContent class="h-full">
             <CarouselItem
@@ -127,21 +136,34 @@ const { data: comments } = useQuery({
           <CarouselPrevious class="-left-4" />
           <CarouselNext class="-right-4" />
         </Carousel>
+        <!-- 사진 출력 종료 -->
+        <Separator />
+        <!-- 하단 컨텐츠 시작 -->
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <Button size="icon" variant="ghost" @click="mutateLike">
-              <Heart v-if="isLiked" fill="red" stroke="red" :size="24" />
-              <Heart v-else :size="24" />
-            </Button>
+            <div class="flex items-center">
+              <Button size="icon" variant="ghost" @click="mutateLike">
+                <Heart v-if="isLiked" fill="red" stroke="red" :size="24" />
+                <Heart v-else :size="24" />
+              </Button>
+              <div v-if="review.likeCount != 0" class="ml-1 text-sm font-semibold">
+                ( {{ review.likeCount }} )
+              </div>
+            </div>
             <Button size="icon" variant="ghost">
               <Share :size="24" />
               <span class="sr-only">Share</span>
             </Button>
           </div>
-          <!-- <Button size="icon" variant="ghost">
-            <Bookmark :size="24" />
-            <span class="sr-only">Save</span>
-          </Button> -->
+        </div>
+        <!-- 하단 컨텐츠 종료 -->
+
+        <!-- 리뷰 내용 및 날짜 출력 -->
+        <div class="relative ml-3">
+          <p class="text-lg mb-5">{{ review.content }}</p>
+          <div class="absolute bottom-0 right-0 text-sm text-gray-500 dark:text-gray-400 mt-4">
+            {{ new Date(review.createdAt).toLocaleDateString() }}
+          </div>
         </div>
       </div>
     </div>
@@ -158,7 +180,6 @@ const { data: comments } = useQuery({
             <h4 class="font-medium">{{ review.user.nickname }}</h4>
           </div>
         </div>
-        <div class="m-4">{{ review.content }}</div>
       </div>
       <div
         class="px-4 py-2 max-h-[520px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"
