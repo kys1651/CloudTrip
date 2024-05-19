@@ -79,6 +79,16 @@ export const reviewRequest = async (id: number): Promise<ReviewDetail> => {
   return data
 }
 
+export const reviewDeleteRequest = async (id: number) => {
+  const {
+    data: { code }
+  } = await client.delete<BaseResponse<void>>(`/review/${id}`)
+  if (code === 204) {
+    return false
+  }
+  return true
+}
+
 export const reviewLikeRequest = async (id: number) => {
   const {
     data: { isSuccess, message }

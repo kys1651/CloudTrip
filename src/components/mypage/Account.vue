@@ -57,7 +57,6 @@ const onSubmit = handleSubmit(async (values) => {
 
 const onDelete = async () => {
   if (confirm('정말 탈퇴하시겠습니까?') && confirm('확인을 누르시면 탈퇴가 완료됩니다.')) {
-    console.log('회원 탈퇴')
     const isSuccess = await deleteRequest(profile.value!.id)
     if (isSuccess) {
       toast({

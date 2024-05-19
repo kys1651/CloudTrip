@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reviewDisLikeRequest, reviewLikeRequest } from '@/api/review'
+import { reviewDeleteRequest, reviewDisLikeRequest, reviewLikeRequest } from '@/api/review'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import {
@@ -8,34 +8,25 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import CardDropdownMenu from './CardDropdownMenu.vue'
 import { useReview } from '@/stores/review'
 import type { IReview } from '@/types/board.type'
-import { useMutation } from '@tanstack/vue-query'
-import {
-  Bookmark,
-  Ellipsis,
-  FileWarning,
-  Heart,
-  MapPin,
-  MessageCircle,
-  Send,
-  Star
-} from 'lucide-vue-next'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { Bookmark, Heart, MapPin, MessageCircle, Send } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonAvatar from '../common/CommonAvatar.vue'
 import Carousel from '../ui/carousel/Carousel.vue'
 import IconReviewRating from '../icons/IconReviewRating.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+import { toast } from '../ui/toast'
 const props = defineProps<{
   review: IReview
 }>()
+const queryClient = useQueryClient()
+const authenticationStore = useAuthenticationStore()
+const { profile } = storeToRefs(authenticationStore)
 
 const reviewStore = useReview()
 
@@ -58,6 +49,27 @@ const pushRouter = () => {
   reviewStore.updateReview(props.review)
   router.push({ name: 'review-detail', params: { id: props.review.reviewId } })
 }
+
+const deleteReview = async () => {
+  if (!confirm('정말 여행지 후기를 삭제하시겠습니까? ')) {
+    return
+  }
+  const isSuccess = await reviewDeleteRequest(props.review.reviewId)
+  if (isSuccess) {
+    toast({
+      title: '여행지 후기 삭제',
+      description: '여행지 후기 삭제가 완료되었습니다.',
+      variant: 'success'
+    })
+    queryClient.invalidateQueries(['reviews'])
+  } else {
+    toast({
+      title: '여행지 후기 삭제',
+      description: '여행지 후기 삭제가 실패하였습니다. 잠시 후 다시 시도해주세요',
+      variant: 'destructive'
+    })
+  }
+}
 </script>
 
 <template>
@@ -70,28 +82,11 @@ const pushRouter = () => {
         <CommonAvatar :src="review.user.profileImage" :username="review.user.nickname" />
         <span>{{ review.user.nickname }}</span>
       </a>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button class="ml-auto w-8 h-8 rounded-full" size="icon" variant="ghost">
-            <Ellipsis class="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <Bookmark class="w-4 h-4 mr-2" />
-            Save
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Star class="w-4 h-4 mr-2" />
-            Add to favorites
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <FileWarning class="w-4 h-4 mr-2" />
-            Report
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <CardDropdownMenu
+        v-if="profile?.id !== review.user.userId"
+        @edit="console.log('hi')"
+        @delete="deleteReview"
+      />
     </CardHeader>
 
     <CardContent class="p-0">

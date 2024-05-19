@@ -6,6 +6,7 @@
       :filled="currentRating >= index + 1"
       @click="() => setRating(index + 1)"
     />
+    <span v-if="currentRating" class="font-semibold">({{ currentRating }})</span>
   </div>
 </template>
 
