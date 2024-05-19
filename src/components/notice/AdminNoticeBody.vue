@@ -104,6 +104,12 @@ const totalPages = computed(() => {
   console.log(notices.value.length + ' ' + postsPerPage.value)
   return Math.ceil(notices.value.length / postsPerPage.value)
 })
+
+// Define the formatDate function within the script setup block
+const formatDate = (dateString: string) => {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+  return new Date(dateString).toLocaleDateString(undefined)
+}
 </script>
 
 <template>
@@ -131,6 +137,7 @@ const totalPages = computed(() => {
         <TableHead className="w-[50px]" />
         <TableHead className="text-left">공지사항 ID </TableHead>
         <TableHead>공지사항 제목</TableHead>
+        <TableHead>게시 날짜</TableHead>
         <TableHead className="w-[50px]" />
       </TableRow>
     </TableHeader>
@@ -141,6 +148,7 @@ const totalPages = computed(() => {
         </TableCell>
         <TableCell className="font-medium">{{ notice.noticeId }}</TableCell>
         <TableCell className="font-medium">{{ notice.title }}</TableCell>
+        <TableCell className="font-medium">{{ formatDate(notice.createdAt) }}</TableCell>
         <TableCell>
           <Button @click="modifyNotice(notice)" class="modify-button">공지사항 수정</Button>
         </TableCell>

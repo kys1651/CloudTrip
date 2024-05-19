@@ -64,6 +64,12 @@ const isATagExists = (content: string) => {
   htmlElement.innerHTML = content
   return htmlElement.querySelector('a') !== null
 }
+
+// Define the formatDate function within the script setup block
+const formatDate = (dateString: string) => {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+  return new Date(dateString).toLocaleDateString(undefined)
+}
 </script>
 
 <template>
@@ -74,7 +80,12 @@ const isATagExists = (content: string) => {
         :key="notice.noticeId"
         :value="notice.content"
       >
-        <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
+        <AccordionTrigger
+          ><div class="flex justify-between items-center w-full">
+            <span>📢 {{ notice.title }}</span>
+            <span class="mx-5 text-gray-500 text-sm">{{ formatDate(notice.createdAt) }}</span>
+          </div></AccordionTrigger
+        >
         <AccordionContent>
           <div class="flex justify-between items-center">
             <p

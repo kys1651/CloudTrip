@@ -57,6 +57,10 @@ const isATagExists = (content: string) => {
   htmlElement.innerHTML = content
   return htmlElement.querySelector('a') !== null
 }
+
+const goUserProfile = (user: Object) => {
+  router.push({ name: 'userDetail', params: { userId: user.userId } })
+}
 </script>
 
 <template>
@@ -114,9 +118,14 @@ const isATagExists = (content: string) => {
         </Accordion>
       </div>
       <h2 className="text-lg font-semibold mt-10">프로필</h2>
-      <div className="grid gap-6 mt-4">
-        <div className="grid grid-cols-3 gap-4">
-          <SocialCard :user-info="user" v-for="user in datas.users" :key="user.userId" />
+      <div className="grid justify-center mt-4">
+        <div className="grid grid-cols-3 gap-4 justify-center">
+          <SocialCard
+            @click="goUserProfile(user)"
+            :user-info="user"
+            v-for="user in datas.users"
+            :key="user.userId"
+          />
         </div>
       </div>
     </div>
