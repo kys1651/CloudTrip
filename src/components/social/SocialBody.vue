@@ -18,10 +18,6 @@ import ReviewCard from '@/components/review/ReviewCard.vue'
 const route = useRoute()
 const router = useRouter()
 
-// const props = defineProps({
-//   searchKeyword: String
-// })
-
 const authentication = useAuthenticationStore()
 const { isLogin } = storeToRefs(authentication)
 
@@ -72,13 +68,6 @@ const goUserProfile = (user: Object) => {
         <Badge>공지사항 {{ noticeLen }}</Badge>
         <Badge>프로필 {{ userLen }}</Badge>
       </div>
-      <div className="flex items-center">
-        <Input
-          className="shadow-md rounded-full pl-4 pr-10 h-8 w-64"
-          placeholder="검색어를 입력해주세요."
-          type="search"
-        />
-      </div>
     </div>
     <div className="mt-4">
       <h2 className="text-lg font-semibold">여행 리뷰</h2>
@@ -87,15 +76,7 @@ const goUserProfile = (user: Object) => {
           <ReviewCard v-for="review in datas.reviews" :key="review.reviewId" :review="review" />
         </div>
       </div>
-      <!-- v-if="isLogin" 추가 해야 함 -->
-      <div class="flex justify-end mt-5">
-        <button
-          @click="goSocialCreate"
-          class="mt-5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md"
-        >
-          글 작성하기
-        </button>
-      </div>
+      <div class="flex justify-end mt-5"></div>
       <h2 className="text-lg font-semibold mt-10">공지사항</h2>
       <div className="grid gap-6 mt-4">
         <Accordion type="multiple" class="w-full" collapsible>
@@ -132,4 +113,8 @@ const goUserProfile = (user: Object) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+Badge {
+  height: 280px;
+}
+</style>

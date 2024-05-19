@@ -149,7 +149,7 @@ const searchByKeyword = () => {
   border: 2px solid black;
   border-radius: 10px;
   outline: none;
-  width: 220px;
+  width: 350px;
   height: 40px;
 }
 .input-container button {
