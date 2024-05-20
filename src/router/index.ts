@@ -135,6 +135,7 @@ const router = createRouter({
       path: '/mypage',
       name: 'mypage',
       component: () => import('@/views/MyPageView.vue'),
+      redirect: { name: 'myProfile' }, // 기본 경로로 리디렉션 추가
       children: [
         {
           path: '',
@@ -168,12 +169,6 @@ const router = createRouter({
         }
       ]
     }
-
-    // {
-    //   path: '/admin',
-    //   name: 'admin',
-    //   component: () => import('@/components/mypage/Notifications.vue')
-    // }
   ]
 })
 

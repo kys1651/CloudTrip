@@ -110,9 +110,11 @@ const pushRouter = () => {
       <div class="flex flex-col cursor-pointer" @click="pushRouter">
         <p class="text-sm text-black-600">{{ review.content }}</p>
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
-          <div class="flex flex-row">
-            <MapPin :size="14" />
-            <span class="text-xs text-gray-500"> {{ review.tourName }} - {{ review.address }}</span>
+          <div class="flex flex-col">
+            <span class="text-xs text-black">{{ review.tourName }}</span>
+            <span id="fontSize-small" class="flex items-center text-xs text-gray-600">
+              <MapPin class="w-3 h-3 mr-1 text-gray-500" />{{ review.address }}
+            </span>
           </div>
           <span class="text-xs">{{ new Date(review.createdAt).toLocaleDateString() }}</span>
         </div>
@@ -130,5 +132,10 @@ p {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   word-break: keep-all;
+}
+
+#fontSize-small {
+  font-size: 10px;
+  line-height: 1rem;
 }
 </style>

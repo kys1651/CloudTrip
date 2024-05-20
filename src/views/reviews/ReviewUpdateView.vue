@@ -33,6 +33,7 @@ import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
 import CreateRating from '@/components/review/CreateRating.vue'
 
+const open = ref(false)
 const toast = useToast()
 const router = useRouter()
 const route = useRoute()
@@ -74,11 +75,10 @@ const { mutate: searchLocation } = useMutation({
   }
 })
 
-const isDialogOpen = ref(false)
 const pickAddress = (name: string, tourId: number) => {
   setFieldValue('name', name)
   setFieldValue('tourId', tourId)
-  isDialogOpen.value = false
+  open.value = false
 }
 
 // 리뷰 데이터를 가져와서 각 필드에 초기값 설정
@@ -248,11 +248,8 @@ const updateRating = (rating: number) => {
     </div>
     <div class="flex flex-row space-x-4">
       <!-- 위치 선택 부분 -->
-      <div
-        @click="isDialogOpen = true"
-        class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2"
-      >
-        <Dialog :open="isDialogOpen">
+      <div class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2">
+        <Dialog v-model:open="open">
           <DialogTrigger>
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>

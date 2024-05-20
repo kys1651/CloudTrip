@@ -11,9 +11,7 @@ defineProps(['comment'])
   >
     <div class="mb-2">
       <p class="text-gray-900 font-bold">
-        {{
-          comment.content.length > 60 ? comment.content.substring(0, 60) + '...' : comment.content
-        }}
+        {{ comment.content }}
       </p>
     </div>
     <div class="text-sm text-gray-500 mb-3">
@@ -31,4 +29,14 @@ defineProps(['comment'])
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+p {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
+}
+</style>

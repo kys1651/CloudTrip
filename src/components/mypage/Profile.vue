@@ -31,6 +31,7 @@ const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)
 
 const open = ref(false)
+const detailOpen = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const { data: cities } = useQuery({
@@ -264,13 +265,13 @@ onMounted(async () => {
 
       <FormField v-slot="{ value }" name="townCode">
         <FormItem class="flex flex-col">
-          <Popover>
+          <Popover v-model:open="detailOpen">
             <PopoverTrigger as-child>
               <FormControl>
                 <Button
                   variant="outline"
                   role="combobox"
-                  :aria-expanded="open"
+                  :aria-expanded="detailOpen"
                   :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
                 >
                   {{
@@ -295,7 +296,7 @@ onMounted(async () => {
                       @select="
                         () => {
                           setFieldValue('townCode', town.townCode)
-                          open = false
+                          detailOpen = false
                         }
                       "
                     >
