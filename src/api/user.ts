@@ -1,11 +1,6 @@
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
-import type {
-  Authentication,
-  IMyPage,
-  Profile,
-  SimpleProfile
-} from '@/types/user.type'
+import type { Authentication, IMyPage, Profile, SimpleProfile } from '@/types/user.type'
 
 export const userDataRequest = async () => {
   const {
@@ -79,9 +74,6 @@ export const deleteRequest = async (userId: number) => {
   const {
     data: { code }
   } = await client.delete<BaseResponse<void>>(`/user/${userId}`)
-  if (code === 204) {
-    return false
-  }
   return true
 }
 
@@ -91,4 +83,30 @@ export const simpleProfileRequest = async (userId: any): Promise<SimpleProfile> 
   } = await client.get<BaseResponse<SimpleProfile>>(`/user/${userId}`)
   if (!isSuccess) throw new Error(message)
   return data
+}
+
+export const followCheckRequest = async (userId: number): Promise<boolean> => {
+  const {
+    data: { isSuccess, data }
+  } = await client.get<BaseResponse<boolean>>(`/user/${userId}/check`)
+  if (!isSuccess) return false
+  return data
+}
+
+export const followRequest = async (userId: number): Promise<boolean> => {
+  const {
+    data: { isSuccess }
+  } = await client.post<BaseResponse<void>>(`/user/${userId}/follow`)
+  return isSuccess
+}
+
+export const unFollowRequest = async (userId: number): Promise<boolean> => {
+  try {
+    const {
+      data: { isSuccess, data, code, errors }
+    } = await client.delete<BaseResponse<void>>(`/user/${userId}/unfollow`)
+    return true
+  } catch (e) {
+    return false
+  }
 }

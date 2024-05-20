@@ -126,12 +126,8 @@ const scrollToBottom = () => {
       <!-- 디테일 뷰 좌측 부분 -->
       <div class="flex justify-between mb-4 text-sm text-gray-500 dark:text-gray-400">
         <!-- 디테일 뷰 좌측 상단 -->
-        <!-- <div>
-          <MapPin class="w-4 h-4 mr-1 inline" />
-          <span>{{ review.tourName }} - {{ review.address }}</span>
-        </div> -->
         <div class="flex flex-col">
-          <span class="text-sm text-black">{{ review.tourName }}</span>
+          <span class="text-sm text-gray-800">{{ review.tourName }}</span>
           <span class="flex items-center text-xs text-gray-600">
             <MapPin class="w-3 h-3 mr-1 text-gray-500" />{{ review.address }}
           </span>
