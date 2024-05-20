@@ -3,7 +3,7 @@ import Pagination from '@/components/common/Pagination.vue'
 import { ref } from 'vue'
 
 const totalPages = ref(5)
-const users = ref([])
+const notices = ref([])
 
 const postsPerPage = ref(10)
 
@@ -17,7 +17,7 @@ const updateCurrentPage = (pageIdx: number) => {
     <Pagination
       @page-number="updateCurrentPage"
       :total-page="totalPages"
-      :total-post="users.length"
+      :total-post="notices.length"
       :items-per-page="postsPerPage"
     />
   </div>

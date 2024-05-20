@@ -20,8 +20,6 @@
     "@vee-validate/zod": "^4.12.8",
     "@vueup/vue-quill": "^1.2.0",
     "@vueuse/core": "^10.9.0",
-    "@xeger/quill-image-actions": "^0.7.2",
-    "@xeger/quill-image-formats": "^0.7.2",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

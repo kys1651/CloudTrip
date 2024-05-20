@@ -37,7 +37,7 @@ onMounted(() => {
 })
 
 const goHome = () => {
-  router.push({ name: 'notice' })
+  router.push({ name: 'adminNotice' })
 }
 
 const goUpdate = () => {
