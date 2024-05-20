@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { cityRequest } from "@/api/trip";
+import ChatMessage from "@/components/trip/ChatMessage.vue";
 import TripMainTab from "@/components/trip/TripMainTab.vue";
 import TripStayTab from "@/components/trip/TripStayTab.vue";
+import TripVehicleTab from "@/components/trip/TripVehicleTab.vue";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -139,6 +141,7 @@ onMounted(() => {
         v-else-if="step === TripStep.STAY"
         @next-step="step = TripStep.VEHICLE"
       />
+      <TripVehicleTab v-else />
     </div>
     <KakaoMap
       :width="'100vw'"
@@ -153,7 +156,7 @@ onMounted(() => {
         :key="index"
         :lat="coordinate.latitude"
         :lng="coordinate.longitude"
-        :content="`<div class='w-5 h-5 text-sm text-white flex justify-center items-center rounded-full ${coordinate.color}'>${coordinate.day}</div>`"
+        :content="`<div class=' w-5 h-5 text-sm text-white flex justify-center items-center rounded-full ${coordinate.color}'>${coordinate.day}</div>`"
       />
       <KakaoMapCustomOverlay
         v-for="(stay, index) in staies"
@@ -165,6 +168,7 @@ onMounted(() => {
         }'>S</div>`"
       />
     </KakaoMap>
+    <ChatMessage class="fixed z-50 bottom-0 w-96 right-0 bg-white" />
   </div>
 </template>
 

@@ -1,3 +1,4 @@
+import { type MobilityResponse } from '@/api/trip'
 import { calculateDistance, calculateSum, type Point } from '@/lib/distance'
 import type { SearchTrip, SearchTripWithDistance } from '@/types/trip.type'
 import { CalendarDate, getLocalTimeZone, today, type DateValue } from '@internationalized/date'
@@ -25,6 +26,10 @@ export const TEXT_COLORS = [
     'text-pink-300'
 ]
 
+interface DirectionDictionary {
+  [key: string]: MobilityResponse
+}
+
 export const useTripPlanStore = defineStore('trip-plan', () => {
   const pickedTrips = ref<SearchTrip[][]>([[], [], []])
   const range = ref<DateRange>({
@@ -33,6 +38,7 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
   })
   const limit = ref(today(getLocalTimeZone()).add({ years: 1 }))
   const staies = ref<SearchTripWithDistance[] | undefined[]>([])
+  const vehicles = ref<DirectionDictionary>({})
 
   const isRangeSetted = computed<boolean>(
     () => range.value.start !== undefined && range.value.end !== undefined
@@ -62,6 +68,42 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
       bounds.extend(new window.kakao.maps.LatLng(coordinate.latitude, coordinate.longitude))
     })
     return bounds
+  })
+
+  const addVehicles = (mobility: MobilityResponse, startTourId: number, endTourId: number) => {
+    const key = `${startTourId}-${endTourId}`
+    vehicles.value[key] = mobility
+  }
+
+  const tourSum = computed(() => {
+    return pickedTrips.value.map((trips, index) => {
+      if (index === 0) {
+        return [...trips, staies.value[index]]
+      }
+      return [staies.value[index - 1], ...trips, staies.value[index]]
+    })
+  })
+
+  const tourSumDistance = computed(() => {
+    return tourSum.value.map((trips) => {
+      return trips.filter((trip, index) => index !== 0).map((_, idx) => {
+        const prev = trips[idx]
+        const trip = trips[idx + 1]
+        
+        if (!prev || !trip) return { distance: 0, walk: 0, bike: 0, bus: undefined, metro: undefined, car: undefined }
+        const vehicle = vehicles.value[`${prev.tourId}-${trip.tourId}`]
+        if (!vehicle) return { distance: 0, walk: 0, bike: 0, bus: undefined, metro: undefined, car: undefined }
+        
+        return {
+          distance: vehicle.walk.distance,
+          walk: vehicle.walk.spentTime,
+          bike: vehicle.bike.spentTime,
+          bus: vehicle.bus,
+          metro: vehicle.metro,
+          car: vehicle.car,
+        }
+      })
+    })
   })
 
   const dailyTrip = computed<
@@ -175,6 +217,9 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     range,
     centercoordinate,
     staies,
+    tourSum,
+    tourSumDistance,
+    addVehicles,
     setRange,
     addTrip,
     removeTrip,

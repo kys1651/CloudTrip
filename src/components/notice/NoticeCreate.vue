@@ -8,15 +8,14 @@ import {
   CardTitle
 } from '@/components/ui/card'
 
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
-import { Files } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()

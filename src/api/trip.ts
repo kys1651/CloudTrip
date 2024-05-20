@@ -47,3 +47,50 @@ export const cityStayRequest = async (cityId: number): Promise<SearchTrip[]> => 
   if (!isSuccess) throw new Error(message)
   return data;
 }
+
+export interface DirectionRequest {
+  startTourId: number
+  endTourId: number
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+}
+
+export interface Step {
+  stepId: number
+  vehicleId: number
+  mode: string
+  startName: string
+  endName: string
+  sectionTime: number
+  distance: number
+  routeName: string
+}
+
+export interface DirectionResponse {
+  vehicleId: number
+  directionId: number
+  fare: number
+  spentTime: number
+  walkTime: number
+  transferCount: number
+  distance: number
+  walkDistance: number
+  path: string
+  steps: Step[]
+}
+
+export interface MobilityResponse {
+  walk: DirectionResponse,
+  bike: DirectionResponse,
+  bus?: DirectionResponse,
+  metro?: DirectionResponse,
+  car?: DirectionResponse,
+} 
+
+export const directionRequest = async (direction: DirectionRequest): Promise<MobilityResponse> => {
+  const { data: { isSuccess, message, data } } = await client.post<BaseResponse<MobilityResponse>>(`/direction`, direction)
+  if (!isSuccess) throw new Error(message)
+  return data;
+}
