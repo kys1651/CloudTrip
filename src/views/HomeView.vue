@@ -30,12 +30,12 @@ const metrics = ref<MetricProps[]>(
                 모두의 여행지 추천 서비스
               </div>
               <h2 class="text-3xl font-bold tracking-tighter sm:text-5xl">
-                당신의 여행지를 추천해드립니다
+                당신의 민보수를 추천해드립니다
               </h2>
               <p
                 class="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
               >
-                저희 트리플랜에서는 짧고 굵은 2박 3일 여행지 혹은 계획을 추천해드립니다.
+                저희 민보수에서는 여러분의 행복한 2박 3일 여행지 혹은 계획을 추천해드립니다.
               </p>
             </div>
             <div class="flex flex-col gap-2 min-[400px]:flex-row">

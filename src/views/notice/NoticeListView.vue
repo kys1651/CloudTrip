@@ -42,7 +42,7 @@ onUpdated(() => {
 })
 
 const pageNumber = ref<number>(1)
-const postsPerPage = ref(6)
+const postsPerPage = ref(10)
 
 const updateCurrentPage = (pageIdx: number) => {
   router.push({ name: 'notice', query: { page: pageIdx } })
@@ -73,6 +73,7 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
+  <NoticeHeader />
   <div class="container justify-center flex flex-col my-6 items-start">
     <Accordion type="multiple" class="w-full" collapsible>
       <AccordionItem
