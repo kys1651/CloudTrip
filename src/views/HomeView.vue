@@ -10,6 +10,19 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { timeStamp } from 'console'
 import ToastProvider from '@/components/ui/toast/ToastProvider.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Card, CardContent } from '@/components/ui/card'
+import Autoplay from 'embla-carousel-autoplay'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel'
+
+const route = useRoute()
+const router = useRouter()
 
 const metrics = ref<MetricProps[]>(
   [1, 2, 3, 4, 5, 6, 7, 8].map(() => ({
@@ -19,42 +32,56 @@ const metrics = ref<MetricProps[]>(
 )
 
 const homeData = ref({
-  numberData: [{
-    reviewCount: Number,
-    noticeCount: Number,
-    usersCount: Number,
-    tourCount: Number,
-    scheduleCount: Number,
-  }],
-  topTours: [{
-    tourId: Number,
-    name: String,
-    description: String,
-    cityName: String,
-    townName: String,
-    rating: Number,
-    backgroundImage: String,
-  }],
-  topReviews: [{
-    reviewId: Number,
-    content: String,
-    createdAt: new Date(),
-    name: String,
-    image: String,
-    likeCount: Number,
-  }] 
+  numberData: [
+    {
+      reviewCount: Number,
+      noticeCount: Number,
+      usersCount: Number,
+      tourCount: Number,
+      scheduleCount: Number
+    }
+  ],
+  topTours: [
+    {
+      tourId: Number,
+      name: String,
+      description: String,
+      cityName: String,
+      townName: String,
+      rating: Number,
+      backgroundImage: String
+    }
+  ],
+  topReviews: [
+    {
+      reviewId: Number,
+      content: String,
+      createdAt: new Date(),
+      name: String,
+      image: String,
+      likeCount: Number
+    }
+  ]
 })
 const addr = `http://localhost:8080/api/v1/home`
 onMounted(() => {
-  axios.get(addr)
-  .then((response) => {
-    console.log(response)
-    homeData.value = response.data
-  })
-  .catch((error) => {
-    console.log("데이터 불러오기 실패", error)
-  })
+  axios
+    .get(addr)
+    .then((response) => {
+      console.log(response)
+      homeData.value = response.data
+    })
+    .catch((error) => {
+      console.log('데이터 불러오기 실패', error)
+    })
 })
+
+const goTourDetail = (tour: Object) => {}
+
+const goReviewDetail = (review: Object) => {
+  router.push({ name: 'review-detail', params: { id: review.reviewId } })
+}
+
 </script>
 
 <template>
@@ -143,15 +170,52 @@ onMounted(() => {
               Explore the most sought-after travel destinations around the world.
             </p>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TripCard v-for="topTour in homeData.topTours" :key="topTour.tourId"
+          <Carousel
+            class="w-full max-w-full m-auto flex justify-center"
+            :opts="{
+              loop:true,
+            }"
+            :plugins="[
+              Autoplay({
+                delay: 2000,
+                stopOnFocusIn: false,
+              }),
+              
+            ]"
+            
+          >
+            <CarouselContent>
+              <CarouselItem
+                v-for="(topTour, index) in homeData.topTours"
+                :key="topTour.tourId"
+                class="basis-1/4"
+              >
+                <TripCard
+                  :name="topTour.name"
+                  :backgroundImage="topTour.backgroundImage"
+                  :description="topTour.description"
+                  :rating="topTour.rating"
+                  :location="topTour.cityName + ' ' + topTour.townName"
+                  @click="goTourDetail(topTour)"
+                  class="hover:scale-110"
+                ></TripCard>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious class="-left-6" />
+            <CarouselNext class="-right-6" />
+          </Carousel>
+          <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <TripCard
+              v-for="topTour in homeData.topTours" :key="topTour.tourId"
               :name='topTour.name'
               :backgroundImage=topTour.backgroundImage
               :description=topTour.description
               :rating=topTour.rating
               :location="topTour.cityName + ' ' + topTour.townName"
+              @click="goTourDetail(topTour)"
+              class="hover:scale-110"
             ></TripCard>
-          </div>
+          </div> -->
         </div>
       </div>
     </section>
@@ -170,17 +234,51 @@ onMounted(() => {
               Read our latest travel insights and tips.
             </p>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Carousel 
+            class="w-full max-w-full m-auto flex justify-center"
+            :opts="{
+              loop:true,
+            }"
+            :plugins="[
+              Autoplay({
+                delay: 2500,
+                stopOnFocusIn: false,
+              })
+            ]">
+            <CarouselContent>
+              <CarouselItem
+                v-for="(topReview, index) in homeData.topReviews"
+                :key="topReview.reviewId"
+                class="basis-1/4"
+              >
+                <TripCard
+                  :name="topReview.name"
+                  :backgroundImage="topReview.image"
+                  :description="topReview.content"
+                  :createdAt="new Date(topReview.createdAt)"
+                  @click="goReviewDetail(topReview)"
+                  class="hover:scale-110"
+                ></TripCard>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious class="-left-6" />
+            <CarouselNext class="-right-6"/>
+          </Carousel>
+          <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <PostingCard v-for="topReview in homeData.topReviews" :key="topReview.reviewId"
               :backgroundImage="topReview.image"
               :name="topReview.name"
               :description="topReview.content"
               :createdAt="new Date(topReview.createdAt)"
               :views="topReview.likeCount"
+              @click="goReviewDetail(topReview)"
+              class="hover:scale-110"
             ></PostingCard>
-          </div>
+          </div> -->
         </div>
       </div>
     </section>
   </main>
 </template>
+
+<style scoped></style>
