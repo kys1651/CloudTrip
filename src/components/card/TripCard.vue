@@ -2,8 +2,16 @@
 import type { TripSummaryProps } from '@/types/trip.type'
 import IconLocation from '../icons/IconLocation.vue'
 import IconRating from '../icons/IconRating.vue'
+import { computed } from 'vue';
 
-defineProps<TripSummaryProps>()
+const props = defineProps<TripSummaryProps>()
+
+const shortDescription = computed(() => {
+  return props.description.length > 10
+    ? props.description.slice(0, 70) + '...'
+    : props.description
+})
+
 </script>
 <template>
   <div
@@ -36,7 +44,7 @@ defineProps<TripSummaryProps>()
       </div>
       <!-- 여행지 정보 상세 설명  -->
       <div class="text-sm font-light text-gray-400 dark:text-gray-300">
-        {{ description }}
+        {{ shortDescription }}
       </div>
       <div class="flex items-center gap-2 mt-2"></div>
     </div>

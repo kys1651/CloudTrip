@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import UserHeader from '@/components/user/UserHeader.vue'
 import UserBody from '@/components/user/UserBody.vue'
 import UserFooter from '@/components/user/UserFooter.vue'
 </script>
 
 <template>
   <div className="container w-full mx-auto my-8 p-6 bg-white shadow rounded-lg">
-    <UserHeader />
     <UserBody />
-    <UserFooter />
+    <!-- <UserFooter /> -->
   </div>
 </template>
 

@@ -34,13 +34,13 @@ onMounted(() => {
     theme: 'snow',
     modules: {
       toolbar: [
-        [{header: [1, 2, false]}],
+        [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
-        [{'list': 'ordered'}, {'list': 'bullet'}],
-        [{'color': []}, {'background' : []}],
-        ['image', 'link'],
-      ],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ color: [] }, { background: [] }],
+        ['image', 'link']
+      ]
     }
   })
 
@@ -59,17 +59,17 @@ onMounted(() => {
   })
 
   quill.getModule('toolbar').addHandler('image', () => {
-    getLocalImage();
+    getLocalImage()
   })
 })
 
 const getLocalImage = () => {
-  const fileInput = document.createElement('input');
-  fileInput.setAttribute('type', 'file');
-  fileInput.setAttribute('accept', 'image/*');
+  const fileInput = document.createElement('input')
+  fileInput.setAttribute('type', 'file')
+  fileInput.setAttribute('accept', 'image/*')
 
-  fileInput.click();
-  
+  fileInput.click()
+
   fileInput.onchange = () => {
     const file = fileInput.files![0]
     const reader = new FileReader()
@@ -114,7 +114,7 @@ const deleteNotice = () => {
     .then((response) => {
       if (confirm('정말 삭제하시겠습니까?')) {
         console.log('글 삭제 성공')
-        router.push({ name: 'notice' })
+        router.push({ name: 'adminNotice' })
       }
       return
     })

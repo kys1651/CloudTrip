@@ -1,5 +1,5 @@
 <script setup>
-import { AvatarFallback, Avatar } from '@/components/ui/avatar'
+import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
 import { CardContent, Card } from '@/components/ui/card'
 
 import { useRoute, useRouter } from 'vue-router'
@@ -21,7 +21,8 @@ const props = defineProps({
     <CardContent>
       <div className="flex items-center space-x-3">
         <Avatar>
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage :src="userInfo.profileImage" alt="No Img" />
+          <AvatarFallback></AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <p className="font-medium">{{ userInfo.nickname }}</p>
