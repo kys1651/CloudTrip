@@ -3,7 +3,7 @@ import type { JwtToken } from '@/types/auth.type'
 import axios from 'axios'
 import { storeToRefs } from 'pinia'
 
-const BACKEND_URL = 'http://localhost:8080'
+const BACKEND_URL = 'http://121.147.38.29:8080'
 const BASE_URL = `${BACKEND_URL}/api/v1`
 
 export const NAVER_LOGIN_URL = `${BACKEND_URL}/oauth2/authorization/naver`
