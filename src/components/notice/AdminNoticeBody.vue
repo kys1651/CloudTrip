@@ -43,13 +43,6 @@ onMounted(() => {
 //   pageNumber.value = Number(route.query.page)
 // })
 
-watch(
-  () => route.query.page,
-  (newPage) => {
-    pageNumber.value = Number(newPage) || 1
-  }
-)
-
 const updateAddr = `http://localhost:8080/api/v1/notice/modify/`
 const changeStatus = (notice: Object) => {
   // 서버로 상태 변경 업데이트
@@ -87,6 +80,13 @@ const makeNotice = () => {
 }
 
 // Paging
+watch(
+  () => route.query.page,
+  (newPage) => {
+    pageNumber.value = Number(newPage) || 1
+  }
+)
+
 const pageNumber = ref<number>(1)
 const postsPerPage = ref(10)
 

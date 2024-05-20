@@ -15,30 +15,31 @@ const router = createRouter({
       component: () => import('@/views/search/SearchView.vue')
     },
     {
+      path: '/searchReview',
+      name: 'search-review',
+      component: () => import('@/views/search/tag/SearchReview.vue')
+    },
+    {
+      path: '/searchNotice',
+      name: 'search-notice',
+      component: () => import('@/views/search/tag/SearchNotice.vue')
+    },
+    {
+      path: '/searchProfile',
+      name: 'search-profile',
+      component: () => import('@/views/search/tag/SearchProfile.vue')
+    },
+    {
       path: '/sign-in',
       name: 'sign-in',
       component: () => import('@/views/SignInView.vue')
     },
     {
-      path: '/social',
-      name: 'social',
-      component: () => import('@/views/social/SocialListView.vue')
+      path: '/search/:searchId',
+      name: 'search-detail',
+      component: () => import('@/views/search/SearchView.vue')
     },
-    {
-      path: '/social/:socialId',
-      name: 'social-detail',
-      component: () => import('@/views/social/SocialView.vue')
-    },
-    {
-      path: '/social/:socialId',
-      name: 'social-modify',
-      component: () => import('@/views/social/SocialUpdateView.vue')
-    },
-    {
-      path: '/social/create',
-      name: 'social-create',
-      component: () => import('@/views/social/SocialCreateView.vue')
-    },
+
     {
       path: '/notice',
       name: 'notice',
@@ -160,7 +161,7 @@ const router = createRouter({
           path: 'admin/notice',
           name: 'adminNotice',
           component: () => import('@/views/notice/AdminNoticeView.vue')
-        },
+        }
       ]
     }
 

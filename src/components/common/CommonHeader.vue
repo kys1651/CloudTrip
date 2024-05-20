@@ -17,10 +17,12 @@ import { LogOut, Settings, User } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useToast } from '@/components/ui/toast'
+import { Search } from 'lucide-vue-next'
 
 const authentication = useAuthenticationStore()
-
 const router = useRouter()
+const toast = useToast()
 
 const { mutate } = useMutation({
   mutationKey: ['sign-out'],
@@ -54,6 +56,15 @@ const { isLogin, profile } = storeToRefs(authenticationStore)
 
 const searchKeyword = ref('')
 const searchByKeyword = () => {
+  if (searchKeyword.value === null || searchKeyword.value === '') {
+    toast.toast({
+      title: '검색어 입력 실패',
+      description: '검색어를 입력해주세요.',
+      duration: 2000,
+      variant: 'destructive'
+    })
+    return
+  }
   router.push({ name: 'search', query: { keyword: searchKeyword.value } })
 }
 </script>
@@ -66,11 +77,17 @@ const searchByKeyword = () => {
     <div class="flex items-center">
       <HomeNavigator />
     </div>
-    <div class="input-container">
-      <input type="text" placeholder="검색어를 입력하세요." v-model="searchKeyword" />
-      <button @click="searchByKeyword">🔍</button>
+    <div class="flex items-center justify-center">
+      <input
+        class="w-[300px] h-[40px] p-2 border-2 border-black rounded-lg"
+        type="text"
+        placeholder="검색어를 입력하세요."
+        v-model="searchKeyword"
+      />
+      <Search class="ml-2 cursor-pointer" @click="searchByKeyword" />
     </div>
-    <div class="flex items-center space-x-4">
+
+    <div class="flex items-center justify-between space-x-4">
       <nav class="hidden space-x-4 md:flex">
         <RouterLink
           v-for="(route, index) in ROUTES"

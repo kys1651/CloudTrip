@@ -6,7 +6,7 @@ import UserFooter from '@/components/user/UserFooter.vue'
 <template>
   <div className="container w-full mx-auto my-8 p-6 bg-white shadow rounded-lg">
     <UserBody />
-    <UserFooter />
+    <!-- <UserFooter /> -->
   </div>
 </template>
 

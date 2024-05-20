@@ -13,9 +13,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { toast } from '@/components/ui/toast'
+import Pagination from '../common/Pagination.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -24,10 +25,20 @@ const authentication = useAuthenticationStore()
 const addr = `http://localhost:8080/api/v1/user/list`
 const users = ref([])
 onMounted(() => {
-  axios.get(addr).then((response) => {
-    console.log(response)
-    users.value = response.data
-  })
+  axios
+    .get(addr)
+    .then((response) => {
+      console.log(response)
+      // ADMIN은 표시하지 X
+      users.value = response.data.filter((user) => user.roleType === 'USER')
+
+      if (!route.query.page) {
+        router.push({ name: 'adminUser', query: { page: 1 } })
+      }
+    })
+    .catch((error) => {
+      console.log('회원 조회 오류', error)
+    })
 })
 
 const updateAddr = `http://localhost:8080/api/v1/user/update/`
@@ -79,6 +90,32 @@ const searchUser = () => {
       console.log('특정 회원 조회 실패', error)
     })
 }
+
+// Paging
+watch(
+  () => route.query.page,
+  (newPage) => {
+    pageNumber.value = Number(newPage) || 1
+  }
+)
+
+const pageNumber = ref<number>(1)
+const postsPerPage = ref(10)
+
+const updateCurrentPage = (pageIdx: number) => {
+  router.push({ name: 'adminUser', query: { page: pageIdx } })
+}
+
+const displayedPosts = computed(() => {
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value
+  const endIndex = startIndex + postsPerPage.value
+  return users.value.slice(startIndex, endIndex)
+})
+
+const totalPages = computed(() => {
+  console.log(users.value.length + ' ' + postsPerPage.value)
+  return Math.ceil(users.value.length / postsPerPage.value)
+})
 </script>
 
 <template>
@@ -108,7 +145,7 @@ const searchUser = () => {
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="user in users" :key="user.userId">
+      <TableRow v-for="user in displayedPosts" :key="user.userId">
         <TableCell>
           <Checkbox id="task-8782" />
         </TableCell>
@@ -127,20 +164,28 @@ const searchUser = () => {
           <Button
             @click="changeStatus(user)"
             class="mx-2"
-            :class="user.locked ? 'activate-button' : 'deactivate-button'"
+            :class="user.locked ? 'deactivate-button' : 'activate-button'"
           >
-            {{ user.locked ? '활성화' : '비활성화' }}
+            {{ user.locked ? '비활성화' : '활성화' }}
           </Button>
           <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
       </TableRow>
     </TableBody>
   </Table>
+  <div class="w-full mt-6 flex justify-center">
+    <Pagination
+      @page-number="updateCurrentPage"
+      :total-page="totalPages"
+      :total-post="users.length"
+      :items-per-page="postsPerPage"
+    />
+  </div>
 </template>
 
 <style scoped>
 .deactivate-button {
-  background-color: rgb(248, 81, 81);
+  background-color: rgb(241, 111, 111);
   color: white;
   border-radius: 9999px; /* Fully rounded */
   padding: 0.5rem 1rem;

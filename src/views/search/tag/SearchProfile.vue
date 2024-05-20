@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import SocialCard from '@/components/social/SocialCard.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
@@ -14,16 +13,13 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import ReviewCard from '@/components/review/ReviewCard.vue'
+import SearchCard from '@/components/search/SearchCard.vue'
+import SearchHeader from '@/components/search/SearchHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
 
 const authentication = useAuthenticationStore()
-const { isLogin } = storeToRefs(authentication)
-
-const goSocialCreate = () => {
-  router.push({ name: 'social-create' })
-}
 
 const datas = ref([])
 const reviewLen = ref()
@@ -57,51 +53,45 @@ const isATagExists = (content: string) => {
 const goUserProfile = (user: Object) => {
   router.push({ name: 'userDetail', params: { userId: user.userId } })
 }
+
+// tag
+const goSearch = () => {
+  router.push({ name: 'search', query: { keyword: route.query.keyword } })
+}
+
+const goSearchReview = () => {
+  router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
+}
+
+const goSearchNotice = () => {
+  router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
+}
+
+const goSearchProfile = () => {
+  router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
+}
 </script>
 
 <template>
-  <div className="w-full px-10">
-    <div className="flex justify-between ">
-      <div className="flex space-x-2 text-sm">
-        <Badge variant="default">전체</Badge>
-        <Badge>여행 리뷰 {{ reviewLen }}</Badge>
-        <Badge>공지사항 {{ noticeLen }}</Badge>
-        <Badge>프로필 {{ userLen }}</Badge>
-      </div>
-    </div>
-    <div className="mt-4">
-      <h2 className="text-lg font-semibold">여행 리뷰</h2>
-      <div className="grid gap-6 mt-4">
-        <div className="grid grid-cols-3 gap-4">
-          <ReviewCard v-for="review in datas.reviews" :key="review.reviewId" :review="review" />
+  <div class="container justify-center flex flex-col my-6 items-start">
+    <SearchHeader />
+    <div className="w-full px-10">
+      <div className="flex justify-between mb-10">
+        <div className="flex space-x-2 text-sm">
+          <Badge class="badge" @click="goSearch" variant="default">전체</Badge>
+          <Badge class="badge" @click="goSearchReview">여행 리뷰 {{ reviewLen }}</Badge>
+          <Badge class="badge" @click="goSearchNotice">공지사항 {{ noticeLen }}</Badge>
+          <Badge class="badge bg-white text-black border-black" @click="goSearchProfile"
+            >프로필 {{ userLen }}</Badge
+          >
         </div>
       </div>
-      <div class="flex justify-end mt-5"></div>
-      <h2 className="text-lg font-semibold mt-10">공지사항</h2>
-      <div className="grid gap-6 mt-4">
-        <Accordion type="multiple" class="w-full" collapsible>
-          <AccordionItem
-            v-for="notice in datas.notices"
-            :key="notice.noticeId"
-            :value="notice.content"
-          >
-            <AccordionTrigger>📢 {{ notice.title }}</AccordionTrigger>
-            <AccordionContent>
-              <div class="flex justify-between items-center">
-                <p
-                  class="flex-grow"
-                  :class="{ aTag: isATagExists(notice.content) }"
-                  v-html="notice.content"
-                ></p>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+      <hr />
+      <div className="mt-4"></div>
       <h2 className="text-lg font-semibold mt-10">프로필</h2>
       <div className="grid justify-center mt-4">
         <div className="grid grid-cols-3 gap-4 justify-center">
-          <SocialCard
+          <SearchCard
             @click="goUserProfile(user)"
             :user-info="user"
             v-for="user in datas.users"
@@ -114,7 +104,9 @@ const goUserProfile = (user: Object) => {
 </template>
 
 <style scoped>
-Badge {
-  height: 280px;
+.badge {
+  width: 100px;
+  height: 40px;
+  justify-content: center;
 }
 </style>
