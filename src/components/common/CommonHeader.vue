@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { signOutRequest } from '@/api/auth'
-import HomeNavigator from '@/components/common/HomeNavigator.vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { signOutRequest } from "@/api/auth";
+import HomeNavigator from "@/components/common/HomeNavigator.vue";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,53 +9,57 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { useMutation } from '@tanstack/vue-query'
-import { LogOut, Settings, User } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-import { RouterLink, useRouter } from 'vue-router'
-import { ref } from 'vue'
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuthenticationStore } from "@/stores/authentication";
+import { useMutation } from "@tanstack/vue-query";
+import { LogOut, Settings, User } from "lucide-vue-next";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
-const authentication = useAuthenticationStore()
+const authentication = useAuthenticationStore();
 
-const router = useRouter()
+const router = useRouter();
 
 const { mutate } = useMutation({
-  mutationKey: ['sign-out'],
+  mutationKey: ["sign-out"],
   mutationFn: signOutRequest,
   onSuccess: () => {
-    authentication.clearAuthentication()
-    sessionStorage.removeItem('accessToken')
-    sessionStorage.removeItem('refreshToken')
-    router.replace('/')
-  }
-})
+    authentication.clearAuthentication();
+    router.replace("/");
+  },
+});
 
-const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'planning']
+const hiddenRoute = [
+  "sign-in",
+  "sign-up",
+  "oauth2-redirect",
+  "confirm-email",
+  "schedule-detail",
+];
 
 const ROUTES: { pathname: string; name: string }[] = [
   {
-    pathname: 'notice',
-    name: '공지사항'
+    pathname: "notice",
+    name: "공지사항",
   },
   {
-    pathname: 'trip',
-    name: '여행지 추천'
+    pathname: "schedule",
+    name: "여행지 추천",
   },
   {
-    pathname: 'review',
-    name: '여행지 후기'
-  }
-]
-const authenticationStore = useAuthenticationStore()
-const { isLogin, profile } = storeToRefs(authenticationStore)
+    pathname: "review",
+    name: "여행지 후기",
+  },
+];
+const authenticationStore = useAuthenticationStore();
+const { isLogin, profile } = storeToRefs(authenticationStore);
 
-const searchKeyword = ref('')
+const searchKeyword = ref("");
 const searchByKeyword = () => {
-  router.push({ name: 'search', query: { keyword: searchKeyword.value } })
-}
+  router.push({ name: "search", query: { keyword: searchKeyword.value } });
+};
 </script>
 
 <template>
@@ -119,7 +123,7 @@ const searchByKeyword = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <LogOut class="mr-2 h-4 w-4" />
-            <span @click="mutate">Log out</span>
+            <span @click="mutate()">Log out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -144,7 +148,7 @@ const searchByKeyword = () => {
   position: relative;
   display: inline-block;
 }
-.input-container input[type='text'] {
+.input-container input[type="text"] {
   padding: 10px;
   border: 2px solid black;
   border-radius: 10px;

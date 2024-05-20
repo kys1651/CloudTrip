@@ -1,22 +1,29 @@
+import client, { type BaseResponse } from '@/api/client'
+import { useAuthenticationStore } from '@/stores/authentication'
 import type {
-  AUthentication,
-  ChangePwForm,
+  Authentication,
   IMyPage,
   Profile,
   SimpleProfile
 } from '@/types/user.type'
-import client, { type BaseResponse } from '@/api/client'
-import { useAuthenticationStore } from '@/stores/authentication'
 
 export const userDataRequest = async () => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<AUthentication>>(`/user/me`)
+  } = await client.get<BaseResponse<Authentication>>(`/user/me`)
   if (!isSuccess) throw new Error(message)
   const store = useAuthenticationStore()
   if (data.isLogin) {
     store.updateProfile(data.profile!!)
   }
+  return data
+}
+
+export const userDataByUserIdRequest = async (userId: number): Promise<Profile> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<Profile>>(`/user/${userId}`)
+  if (!isSuccess) throw new Error(message)
   return data
 }
 

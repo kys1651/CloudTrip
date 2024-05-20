@@ -1,9 +1,8 @@
-import { type MobilityResponse } from '@/api/trip'
+import { type DirectionResponse, type MobilityResponse } from '@/api/trip'
 import { calculateDistance, calculateSum, type Point } from '@/lib/distance'
-import type { SearchTrip, SearchTripWithDistance } from '@/types/trip.type'
-import { CalendarDate, getLocalTimeZone, today, type DateValue } from '@internationalized/date'
+import type { IVehicle } from '@/types/schedule.type'
+import type { SearchTrip } from '@/types/trip.type'
 import { defineStore } from 'pinia'
-import type { DateRange } from 'radix-vue'
 import { computed, ref } from 'vue'
 
 export const COLORS = [
@@ -16,40 +15,239 @@ export const COLORS = [
   'bg-pink-300'
 ]
 
-export const TEXT_COLORS = [
-    'text-blue-300',
-    'text-green-300',
-    'text-yellow-300',
-    'text-red-300',
-    'text-indigo-300',
-    'text-purple-300',
-    'text-pink-300'
+export const BORDER_COLORS = [
+  'border-blue-300',
+  'border-green-300',
+  'border-yellow-300',
+  'border-red-300',
+  'border-indigo-300',
+  'border-purple-300',
+  'border-pink-300'
 ]
+
+export const TEXT_COLORS = [
+  'text-blue-300',
+  'text-green-300',
+  'text-yellow-300',
+  'text-red-300',
+  'text-indigo-300',
+  'text-purple-300',
+  'text-pink-300'
+]
+
+export interface ITripPlace {
+  tourId: number
+  latitude: number
+  longitude: number
+  name: string
+  address: string
+  backgroundImage?: string
+  room: boolean
+}
 
 interface DirectionDictionary {
   [key: string]: MobilityResponse
 }
 
+export interface ITripVehicle {
+  fromTourId: number
+  toTourId?: number
+  name: string
+  vehicleType: string
+  vehicleId?: number
+}
+
+interface TripVehicleDictionary {
+  [key: string]: IVehicle
+}
+
 export const useTripPlanStore = defineStore('trip-plan', () => {
-  const pickedTrips = ref<SearchTrip[][]>([[], [], []])
-  const range = ref<DateRange>({
-    start: undefined,
-    end: undefined
+  const trips = ref<ITripPlace[][]>([])
+  const tripVehicles = ref<IVehicle[]>([])
+
+  const tripVehicleDictionary = computed<TripVehicleDictionary>(() => {
+    const dictionary: TripVehicleDictionary = {}
+    tripVehicles.value.forEach((vehicle) => {
+      dictionary[dictionaryKey(vehicle.day, vehicle.order)] = vehicle
+    })
+    return dictionary
   })
-  const limit = ref(today(getLocalTimeZone()).add({ years: 1 }))
-  const staies = ref<SearchTripWithDistance[] | undefined[]>([])
+
+  const tripVehicleList = computed<IVehicle[][]>(() => {
+    console.log(trips.value.map((dayTrips, day) => {
+      return dayTrips.map((_, index) => tripVehicleDictionary.value[dictionaryKey(day, index)])
+    }))
+    return trips.value.map((dayTrips, day) => {
+      return dayTrips.map((_, index) => tripVehicleDictionary.value[dictionaryKey(day, index)])
+    })
+  })
+
+  const dictionaryKey = (day: number, order: number) => {
+    return day + ":" + order;
+  }
+
+  const updateVehicles = () => {
+    const newTripVehicles: IVehicle[] = []
+    trips.value.forEach((dayTrips, day) => {
+      [...dayTrips].sort((prev, next) => Number(prev.room) - Number(next.room)).forEach((trip, index) => {
+        const findVehicle = tripVehicles.value.find((find) => find.day === day && find.order === index && find.fromTourId === trip.tourId)
+        const newVehicle: IVehicle = {
+          fromTourId: trip.tourId,
+          name: trip.name,
+          toTourId: 0,
+          type: 'none',
+          day: day,
+          order: index
+        }
+
+        if (index !== dayTrips.length - 1) {
+          newVehicle.toTourId = dayTrips[index + 1].tourId
+        }
+
+        if (findVehicle) {
+          newVehicle.vehicleId = findVehicle.vehicleId
+          newVehicle.type = findVehicle.type
+        }
+
+        newTripVehicles.push(newVehicle)
+      })
+    })
+    tripVehicles.value = newTripVehicles
+  }
+
+  const initTripAndVehicle = (initTrips: ITripPlace[][], initVehicles:  IVehicle[]) => {
+    trips.value = [...initTrips]
+    tripVehicles.value = [...initVehicles]
+  }
+
+  const setTripVehicles = (day: number, index: number, vehicleType: string) => {
+    const tripVehicle = tripVehicleDictionary.value[dictionaryKey(day, index)]
+    if (!tripVehicle) return;
+    const vehicleIndex = tripVehicles.value.indexOf(tripVehicle)
+    const newVehicle = {...tripVehicle}
+    newVehicle.type = vehicleType
+    const fromTourId = newVehicle.fromTourId
+    const toTourId = newVehicle.toTourId
+    const vehicle = findVehicle(fromTourId, toTourId, vehicleType)
+    if (vehicle) {
+      newVehicle.vehicleId = vehicle.vehicleId
+    }
+    tripVehicles.value[vehicleIndex] = newVehicle
+  }
+
+  const findVehicle = (fromTourId: number, toTourId: number | undefined, vehicleType: string): DirectionResponse | undefined => {
+    const vehicle = vehicles.value[`${fromTourId}-${toTourId}`]
+    if (!vehicle) return
+    switch (vehicleType) {
+      case 'walk':
+        return vehicle.walk
+      case 'bike':
+        return vehicle.bike
+      case 'bus':
+        return vehicle.bus
+      case 'metro':
+        return vehicle.metro
+      case 'car':
+        return vehicle.car
+    }
+  }
+
+  const setDefaultTripVehicles = (vehicleType: string) => {
+    tripVehicles.value = tripVehicles.value.map((tripVehicle) => {
+      const newVehicle = {...tripVehicle}
+      newVehicle.type = vehicleType;
+      const fromTourId = newVehicle.fromTourId
+      const toTourId = newVehicle.toTourId
+      const vehicle = findVehicle(fromTourId, toTourId, vehicleType)
+      if (vehicle) {
+        newVehicle.vehicleId = vehicle.vehicleId
+      }
+      return newVehicle
+    })  
+    console.log(tripVehicles)
+  }
+
+  const distances = computed(() => {
+    return trips.value.map((dayTrips) => {
+      return {
+        count: dayTrips.length,
+        distance: calculateSum(
+          dayTrips.map((trip) => ({
+            latitude: trip.latitude,
+            longitude: trip.longitude,
+            tourId: trip.tourId
+          }))
+        )
+      }
+    })
+  })
+
+  const tripsExceptRooms = computed<ITripPlace[][]>(() => {
+    return trips.value.map((dayTrips) => {
+      return dayTrips.filter((trip) => !trip.room)
+    })
+  })
+
+  const rooms = computed<(ITripPlace | undefined)[]>(() => {
+    return trips.value.map((dayTrips) => {
+      return dayTrips.find((trip) => trip.room)
+    })
+  })
+
+  const removeRoom = (day: number) => {
+    trips.value[day] = trips.value[day].filter((trip) => !trip.room)
+  }
+
+  const setTripDay = (day: number) => {
+    if (trips.value.length !== day) {
+      trips.value = Array.from({ length: day }, () => [])
+    }
+  }
+
+  const addTrip = (day: number, trip: SearchTrip) => {
+    trips.value[day] = [
+      ...trips.value[day],
+      {
+        tourId: trip.tourId,
+        latitude: trip.latitude,
+        longitude: trip.longitude,
+        name: trip.name,
+        address: trip.address,
+        backgroundImage: trip.backgroundImage,
+        room: false
+      }
+    ]
+  }
+
+  const addRoom = (day: number, trip: SearchTrip) => {
+    trips.value[day] = [
+      ...trips.value[day],
+      {
+        tourId: trip.tourId,
+        latitude: trip.latitude,
+        longitude: trip.longitude,
+        name: trip.name,
+        address: trip.address,
+        backgroundImage: trip.backgroundImage,
+        room: true
+      }
+    ]
+  }
+
+  const exists = (tripId: number): boolean => {
+    return trips.value.flat().some((trip) => trip.tourId === tripId)
+  }
+
+  const removeTrip = (day: number, tourId: number) => {
+    trips.value[day] = trips.value[day].filter((trip) => trip.tourId !== tourId)
+  }
+
   const vehicles = ref<DirectionDictionary>({})
 
-  const isRangeSetted = computed<boolean>(
-    () => range.value.start !== undefined && range.value.end !== undefined
-  )
-
-  const tourIds = computed(() => pickedTrips.value.flat().map((trip) => trip.tourId))
-
   const coordinates = computed(() => {
-    return pickedTrips.value
-      .map((trips, index) => {
-        return trips.map((trip) => {
+    return tripsExceptRooms.value
+      .map((dayTrips, index) => {
+        return dayTrips.map((trip) => {
           return {
             day: index + 1,
             latitude: trip.latitude,
@@ -75,159 +273,67 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     vehicles.value[key] = mobility
   }
 
-  const tourSum = computed(() => {
-    return pickedTrips.value.map((trips, index) => {
-      if (index === 0) {
-        return [...trips, staies.value[index]]
-      }
-      return [staies.value[index - 1], ...trips, staies.value[index]]
-    })
-  })
-
-  const tourSumDistance = computed(() => {
-    return tourSum.value.map((trips) => {
-      return trips.filter((trip, index) => index !== 0).map((_, idx) => {
-        const prev = trips[idx]
-        const trip = trips[idx + 1]
-        
-        if (!prev || !trip) return { distance: 0, walk: 0, bike: 0, bus: undefined, metro: undefined, car: undefined }
-        const vehicle = vehicles.value[`${prev.tourId}-${trip.tourId}`]
-        if (!vehicle) return { distance: 0, walk: 0, bike: 0, bus: undefined, metro: undefined, car: undefined }
-        
-        return {
-          distance: vehicle.walk.distance,
-          walk: vehicle.walk.spentTime,
-          bike: vehicle.bike.spentTime,
-          bus: vehicle.bus,
-          metro: vehicle.metro,
-          car: vehicle.car,
-        }
-      })
-    })
-  })
-
-  const dailyTrip = computed<
-    {
-      count: number
-      distance: number
-    }[]
-  >(() => {
-    return pickedTrips.value.map((trips) => ({
-      count: trips.length,
-      distance: calculateSum(
-        trips.map((trip) => ({
-          latitude: trip.latitude,
-          longitude: trip.longitude,
-          tourId: trip.tourId
-        }))
-      )
-    }))
-  })
-
-  const setStaies = (day: number, stay: SearchTripWithDistance | undefined) => {
-    staies.value[day - 1] = stay
-  }
-
-  // 여행 일정 설정 부분
-  const setRange = (dateRange: DateRange) => {
-    if (!dateRange.start || !dateRange.end) return
-    range.value = dateRange
-    const day = dateRange.end!!.compare(dateRange.start!!) + 1
-    pickedTrips.value = Array.from({ length: day }, () => [])
-    staies.value = Array.from({ length: day }, () => undefined)
-  }
-
-  const changeRange = (date: DateValue | undefined) => {
-    if (!date) return
-    const { year, month, day } = date
-    const newDate = new CalendarDate(year, month, day)
-    range.value.start = newDate
-    limit.value = newDate.add({ days: 4 })
-  }
-
-  const disabledDate = ({ year, month, day }: { year: number; month: number; day: number }) => {
-    const startDate = range.value.start ?? today(getLocalTimeZone())
-    const date = new CalendarDate(year, month, day)
-    return !(startDate <= date && date <= limit.value)
-  }
-
-  const resetRange = () => {
-    range.value = {
-      start: undefined,
-      end: undefined
-    }
-    limit.value = today(getLocalTimeZone()).add({ years: 1 })
-  }
-
-  const exists = (tripId: number): boolean => {
-    return tourIds.value.includes(tripId)
-  }
-
-  const addTrip = (day: number, trip: SearchTrip) => {
-    const prev = pickedTrips.value[day - 1]
-    pickedTrips.value[day - 1] = [...prev, trip]
-  }
-
-  const removeTrip = (day: number, tourId: number) => {
-    pickedTrips.value[day] = pickedTrips.value[day].filter((trip) => trip.tourId !== tourId)
-  }
 
   const calculateOptimalRoute = () => {
-    const trips = pickedTrips.value.flat()
-    const tripDictionary = trips.reduce((acc, trip) => {
+    const newTrips = trips.value.flat()
+    const tripDictionary = newTrips.reduce(
+      (acc, trip) => {
         acc[trip.tourId] = trip
         return acc
-    }, {} as Record<number, SearchTrip>)
-    const numRoutes = pickedTrips.value.length
+      },
+      {} as Record<number, ITripPlace>
+    )
+    const numRoutes = trips.value.length
     const routes: Point[][] = Array(numRoutes).fill([])
 
     for (let i = 0; i < numRoutes; i++) {
-      if (trips.length === 0) break
+      if (newTrips.length === 0) break
 
-      const route: Point[] = [trips[0]]
-      trips.splice(0, 1)
+      const route: Point[] = [newTrips[0]]
+      newTrips.splice(0, 1)
 
-      while (route.length < trips.length / numRoutes) {
+      while (route.length < newTrips.length / numRoutes) {
         let closestTripIndex = 0
-        let closestTripDistance = calculateDistance(route[route.length - 1], trips[0])
+        let closestTripDistance = calculateDistance(route[route.length - 1], newTrips[0])
 
-        for (let i = 1; i < trips.length; i++) {
-          const distance = calculateDistance(route[route.length - 1], trips[i])
+        for (let i = 1; i < newTrips.length; i++) {
+          const distance = calculateDistance(route[route.length - 1], newTrips[i])
           if (distance < closestTripDistance) {
             closestTripDistance = distance
             closestTripIndex = i
           }
         }
 
-        route.push(trips[closestTripIndex])
-        trips.splice(closestTripIndex, 1)
+        route.push(newTrips[closestTripIndex])
+        newTrips.splice(closestTripIndex, 1)
       }
 
       routes[i] = route
     }
-    const newTrips = routes.map((route) => route.map((point) => tripDictionary[point.tourId]))
-    pickedTrips.value = newTrips
+    trips.value = routes.map((route) => route.map((point) => tripDictionary[point.tourId]))
   }
 
   return {
-    pickedTrips,
+    trips,
     coordinates,
-    dailyTrip,
-    isRangeSetted,
-    range,
+    distances,
+    rooms,
     centercoordinate,
-    staies,
-    tourSum,
-    tourSumDistance,
+    tripVehicles,
+    tripsExceptRooms,
+    tripVehicleList,
+    initTripAndVehicle,
+    setTripDay,
     addVehicles,
-    setRange,
     addTrip,
+    addRoom,
+    updateVehicles,
+    findVehicle,
     removeTrip,
     exists,
-    changeRange,
-    resetRange,
-    disabledDate,
+    removeRoom,
+    setTripVehicles,
+    setDefaultTripVehicles,
     calculateOptimalRoute,
-    setStaies
   }
 })

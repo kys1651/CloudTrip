@@ -122,9 +122,14 @@ const router = createRouter({
       ]
     },
     {
-      path: '/planning/:cityId',
-      name: 'planning',
-      component: () => import('@/views/PlanningView.vue')
+      path: '/schedule',
+      name: 'schedule',
+      component: () => import('@/views/schedule/ScheduleView.vue')
+    },
+    {
+      path: '/schedule/:scheduleId',
+      name: 'schedule-detail',
+      component: () => import('@/views/schedule/ScheduleDetailView.vue')
     },
     {
       path: '/mypage',

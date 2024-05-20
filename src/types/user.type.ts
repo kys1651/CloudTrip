@@ -1,5 +1,5 @@
-import { Profile } from '@/types/user.type'
-export interface AUthentication {
+
+export interface Authentication {
   isLogin: boolean
   profile?: Profile
 }
