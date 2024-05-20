@@ -108,9 +108,7 @@ const pushRouter = () => {
       </div>
       <!-- 아이콘 출력 종료 -->
       <div class="flex flex-col cursor-pointer" @click="pushRouter">
-        <p class="text-sm text-black-600">
-          {{ review.content }}
-        </p>
+        <p class="text-sm text-black-600">{{ review.content }}</p>
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
           <div class="flex flex-row">
             <MapPin :size="14" />
