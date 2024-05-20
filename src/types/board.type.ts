@@ -17,11 +17,14 @@ export interface IReview {
     profileImage: string
   }
   isLiked: boolean
+  likeCount: number
   images: string[]
   content: string
   tourId: number
+  tourName: string
   address: string
   createdAt: number
+  rating: number
 }
 
 export interface ReviewForm {
@@ -74,15 +77,18 @@ export interface ReviewForm {
   tourId: number
   content: string
   images: File[]
+  rating: number
 }
 
 export interface ReviewDetail {
   reviewId: number
   content: string
+  tourName: string
   tourId: number
   createdAt: number
   updatedAt: number
   likeCount: number
+  rating: number
   address: string
   isLiked: boolean
   images: string[]

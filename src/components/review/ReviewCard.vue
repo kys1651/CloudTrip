@@ -8,34 +8,24 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import ReviewDropdownMenu from './ReviewDropdownMenu.vue'
 import { useReview } from '@/stores/review'
 import type { IReview } from '@/types/board.type'
-import { useMutation } from '@tanstack/vue-query'
-import {
-  Bookmark,
-  Ellipsis,
-  FileWarning,
-  Heart,
-  MapPin,
-  MessageCircle,
-  Send,
-  Star
-} from 'lucide-vue-next'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { Heart, MapPin, MessageCircle, Send } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonAvatar from '../common/CommonAvatar.vue'
 import Carousel from '../ui/carousel/Carousel.vue'
-
+import IconReviewRating from '../icons/IconReviewRating.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 const props = defineProps<{
   review: IReview
 }>()
+const queryClient = useQueryClient()
+const authenticationStore = useAuthenticationStore()
+const { profile } = storeToRefs(authenticationStore)
 
 const reviewStore = useReview()
 
@@ -51,6 +41,9 @@ const { mutate } = useMutation({
       : reviewLikeRequest(props.review.reviewId),
   onSuccess: () => {
     isLiked.value = !isLiked.value
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', 'like', props.review.reviewId]
+    })
   }
 })
 
@@ -70,28 +63,7 @@ const pushRouter = () => {
         <CommonAvatar :src="review.user.profileImage" :username="review.user.nickname" />
         <span>{{ review.user.nickname }}</span>
       </a>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button class="ml-auto w-8 h-8 rounded-full" size="icon" variant="ghost">
-            <Ellipsis class="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <Bookmark class="w-4 h-4 mr-2" />
-            Save
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Star class="w-4 h-4 mr-2" />
-            Add to favorites
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <FileWarning class="w-4 h-4 mr-2" />
-            Report
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
     </CardHeader>
 
     <CardContent class="p-0">
@@ -111,6 +83,7 @@ const pushRouter = () => {
       </Carousel>
     </CardContent>
     <CardFooter class="grid py-2 px-4">
+      <!-- 아이콘 출력 -->
       <div class="flex items-center w-full">
         <Button size="icon" variant="ghost" @click="mutate">
           <Heart v-if="isLiked" :size="20" fill="red" stroke="red" />
@@ -122,18 +95,26 @@ const pushRouter = () => {
         <Button size="icon" variant="ghost">
           <Send :size="20" />
         </Button>
-        <Button class="ml-auto" size="icon" variant="ghost">
-          <Bookmark :size="20" />
-        </Button>
+        <div class="flex items-center text-xs text-gray-500 ml-auto">
+          <IconReviewRating
+            :filled="true"
+            class="ml-2"
+            :stroke="'black'"
+            :stroke-width="0.8"
+            :size="20"
+          />
+          ({{ review.rating }})
+        </div>
       </div>
+      <!-- 아이콘 출력 종료 -->
       <div class="flex flex-col cursor-pointer" @click="pushRouter">
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-black-600">
           {{ review.content }}
         </p>
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
-          <div class="flex flex-row space-x-1">
+          <div class="flex flex-row">
             <MapPin :size="14" />
-            <span class="text-xs text-gray-500">{{ review.address }}</span>
+            <span class="text-xs text-gray-500"> {{ review.tourName }} - {{ review.address }}</span>
           </div>
           <span class="text-xs">{{ new Date(review.createdAt).toLocaleDateString() }}</span>
         </div>
@@ -141,3 +122,15 @@ const pushRouter = () => {
     </CardFooter>
   </Card>
 </template>
+
+<style scoped>
+p {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
+}
+</style>

@@ -1,21 +1,23 @@
-import type { IReview } from "@/types/board.type";
-import { defineStore } from "pinia";
-import { ref } from "vue";
+import type { IReview } from '@/types/board.type'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 const INIT_REVIEW: IReview = {
   reviewId: 0,
   user: {
     userId: 0,
-    nickname: "",
-    profileImage: "",
+    nickname: '',
+    profileImage: ''
   },
   isLiked: false,
   images: [],
-  content: "",
+  content: '',
+  tourName: '',
   tourId: 0,
-  address: "",
+  address: '',
   createdAt: 0,
-};
+  rating: 0
+}
 
 export const useReview = defineStore('review', () => {
   const review = ref<IReview>(INIT_REVIEW)
