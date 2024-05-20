@@ -14,6 +14,7 @@ export const reviewWriteRequest = async (review: ReviewForm) => {
   } = await client.post<BaseResponse<void>>(`/review`, review)
   if (!isSuccess) throw new Error(message)
 }
+
 export const reviewsRequest = async ({
   pageParam = 0
 }: {
