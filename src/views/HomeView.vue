@@ -6,7 +6,10 @@ import TripCard from '@/components/card/TripCard.vue'
 import { useToast } from '@/components/ui/toast'
 import type { MetricProps } from '@/types/trip.type'
 import { useQuery } from '@tanstack/vue-query'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { timeStamp } from 'console'
+import ToastProvider from '@/components/ui/toast/ToastProvider.vue'
 
 const metrics = ref<MetricProps[]>(
   [1, 2, 3, 4, 5, 6, 7, 8].map(() => ({
@@ -14,6 +17,44 @@ const metrics = ref<MetricProps[]>(
     count: Math.floor(Math.random() * 100000)
   }))
 )
+
+const homeData = ref({
+  numberData: [{
+    reviewCount: Number,
+    noticeCount: Number,
+    usersCount: Number,
+    tourCount: Number,
+    scheduleCount: Number,
+  }],
+  topTours: [{
+    tourId: Number,
+    name: String,
+    description: String,
+    cityName: String,
+    townName: String,
+    rating: Number,
+    backgroundImage: String,
+  }],
+  topReviews: [{
+    reviewId: Number,
+    content: String,
+    createdAt: new Date(),
+    name: String,
+    image: String,
+    likeCount: Number,
+  }] 
+})
+const addr = `http://localhost:8080/api/v1/home`
+onMounted(() => {
+  axios.get(addr)
+  .then((response) => {
+    console.log(response)
+    homeData.value = response.data
+  })
+  .catch((error) => {
+    console.log("데이터 불러오기 실패", error)
+  })
+})
 </script>
 
 <template>
@@ -103,33 +144,12 @@ const metrics = ref<MetricProps[]>(
             </p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TripCard
-              :name="'Tokyo, Japan'"
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :description="'The Neon Metropolis, a vibrant city that blends ancient traditions with cutting-edge technology.'"
-              :rating="4"
-              :location="'Asia'"
-            ></TripCard>
-            <TripCard
-              :name="'Tokyo, Japan'"
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :description="'The Neon Metropolis, a vibrant city that blends asb ancient traditions with cutting-edge technology.'"
-              :rating="4"
-              :location="'Asia'"
-            ></TripCard>
-            <TripCard
-              :name="'Tokyo, Japan'"
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :description="'The Neon Metropolis, a vibrant city that blends ancient traditions with cutting-edge technology.'"
-              :rating="4"
-              :location="'Asia'"
-            ></TripCard>
-            <TripCard
-              :name="'Tokyo, Japan'"
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :description="'The Neon Metropolis, a vibrant city that blends ancient traditions with cutting-edge technology.'"
-              :rating="4"
-              :location="'Asia'"
+            <TripCard v-for="topTour in homeData.topTours" :key="topTour.tourId"
+              :name='topTour.name'
+              :backgroundImage=topTour.backgroundImage
+              :description=topTour.description
+              :rating=topTour.rating
+              :location="topTour.cityName + ' ' + topTour.townName"
             ></TripCard>
           </div>
         </div>
@@ -151,33 +171,12 @@ const metrics = ref<MetricProps[]>(
             </p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <PostingCard
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :name="'The Ultimate Guide to Sustainable Travel'"
-              :description="'Learn how to minimize your environmental impact while exploring the world, from choosing eco-friendly accommodations to reducing your carbon footprint.'"
-              :createdAt="new Date()"
-              :views="234"
-            ></PostingCard>
-            <PostingCard
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :name="'The Ultimate Guide to Sustainable Travel'"
-              :description="'Learn how to minimize your environmental impact while exploring the world, from choosing eco-friendly accommodations to reducing your carbon footprint.'"
-              :createdAt="new Date()"
-              :views="234"
-            ></PostingCard>
-            <PostingCard
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :name="'The Ultimate Guide to Sustainable Travel'"
-              :description="'Learn how to minimize your environmental impact while exploring the world, from choosing eco-friendly accommodations to reducing your carbon footprint.'"
-              :createdAt="new Date()"
-              :views="234"
-            ></PostingCard>
-            <PostingCard
-              :backgroundImage="'https://generated.vusercontent.net/placeholder.svg'"
-              :name="'The Ultimate Guide to Sustainable Travel'"
-              :description="'Learn how to minimize your environmental impact while exploring the world, from choosing eco-friendly accommodations to reducing your carbon footprint.'"
-              :createdAt="new Date()"
-              :views="234"
+            <PostingCard v-for="topReview in homeData.topReviews" :key="topReview.reviewId"
+              :backgroundImage="topReview.image"
+              :name="topReview.name"
+              :description="topReview.content"
+              :createdAt="new Date(topReview.createdAt)"
+              :views="topReview.likeCount"
             ></PostingCard>
           </div>
         </div>

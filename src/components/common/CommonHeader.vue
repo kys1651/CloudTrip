@@ -78,8 +78,9 @@ const searchByKeyword = () => {
       <HomeNavigator />
     </div>
     <div class="flex items-center justify-center">
+
       <input
-        class="w-[300px] h-[40px] p-2 border-2 border-black rounded-lg"
+        class="w-[500px] h-[40px] p-2 border-2 border-black rounded-lg"
         type="text"
         placeholder="검색어를 입력하세요."
         v-model="searchKeyword"
