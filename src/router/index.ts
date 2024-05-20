@@ -55,7 +55,7 @@ const router = createRouter({
       component: () => import('@/views/reviews/ReviewCreateView.vue')
     },
     {
-      path: '/review/update',
+      path: '/review/update/:reviewId',
       name: 'review-update',
       component: () => import('@/views/reviews/ReviewUpdateView.vue')
     },
