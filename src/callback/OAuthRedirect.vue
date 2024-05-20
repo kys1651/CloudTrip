@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { useToast } from "@/components/ui/toast";
-import { useRoute, useRouter } from "vue-router";
+import { userDataRequest } from "@/api/user";
 import CircularLoading from "@/components/common/CircularLoading.vue";
+import { useToast } from "@/components/ui/toast";
+import { useAuthenticationStore } from "@/stores/authentication";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 if (route.query.access_token) {
-  sessionStorage.setItem("accessToken", route.query.access_token as string);
-  sessionStorage.setItem("refreshToken", route.query.refresh_token as string);
-  router.push({ name: "home" });
+  const { setAccessToken } = useAuthenticationStore();
+  setAccessToken(route.query.access_token as string);
+  userDataRequest().then(() => {
+    router.push({ name: "home" });
+  });
 } else {
   const isNew: boolean = JSON.parse(route.query.isNew as string);
 

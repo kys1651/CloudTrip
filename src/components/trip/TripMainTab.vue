@@ -12,7 +12,8 @@ import { Search } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
-  cityId: number
+  cityId: number,
+  multi: boolean
 }>()
 
 defineEmits(['nextStep'])
@@ -58,7 +59,7 @@ const changeCategory = (category: string) => {
 </script>
 
 <template>
-  <Tabs default-value="trip" class="w-[350px] flex-grow">
+  <Tabs default-value="trip" class="w-full flex-grow">
     <TabsList class="grid w-full grid-cols-2">
       <TabsTrigger value="trip"> 여행지 선택 </TabsTrigger>
       <TabsTrigger value="manage"> 여행지 관리 </TabsTrigger>
@@ -135,7 +136,7 @@ const changeCategory = (category: string) => {
       </div>
     </TabsContent>
     <TabsContent value="manage">
-      <TripManageBox @next-step="$emit('nextStep')" />
+      <TripManageBox :multi="multi" @next-step="$emit('nextStep')" />
     </TabsContent>
   </Tabs>
 </template>

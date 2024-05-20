@@ -61,13 +61,10 @@ instance.interceptors.response.use(
         data: {
           isSuccess,
           message,
-          data: { accessToken: newAccessToken, refreshToken }
+          data: { accessToken: newAccessToken }
         }
       } = await instance.post<BaseResponse<JwtToken>>(REFRESH_URI)
       if (!isSuccess) throw new Error(message)
-
-      sessionStorage.setItem('accessToken', newAccessToken)
-      sessionStorage.setItem('refreshToken', refreshToken)
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
       authentication.setAccessToken(newAccessToken)
