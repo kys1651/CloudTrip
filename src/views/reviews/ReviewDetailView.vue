@@ -8,8 +8,6 @@ import {
 } from '@/api/review'
 import IconReviewRating from '@/components/icons/IconReviewRating.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-// import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
-// import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
   CarouselContent,
@@ -130,7 +128,8 @@ const scrollToBottom = () => {
         <!-- 디테일 뷰 좌측 상단 -->
         <div>
           <MapPin class="w-4 h-4 mr-1 inline" />
-          <span>{{ review.tourName }} - {{ review.address }}</span>
+          <span>{{ review.tourName }}</span>
+          <span>{{ review.address }}</span>
         </div>
         <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
       </div>
@@ -224,7 +223,7 @@ const scrollToBottom = () => {
           :key="comment.commentId"
           :comment="comment"
           :reviewId="review.reviewId"
-        />바나나 킥 AND WAXING
+        />
         <div class="h-12"></div>
       </div>
       <!-- 댓글 출력 종료 -->
@@ -240,14 +239,14 @@ const scrollToBottom = () => {
             class="flex-1 w-full bg-transparent border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="댓글을 입력해주세요."
             v-model="comment"
-            @keyup.enter="onSubmit"
+            @keyup.enter.prevent.stop="onSubmit"
           />
           <span
-            @click="onSubmit"
+            @click.enter.prevent.stop="onSubmit"
             class="text-sm pr-2"
             :class="comment.length > 0 ? 'text-blue-500 font-bold cursor-pointer' : 'text-gray-400'"
-            >작성</span
-          >
+            >작성
+          </span>
         </div>
       </div>
     </div>

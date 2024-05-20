@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reviewCreateRequest, reviewRequest } from '@/api/review'
+import { reviewUpdateRequest, reviewRequest } from '@/api/review'
 import { reviewRecommendRequest } from '@/api/chat'
 import { searchTripRequest } from '@/api/trip'
 import Button from '@/components/ui/button/Button.vue'
@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/toast'
 import type { ReviewForm } from '@/types/board.type'
-import { useMutation, useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { Image, Locate, MapPin, WandSparkles } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
@@ -33,13 +33,24 @@ import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
 import CreateRating from '@/components/review/CreateRating.vue'
 
-// 이미지 관련 변수 선언
-const images = ref<File[]>([])
-const imageSrcs = ref<{ src: string; isNew: boolean }[]>([])
-const imageIndex = ref<number>(-1)
+const toast = useToast()
+const router = useRouter()
+const route = useRoute()
+const reviewId = route.params.reviewId
+const queryClient = useQueryClient()
 
-const image = computed(() => imageSrcs.value[imageIndex.value])
-const MAX_IMAGES = 5 // 업로드 가능한 최대 이미지 개수 설정
+// 폼 유효성 검사를 위한 schema 설정
+const formSchema = yup.object({
+  name: yup.string().required('방문한 주소를 적어주세요.'),
+  tourId: yup.number(),
+  content: yup.string().required('방문 후기를 작성해주세요.'),
+  rating: yup.number().required('별점을 입력해주세요').min(1, '별점을 입력해주세요.')
+})
+
+// useForm 설정
+const { handleSubmit, setFieldValue, values } = useForm<ReviewForm>({
+  validationSchema: formSchema
+})
 
 // 여행지 목록 변수 선언
 const tours = ref<
@@ -49,10 +60,6 @@ const tours = ref<
     address: string
   }[]
 >([])
-
-const toast = useToast()
-const router = useRouter()
-const route = useRoute()
 
 // 위치 검색 요청을 위한 mutation 설정
 const { mutate: searchLocation } = useMutation({
@@ -67,20 +74,12 @@ const { mutate: searchLocation } = useMutation({
   }
 })
 
-const reviewId = route.params.reviewId
-
-// 폼 유효성 검사를 위한 schema 설정
-const formSchema = yup.object({
-  name: yup.string().required('방문한 주소를 적어주세요.'),
-  tourId: yup.number(),
-  content: yup.string().required('방문 후기를 작성해주세요.'),
-  rating: yup.number().required('별점을 입력해주세요').min(1, '별점을 입력해주세요.')
-})
-
-// useForm 설정
-const { handleSubmit, setFieldValue, values, setValues } = useForm<ReviewForm>({
-  validationSchema: formSchema
-})
+const isDialogOpen = ref(false)
+const pickAddress = (name: string, tourId: number) => {
+  setFieldValue('name', name)
+  setFieldValue('tourId', tourId)
+  isDialogOpen.value = false
+}
 
 // 리뷰 데이터를 가져와서 각 필드에 초기값 설정
 const { data: review } = useQuery({
@@ -88,12 +87,28 @@ const { data: review } = useQuery({
   queryFn: () => reviewRequest(Number(reviewId))
 })
 
+// 이미지 관련 변수 선언
+const images = ref<File[]>([])
+const imageSrcs = ref<{ src: string; isNew: boolean }[]>([])
+const removeImagesSrc = ref<string[]>([])
+const imageIndex = ref<number>(-1)
+const image = computed(() => {
+  return imageIndex.value >= 0 && imageIndex.value < imageSrcs.value.length
+    ? imageSrcs.value[imageIndex.value].src
+    : ''
+})
+
+const MAX_IMAGES = 5 // 업로드 가능한 최대 이미지 개수 설정
+
+const currentRating = ref(Number(0))
 watch(review, (data) => {
   if (data) {
     setFieldValue('name', data.tourName)
     setFieldValue('tourId', data.tourId)
     setFieldValue('content', data.content)
     setFieldValue('rating', data.rating)
+    currentRating.value = data.rating
+
     imageSrcs.value = data.images.map((src) => ({ src, isNew: false }))
     if (data.images.length > 0) imageIndex.value = 0
   }
@@ -101,7 +116,7 @@ watch(review, (data) => {
 
 // 폼 제출 함수
 const onSubmit = handleSubmit(async (values) => {
-  if (images.value.length === 0) {
+  if (imageSrcs.value.length === 0) {
     toast.toast({
       title: '이미지를 추가해주세요.',
       description: '후기 작성을 위해 이미지를 추가해주세요.',
@@ -111,36 +126,37 @@ const onSubmit = handleSubmit(async (values) => {
   }
 
   // API 호출
-  const isSuccess = await reviewCreateRequest(values, images.value)
+  const isSuccess = await reviewUpdateRequest(
+    Number(reviewId),
+    values,
+    images.value,
+    removeImagesSrc.value
+  )
   if (isSuccess) {
-    router.push({ name: 'review' })
     toast.toast({
-      title: '후기 작성 성공',
-      description: '후기 작성이 완료되었습니다.',
+      title: '후기 업데이트',
+      description: '후기가 업데이트되었습니다.',
       variant: 'success'
     })
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', reviewId]
+    })
+    router.push({ name: 'review-detail', params: { id: reviewId } })
     return
   } else {
     toast.toast({
-      title: '후기 작성 실패',
-      description: '후기 작성에 실패했습니다. 다시 시도해주세요.',
+      title: '후기 업데이트 실패',
+      description: '후기 업데이트에 실패했습니다. 다시 시도해주세요',
       variant: 'destructive'
     })
   }
 })
 
-const isDialogOpen = ref(false)
-const pickAddress = (name: string, tourId: number) => {
-  setFieldValue('name', name)
-  setFieldValue('tourId', tourId)
-  isDialogOpen.value = false
-}
-
 // 이미지가 추가 된 경우 호출하는 메서드
 const changeImage = (event: Event) => {
   const files = (event.target as HTMLInputElement).files
   if (files && files.length > 0) {
-    if (images.value.length + files.length > MAX_IMAGES) {
+    if (imageSrcs.value.length + 1 > MAX_IMAGES) {
       toast.toast({
         title: '이미지 업로드 개수 제한',
         description: `최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다.`,
@@ -168,6 +184,8 @@ const removeImage = (index: number) => {
     if (imageIndexToRemove !== -1) {
       images.value.splice(imageIndexToRemove, 1)
     }
+  } else {
+    removeImagesSrc.value.push(imageSrcs.value[index].src)
   }
   imageSrcs.value.splice(index, 1)
   if (imageIndex.value >= imageSrcs.value.length) {
@@ -216,14 +234,17 @@ const initContent = () => {
   isRecommend.value = false
 }
 
-const currentRating = ref(0)
+const updateRating = (rating: number) => {
+  currentRating.value = rating
+  setFieldValue('rating', rating)
+}
 </script>
 
 <template>
   <form @submit.prevent="onSubmit" class="container flex flex-col py-10 space-y- w-1/2 space-y-4">
     <div class="flex flex-row justify-between">
-      <h2 class="text-2xl font-bold">여행 후기 작성</h2>
-      <Button class="w-24 h-10" variant="outline" type="submit">작성하기</Button>
+      <h2 class="text-2xl font-bold">여행 후기 수정</h2>
+      <Button class="w-24 h-10" variant="outline" type="submit">수정하기</Button>
     </div>
     <div class="flex flex-row space-x-4">
       <!-- 위치 선택 부분 -->
@@ -294,18 +315,23 @@ const currentRating = ref(0)
         <FormField v-slot="{ componentField }" name="rating">
           <FormItem>
             <FormControl>
-              <CreateRating v-model="currentRating" v-bind="componentField" />
+              <CreateRating
+                :rating="currentRating"
+                @update:rating="updateRating"
+                v-bind="componentField"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
       </div>
+      <!-- 별점 출력 종료 -->
     </div>
     <!-- 이미지 미리보기 -->
     <div class="border border-gray-400 flex flex-row items-center rounded-md px-4 py-2 h-96">
       <div
+        v-if="image && image.length != 0"
         class="w-full h-full justify-center bg-contain bg-center bg-no-repeat"
-        v-if="image"
         :style="{ backgroundImage: `url(${image})` }"
       />
     </div>
@@ -344,8 +370,9 @@ const currentRating = ref(0)
         >
           <img :src="imageObj.src" class="w-full h-full object-cover" />
           <button
+            type="button"
             class="absolute -top-2.5 -right-0.5 w-5 h-5 bg-black text-white border border-gray-300 flex items-center justify-center opacity-75 hover:opacity-100"
-            @click.stop="removeImage(index)"
+            @click="removeImage(index)"
           >
             <span class="sr-only">Remove image</span>
             &times;

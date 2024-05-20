@@ -180,7 +180,11 @@ const initContent = () => {
   isRecommend.value = false
 }
 
-const currentRating = ref(0)
+const currentRating = ref(Number(0))
+const updateRating = (rating: number) => {
+  currentRating.value = rating
+  setFieldValue('rating', rating)
+}
 </script>
 
 <template>
@@ -258,7 +262,11 @@ const currentRating = ref(0)
         <FormField v-slot="{ componentField }" name="rating">
           <FormItem>
             <FormControl>
-              <CreateRating v-model="currentRating" v-bind="componentField" />
+              <CreateRating
+                :rating="currentRating"
+                @update:rating="updateRating"
+                v-bind="componentField"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -82,6 +82,33 @@ export const reviewDeleteRequest = async (id: number) => {
   return true
 }
 
+export const reviewUpdateRequest = async (
+  reviewId: number,
+  review: ReviewForm,
+  images: File[],
+  removeImagesSrc: string[]
+) => {
+  const formData = new FormData()
+  images.forEach((image) => {
+    formData.append('images', image)
+  })
+  removeImagesSrc.forEach((image) => {
+    formData.append('removeImages', image)
+  })
+  formData.append('content', review.content)
+  formData.append('tourId', review.tourId.toString())
+  formData.append('rating', review.rating.toString())
+  const {
+    data: { isSuccess, message }
+  } = await client.patch<BaseResponse<void>>(`/review/${reviewId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (!isSuccess) throw new Error(message)
+  return isSuccess
+}
+
 export const reviewLikeRequest = async (id: number) => {
   const {
     data: { isSuccess, message }
