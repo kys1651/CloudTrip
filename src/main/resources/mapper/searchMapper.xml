@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.search.mapper.SearchMapper">
+    <resultMap id="simpleUser" type="com.ssafy.trip.domain.user.entity.SimpleUser">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="profile_image" property="profileImage"/>
+    </resultMap>
+    <resultMap id="reviewWithUser" type="com.ssafy.trip.domain.review.entity.ReviewWithUser">
+        <id column="review_id" property="reviewId"/>
+        <result column="is_liked" property="isLiked"/>
+        <result column="content" property="content"/>
+        <result column="tour_id" property="tourId"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="address" property="address"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="images" ofType="String" javaType="ArrayList">
+            <result column="image" property="imgUrl"/>
+        </collection>
+    </resultMap>
+
+    <!-- 여행 후기 조회   -->
+    <select id="searchReviewsByKeyword" resultMap="reviewWithUser">
+        SELECT R.review_id,
+            R.content,
+            R.tour_id,
+            R.created_at,
+            R.updated_at,
+            I.image,
+            R.like_count,
+            U.user_id,
+            U.nickname,
+            U.profile_image,
+            T.address,
+            IFNULL(RL.user_id = #{userId}, 0) AS is_liked
+        FROM review R
+        JOIN users U ON R.user_id = U.user_id
+        LEFT JOIN review_images I ON R.review_id = I.review_id
+        LEFT JOIN review_like RL ON R.review_id = RL.review_id AND RL.user_id = #{userId}
+        LEFT JOIN tour T ON R.tour_id = T.tour_id
+        WHERE (
+              R.content like concat('%', #{searchKeyword}, '%')
+              OR T.name like concat('%', #{searchKeyword}, '%')
+              OR T.address like concat('%', #{searchKeyword}, '%')
+        );
+    </select>
+
+    <!-- 공지사항 조회   -->
+    <select id="searchNoticesByKeyword">
+        SELECT *
+        FROM notices N
+        WHERE N.content like concat('%', #{searchkeyword}, '%')
+        OR N.title like concat('%', #{searchkeyword}, '%');
+    </select>
+
+    <!-- 유저 조회   -->
+    <select id="searchUsersByKeyword">
+        SELECT *
+        FROM users U
+        WHERE U.nickname like concat('%', #{searchkeyword}, '%')
+        OR U.username like concat('%', #{searchkeyword}, '%');
+    </select>
+</mapper>

@@ -74,7 +74,6 @@ public class AuthController {
         return SuccessResponse.empty();
     }
 
-
     /**
      * 로그아웃
      *

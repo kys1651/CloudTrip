@@ -1,20 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.trip.domain.user.mapper.UserMapper">
+    <select id="findAll">
+        SELECT *
+        FROM users;
+    </select>
+
+    <select id="findByKeyword">
+        SELECT *
+        FROM users
+        WHERE users.username like concat('%', #{keyword}, '%')
+           OR users.email like concat('%', #{keyword}, '%')
+           OR users.nickname like concat('%', #{keyword}, '%');
+    </select>
+
     <select id="findByUsername">
         SELECT *
         FROM users
         WHERE username = #{username};
     </select>
+
     <select id="findByEmail">
         SELECT *
         FROM users
         WHERE email = #{email};
     </select>
+
     <select id="existsByUsername" resultType="boolean">
         SELECT COUNT(*)
         FROM users
         WHERE username = #{username};
+    </select>
+
+    <select id="commentsByUserId">
+        SELECT c.comment_id, c.review_id, c.created_at, c.content, r.content as ReviewContent
+        FROM review_comment c
+                 JOIN users u ON c.user_id = u.user_id
+                 JOIN review r ON c.review_id = r.review_id
+        WHERE c.user_id = #{userId}
     </select>
 
     <insert id="save">
@@ -22,16 +45,92 @@
         VALUES (#{username}, #{email}, #{password}, #{nickname}, #{profileImage}, #{providerType}, #{roleType});
     </insert>
 
+    <select id="findById">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId};
+    </select>
+
     <update id="update">
         UPDATE users
-        SET username          = #{username},
-            email             = #{email},
-            password          = #{password},
-            nickname          = #{nickname},
-            profile_image     = #{profileImage},
-            provider_type     = #{providerType},
-            role_type         = #{roleType},
-            is_email_verified = #{isEmailVerified}
+        <set>
+            username = #{username},
+            email = #{email},
+            password = #{password},
+            nickname = #{nickname},
+            profile_image = #{profileImage},
+            provider_type = #{providerType},
+            role_type = #{roleType},
+            is_email_verified = #{isEmailVerified},
+            <!-- cityCode와 townCode가 제공되었는지 확인 -->
+            <if test="cityCode != 0">
+                city_code = #{cityCode},
+            </if>
+            <if test="townCode != 0">
+                town_code = #{townCode}
+            </if>
+        </set>
         WHERE user_id = #{userId};
     </update>
+
+    <update id="updateIsLocked">
+        UPDATE users
+        SET is_locked = !is_locked
+        WHERE user_id = #{userId};
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM users
+        WHERE user_id = #{userId}
+    </delete>
+
+
+    <resultMap id="simpleReview" type="com.ssafy.trip.domain.user.dto.UserData$SimpleReview">
+        <id column="review_id" property="reviewId"/>
+        <result column="content" property="content"/>
+        <result column="created_at" property="createdAt"/>
+        <collection property="images" ofType="String" javaType="ArrayList">
+            <result column="image" property="imgUrl"/>
+        </collection>
+    </resultMap>
+
+    <select id="getReviewsById" resultMap="simpleReview">
+        SELECT r.review_id,
+               r.content,
+               r.created_at,
+               i.image
+        FROM review r
+                 LEFT JOIN review_images i ON r.review_id = i.review_id
+                 JOIN users u ON r.user_id = u.user_id
+        WHERE u.user_id = #{userId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="getLikedReviewsById" resultMap="simpleReview">
+        SELECT r.review_id,
+               r.content,
+               r.created_at,
+               i.image
+        FROM review r
+                 JOIN review_like rl ON r.review_id = rl.review_id
+                 LEFT JOIN review_images i ON r.review_id = i.review_id
+                 JOIN users u ON r.user_id = u.user_id
+        WHERE rl.user_id = #{userId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!--    <select id="findById" >-->
+    <!--        SELECT-->
+    <!--            user_id,-->
+    <!--            email,-->
+    <!--            nickname,-->
+    <!--            profile_image,-->
+    <!--            IFNULL(c.name,'정보없음') as city,-->
+    <!--            IFNULL(t.name,'정보없음') as town-->
+    <!--        FROM users u-->
+    <!--                 LEFT JOIN town t ON u.town_code = t.town_code AND u.city_code = t.city_code-->
+    <!--                 LEFT JOIN city c ON t.city_code = c.city_code-->
+    <!--        WHERE user_id = ${userId}-->
+    <!--    </select>-->
 </mapper>

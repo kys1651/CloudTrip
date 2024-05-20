@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.schedule.mapper.ScheduleMapper">
+    <resultMap id="simpleUser" type="com.ssafy.trip.domain.user.entity.SimpleUser">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="profile_image" property="profileImage"/>
+    </resultMap>
+    <resultMap id="scheduleWithUser" type="com.ssafy.trip.domain.schedule.entity.ScheduleWithUser">
+        <id column="schedule_id" property="scheduleId"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="thumbnail_image" property="thumbnailImage"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="day" property="day"/>
+        <result column="is_multi" property="isMulti"/>
+        <result column="city_name" property="cityName"/>
+        <result column="is_private" property="isPrivate"/>
+        <result column="city_code" property="cityCode"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="usernames" ofType="String" javaType="ArrayList">
+            <result column="username" property="username"/>
+        </collection>
+    </resultMap>
+
+    <insert id="saveBulkScheduleTrip">
+        INSERT INTO schedule_trip (schedule_id, tour_id, day, `order`, is_room)
+        VALUES
+        <foreach collection="scheduleTrips" item="scheduleTrip" separator=",">
+            (#{scheduleTrip.scheduleId}, #{scheduleTrip.tourId}, #{scheduleTrip.day}, #{scheduleTrip.order},
+            #{scheduleTrip.room})
+        </foreach>
+    </insert>
+
+    <insert id="saveBulkScheduleVehicle">
+        INSERT INTO schedule_vehicle (schedule_id, vehicle_id, type, from_tour_id, to_tour_id, day, `order`)
+        VALUES
+        <foreach collection="scheduleVehicles" item="scheduleVehicle" separator=",">
+            (#{scheduleVehicle.scheduleId}, #{scheduleVehicle.vehicleId}, #{scheduleVehicle.type},
+            #{scheduleVehicle.fromTourId}, #{scheduleVehicle.toTourId}, #{scheduleVehicle.day},
+            #{scheduleVehicle.order})
+        </foreach>
+    </insert>
+
+    <select id="findById" resultMap="scheduleWithUser">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.password,
+               S.thumbnail_image,
+               S.start_date,
+               S.day,
+               S.end_date,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               SP.username,
+               U.nickname,
+               U.profile_image,
+               C.name AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+        WHERE S.schedule_id = #{scheduleId}
+    </select>
+
+    <select id="findAll" resultMap="scheduleWithUser">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.password,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               C.name AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+        WHERE is_private = FALSE
+          AND is_finished = TRUE
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO schedule (name, user_id, thumbnail_image, start_date, end_date, is_multi, is_private,
+                              city_code, day)
+        VALUES (#{name}, #{userId}, #{thumbnailImage}, #{startDate}, #{endDate}, #{isMulti}, #{isPrivate},
+                #{cityCode}, #{day})
+    </insert>
+    <insert id="addPrivilege">
+        INSERT INTO schedule_privilege (schedule_id, username)
+        VALUES (#{scheduleId}, #{username})
+    </insert>
+
+    <update id="finishSchedule">
+        UPDATE schedule
+        SET is_finished = TRUE
+        WHERE schedule_id = #{scheduleId}
+    </update>
+</mapper>

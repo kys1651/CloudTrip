@@ -15,6 +15,9 @@ public interface NoticeMapper {
     // 공지사항 단건 조회
     Optional<Notice> findNoticeById(Long noticeId);
 
+    // 특정 공지사항 조회
+    List<Notice> findNoticesByKeyword(String keyword);
+
     // 공지사항 등록
     void save(Notice notice);
 

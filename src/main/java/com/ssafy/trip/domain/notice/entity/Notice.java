@@ -1,10 +1,11 @@
 package com.ssafy.trip.domain.notice.entity;
 
+import lombok.Data;
 import lombok.Getter;
 
 import java.sql.Timestamp;
 
-@Getter
+@Data
 public class Notice {
     private Long noticeId;
     private String title;

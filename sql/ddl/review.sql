@@ -1,8 +1,9 @@
 # 리뷰 테이블
-# DROP table review_like;
-# DROP table review_comment;
-# DROP table review_img;
-# DROP table review;
+
+DROP table IF EXISTS review_like;
+DROP table IF EXISTS review_comment;
+DROP table IF EXISTS review_images;
+DROP table IF EXISTS review;
 CREATE TABLE IF NOT EXISTS review
 (
     review_id  INT PRIMARY KEY AUTO_INCREMENT,
@@ -12,6 +13,7 @@ CREATE TABLE IF NOT EXISTS review
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     like_count INT      DEFAULT 0,
+    rating     INT CHECK (rating BETWEEN 1 AND 5),
     CONSTRAINT foreign_key_review_author FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
     CONSTRAINT foreign_key_review_tour_id FOREIGN KEY (tour_id) REFERENCES tour (tour_id) ON DELETE CASCADE
 );

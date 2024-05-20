@@ -7,10 +7,13 @@ import java.util.Map;
 
 public class KakaoAttribute extends OAuth2Attribute {
     private final Map<String, Object> properties;
+    private final Map<String, Object> kakaoAccount;
 
     public KakaoAttribute(Map<String, Object> attributes) {
         super(attributes);
+        System.out.println(attributes);
         this.properties = (Map<String, Object>) attributes.get("properties");
+        this.kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
     }
 
     @Override
@@ -25,7 +28,7 @@ public class KakaoAttribute extends OAuth2Attribute {
 
     @Override
     public String getEmail() {
-        String email = (String) properties.get("email");
+        String email = (String) kakaoAccount.get("email");
         if (!StringUtils.hasText(email)) {
             return this.getName() + "@kakao.com";
         }

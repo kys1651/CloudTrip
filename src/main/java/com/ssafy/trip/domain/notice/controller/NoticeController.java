@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,10 +36,23 @@ public class NoticeController {
         return new ResponseEntity<>(noticeService.findNoticeById(noticeId), HttpStatus.OK);
     }
 
+    // 특정 공지사항 조회
+    @GetMapping("")
+    public ResponseEntity<List<Notice>> findNoticeByKeyword(@RequestParam String keyword) {
+        List<Notice> list = noticeService.findNoticesByKeyword(keyword);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
     // 공지사항 등록
     @PostMapping("/create")
-    public ResponseEntity<Void> save(@RequestBody Notice noticeDto) {
-        noticeService.save(noticeDto);
+    public ResponseEntity<Void> save(
+            Notice noticeDto,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images
+        ) {
+        System.out.println(noticeDto);
+        System.out.println(images);
+        
+        noticeService.save(noticeDto, images);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

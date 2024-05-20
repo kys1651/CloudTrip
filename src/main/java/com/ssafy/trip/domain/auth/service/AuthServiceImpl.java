@@ -69,7 +69,6 @@ public class AuthServiceImpl implements AuthService {
 
         // 비밀번호 암호화 추가
         signUp.setPassword(passwordEncoder.encode(signUp.getPassword()));
-
         // 이메일 인증 코드 전송
         if (authCacheRepository.existsConfirmKey(signUp.getEmail()))
             throw new CustomException(ErrorCode.ALREADY_EMAIL_SEND);
@@ -188,6 +187,4 @@ public class AuthServiceImpl implements AuthService {
     private boolean existsByUsername(String username) {
         return userMapper.existsByUsername(username);
     }
-
-
 }

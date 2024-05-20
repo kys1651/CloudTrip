@@ -27,6 +27,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        System.out.println(principal);
         String redirectUrl;
         if (principal.isEnabled()) {
             JwtToken token = jwtTokenService.generateTokenByOAuth2(principal);
