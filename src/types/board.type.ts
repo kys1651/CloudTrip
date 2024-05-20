@@ -17,6 +17,7 @@ export interface IReview {
     profileImage: string
   }
   isLiked: boolean
+  likeCount: number
   images: string[]
   content: string
   tourId: number

@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-start space-x-3">
     <div class="flex-shrink-0">
-      <div class="rounded-full border-2 border-gray-500 p-1" style="width: 60px; height: 60px">
+      <div class="rounded-full border-2 border-gray-500 p-1" style="width: 50px; height: 50px">
         <Bot class="w-10 h-10 text-gray-500" style="width: 100%; height: 100%" />
       </div>
     </div>

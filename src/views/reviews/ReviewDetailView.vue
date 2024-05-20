@@ -7,9 +7,9 @@ import {
   reviewRequest
 } from '@/api/review'
 import IconReviewRating from '@/components/icons/IconReviewRating.vue'
-import Avatar from '@/components/ui/avatar/Avatar.vue'
-import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
-import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+// import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
+// import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
   CarouselContent,
@@ -27,6 +27,8 @@ import { Heart, MapPin, Share } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
+import ReviewComment from '@/components/review/ReviewComment.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,7 +41,7 @@ const queryClient = useQueryClient()
 
 const comment = ref<string>('')
 
-const { data: review, isLoading } = useQuery({
+const { data: review } = useQuery({
   queryKey: ['reviews', reviewId],
   queryFn: () => reviewRequest(reviewId),
   initialData: {
@@ -79,10 +81,9 @@ const { mutate: mutateLike } = useMutation({
   mutationFn: () => (isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId)),
   onSuccess: () => {
     isLiked.value = !isLiked.value
-    review.value.likeCount += isLiked.value ? 1 : -1
-  },
-  onSettled: () => {
-    queryClient.invalidateQueries(['reviews', reviewId])
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', reviewId]
+    })
   }
 })
 
@@ -90,7 +91,9 @@ const { mutate: mutateComment } = useMutation({
   mutationKey: ['reviews', 'comments', reviewId],
   mutationFn: (content: string) => commentCreateRequest(reviewId, content),
   onSuccess: () => {
-    queryClient.invalidateQueries(['reviews', reviewId, 'comments'])
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', reviewId, 'comments']
+    })
     comment.value = ''
   }
 })
@@ -105,21 +108,19 @@ const onSubmit = () => {
   <!-- 전체 컨테이너 -->
   <div class="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto py-8 px-4">
     <div class="flex-1">
+      <!-- 디테일 뷰 좌측 부분 -->
       <div class="flex justify-between mb-4 text-sm text-gray-500 dark:text-gray-400">
-        <!-- 주소 및 위치 출력 -->
+        <!-- 디테일 뷰 좌측 상단 -->
         <div>
           <MapPin class="w-4 h-4 mr-1 inline" />
           <span>{{ review.tourName }} - {{ review.address }}</span>
         </div>
-        <div class="flex items-center">
-          <IconReviewRating :filled="true" />
-          ({{ review.rating }})
-        </div>
+        <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
       </div>
-      <!-- 디테일 뷰 좌측 부분 -->
-      <div class="grid gap-6">
+      <!-- 디테일 뷰 좌측 컨텐츠 부분 -->
+      <div class="grid gap-2">
         <!-- 사진 출력 -->
-        <Carousel class="w-full h-[70vh] m-auto flex justify-center flex-shrink">
+        <Carousel class="w-full h-[50vh] m-auto flex justify-center flex-shrink">
           <CarouselContent class="h-full">
             <CarouselItem
               v-for="(image, index) in review.images"
@@ -144,36 +145,48 @@ const onSubmit = () => {
             <div class="flex items-center">
               <Button size="icon" variant="ghost" @click="mutateLike">
                 <Heart v-if="isLiked" fill="red" stroke="red" :size="24" />
-                <Heart v-else :size="24" />
+                <Heart v-else :size="20" />
               </Button>
               <div v-if="review.likeCount != 0" class="ml-1 text-sm font-semibold">
                 ( {{ review.likeCount }} )
               </div>
             </div>
             <Button size="icon" variant="ghost">
-              <Share :size="24" />
+              <Share :size="20" />
               <span class="sr-only">Share</span>
             </Button>
+          </div>
+          <div class="flex items-center text-xs text-gray-500">
+            <IconReviewRating
+              :filled="true"
+              class="ml-2"
+              :stroke="'gray'"
+              :stroke-width="0.3"
+              :size="20"
+            />
+            ({{ review.rating }})
           </div>
         </div>
         <!-- 하단 컨텐츠 종료 -->
 
         <!-- 리뷰 내용 및 날짜 출력 -->
         <div class="relative ml-3">
-          <p class="text-lg mb-5">{{ review.content }}</p>
+          <p class="text-sm mb-5">{{ review.content }}</p>
           <div class="absolute bottom-0 right-0 text-sm text-gray-500 dark:text-gray-400 mt-4">
             {{ new Date(review.createdAt).toLocaleDateString() }}
           </div>
         </div>
       </div>
     </div>
+    <!-- 우측 컨텐츠 -->
     <div
       class="w-full md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden relative"
     >
-      <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+        <!-- 작성자 정보 출력 -->
         <div @click="router.push(`/user/${review.user.userId}`)" class="flex items-center gap-4">
           <Avatar class="w-10 h-10 border">
-            <AvatarImage alt="@shadcn" :src="review.user.profileImage" />
+            <AvatarImage :alt="review.user.nickname" :src="review.user.profileImage" />
             <AvatarFallback>{{ review.user.userId }}</AvatarFallback>
           </Avatar>
           <div>
@@ -181,30 +194,25 @@ const onSubmit = () => {
           </div>
         </div>
       </div>
+      <!-- 작성자 정보 출력 종료 -->
+      <div class="text-sm m-2 text-gray-500 dark:text-gray-400">댓글({{ comments.length }}개)</div>
+      <!-- 댓글 창 시작 -->
       <div
         class="px-4 py-2 max-h-[520px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"
       >
-        <div v-for="comment in comments" :key="comment.commentId">
-          <div class="flex items-center gap-1 pb-1">
-            <Avatar class="w-7 h-7 border" @click="router.push(`/user/${comment.user.userId}`)">
-              <AvatarImage alt="@shadcn" :src="comment.user.profileImage" />
-              <AvatarFallback>{{ comment.user.userId }}</AvatarFallback>
-            </Avatar>
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <h5 class="font-medium text-sm">{{ comment.user.nickname }}</h5>
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
-                  new Date(comment.createdAt).toLocaleDateString()
-                }}</span>
-              </div>
-            </div>
-          </div>
-          <p class="px-2 text-xs text-gray-400">{{ comment.content }}</p>
-        </div>
+        <!-- 댓글 출력 -->
+        <ReviewComment
+          v-for="comment in comments"
+          :key="comment.commentId"
+          :comment="comment"
+          :reviewId="review.reviewId"
+        />
+        <div class="h-12"></div>
       </div>
-      <div v-if="isLogin" class="absolute bottom-4 w-full">
+      <!-- 댓글 출력 종료 -->
+      <div v-if="isLogin" class="absolute bottom-0 w-full">
         <Separator class="w-full" />
-        <div class="flex pt-3 flex-row w-full space-x-2 h-10 items-center px-2">
+        <div class="flex flex-row w-full space-x-2 h-14 items-center px-2 bg-gray-100">
           <Avatar class="w-10 h-10 border">
             <AvatarImage alt="프로필 이미지" :src="profile?.profileImage!!" />
             <AvatarFallback>{{ profile?.id }}</AvatarFallback>
@@ -217,6 +225,7 @@ const onSubmit = () => {
             @keyup.enter="onSubmit"
           />
           <span
+            @click="onSubmit"
             class="text-sm pr-2"
             :class="comment.length > 0 ? 'text-blue-500 font-bold cursor-pointer' : 'text-gray-400'"
             >작성</span

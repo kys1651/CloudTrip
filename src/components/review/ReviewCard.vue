@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reviewDeleteRequest, reviewDisLikeRequest, reviewLikeRequest } from '@/api/review'
+import { reviewDisLikeRequest, reviewLikeRequest } from '@/api/review'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import {
@@ -8,11 +8,11 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel'
-import CardDropdownMenu from './CardDropdownMenu.vue'
+import ReviewDropdownMenu from './ReviewDropdownMenu.vue'
 import { useReview } from '@/stores/review'
 import type { IReview } from '@/types/board.type'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Bookmark, Heart, MapPin, MessageCircle, Send } from 'lucide-vue-next'
+import { Heart, MapPin, MessageCircle, Send } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonAvatar from '../common/CommonAvatar.vue'
@@ -20,7 +20,6 @@ import Carousel from '../ui/carousel/Carousel.vue'
 import IconReviewRating from '../icons/IconReviewRating.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
-import { toast } from '../ui/toast'
 const props = defineProps<{
   review: IReview
 }>()
@@ -42,33 +41,15 @@ const { mutate } = useMutation({
       : reviewLikeRequest(props.review.reviewId),
   onSuccess: () => {
     isLiked.value = !isLiked.value
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', 'like', props.review.reviewId]
+    })
   }
 })
 
 const pushRouter = () => {
   reviewStore.updateReview(props.review)
   router.push({ name: 'review-detail', params: { id: props.review.reviewId } })
-}
-
-const deleteReview = async () => {
-  if (!confirm('정말 여행지 후기를 삭제하시겠습니까? ')) {
-    return
-  }
-  const isSuccess = await reviewDeleteRequest(props.review.reviewId)
-  if (isSuccess) {
-    toast({
-      title: '여행지 후기 삭제',
-      description: '여행지 후기 삭제가 완료되었습니다.',
-      variant: 'success'
-    })
-    queryClient.invalidateQueries(['reviews'])
-  } else {
-    toast({
-      title: '여행지 후기 삭제',
-      description: '여행지 후기 삭제가 실패하였습니다. 잠시 후 다시 시도해주세요',
-      variant: 'destructive'
-    })
-  }
 }
 </script>
 
@@ -82,11 +63,7 @@ const deleteReview = async () => {
         <CommonAvatar :src="review.user.profileImage" :username="review.user.nickname" />
         <span>{{ review.user.nickname }}</span>
       </a>
-      <CardDropdownMenu
-        v-if="profile?.id !== review.user.userId"
-        @edit="console.log('hi')"
-        @delete="deleteReview"
-      />
+      <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
     </CardHeader>
 
     <CardContent class="p-0">
@@ -106,6 +83,7 @@ const deleteReview = async () => {
       </Carousel>
     </CardContent>
     <CardFooter class="grid py-2 px-4">
+      <!-- 아이콘 출력 -->
       <div class="flex items-center w-full">
         <Button size="icon" variant="ghost" @click="mutate">
           <Heart v-if="isLiked" :size="20" fill="red" stroke="red" />
@@ -117,7 +95,7 @@ const deleteReview = async () => {
         <Button size="icon" variant="ghost">
           <Send :size="20" />
         </Button>
-        <div class="flex items-center text-xs text-gray-500">
+        <div class="flex items-center text-xs text-gray-500 ml-auto">
           <IconReviewRating
             :filled="true"
             class="ml-2"
@@ -127,12 +105,10 @@ const deleteReview = async () => {
           />
           ({{ review.rating }})
         </div>
-        <Button class="ml-auto" size="icon" variant="ghost">
-          <Bookmark :size="20" />
-        </Button>
       </div>
+      <!-- 아이콘 출력 종료 -->
       <div class="flex flex-col cursor-pointer" @click="pushRouter">
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-black-600">
           {{ review.content }}
         </p>
         <div class="flex my-2 flex-row justify-between items-center text-gray-400">
@@ -146,3 +122,15 @@ const deleteReview = async () => {
     </CardFooter>
   </Card>
 </template>
+
+<style scoped>
+p {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
+}
+</style>

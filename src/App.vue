@@ -7,7 +7,7 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 import { storeToRefs } from 'pinia'
 import { RouterView } from 'vue-router'
 import { refreshRequest } from './api/auth'
-import Chatbot from './components/chat/ChatBot.vue'
+import ChatBot from './components/chat/Chatbot.vue'
 
 const authenticationStore = useAuthenticationStore()
 const { isLogin } = storeToRefs(authenticationStore)
@@ -35,5 +35,5 @@ if (!isLogin.value) {
   <RouterView />
   <Toaster />
   <VueQueryDevtools position="left" buttonPosition="bottom-left" />
-  <Chatbot v-if="isLogin" />
+  <ChatBot v-if="isLogin" />
 </template>

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { FormControl, FormItem, FormLabel, FormMessage, FormField } from '@/components/ui/form'
