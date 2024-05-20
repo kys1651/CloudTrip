@@ -8,9 +8,6 @@ const emit = defineEmits({
 })
 
 const pagingNum = ref()
-const setPage = (noticeLen: Number) => {
-  pagingNum.value = noticeLen
-}
 </script>
 
 <template>
