@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SearchHeader from '@/components/search/SearchHeader.vue'
 import SearchBody from '@/components/search/SearchBody.vue'
+import CommonFooter from '@/components/common/CommonFooter.vue'
 
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -16,4 +17,5 @@ watch(route, () => {
     <SearchHeader />
     <SearchBody />
   </div>
+  <CommonFooter />
 </template>

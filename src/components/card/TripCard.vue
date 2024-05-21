@@ -2,16 +2,13 @@
 import type { TripSummaryProps } from '@/types/trip.type'
 import IconLocation from '../icons/IconLocation.vue'
 import IconRating from '../icons/IconRating.vue'
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps<TripSummaryProps>()
 
 const shortDescription = computed(() => {
-  return props.description.length > 10
-    ? props.description.slice(0, 70) + '...'
-    : props.description
+  return props.description.length > 10 ? props.description.slice(0, 60) + '...' : props.description
 })
-
 </script>
 <template>
   <div
@@ -34,7 +31,7 @@ const shortDescription = computed(() => {
         <div class="flex flex-row items-center space-x-4">
           <div class="flex flex-row items-center space-x-1">
             <IconLocation />
-            <span class="text-sm text-gray-500 dark:text-gray-400 br-4">{{ location }}</span>
+            <span class="text-gray-500 dark:text-gray-400 br-4">{{ location }}</span>
           </div>
           <div class="flex flex-row items-center space-x-1">
             <IconRating />

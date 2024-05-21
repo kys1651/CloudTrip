@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { signOutRequest } from "@/api/auth";
-import HomeNavigator from "@/components/common/HomeNavigator.vue";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOutRequest } from '@/api/auth'
+import HomeNavigator from '@/components/common/HomeNavigator.vue'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,40 +25,34 @@ const router = useRouter()
 const toast = useToast()
 
 const { mutate } = useMutation({
-  mutationKey: ["sign-out"],
+  mutationKey: ['sign-out'],
   mutationFn: signOutRequest,
   onSuccess: () => {
-    authentication.clearAuthentication();
-    router.replace("/");
-  },
-});
+    authentication.clearAuthentication()
+    router.replace('/')
+  }
+})
 
-const hiddenRoute = [
-  "sign-in",
-  "sign-up",
-  "oauth2-redirect",
-  "confirm-email",
-  "schedule-detail",
-];
+const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'schedule-detail']
 
 const ROUTES: { pathname: string; name: string }[] = [
   {
-    pathname: "notice",
-    name: "공지사항",
+    pathname: 'notice',
+    name: '공지사항'
   },
   {
-    pathname: "schedule",
-    name: "여행지 추천",
+    pathname: 'schedule',
+    name: '여행지 추천'
   },
   {
-    pathname: "review",
-    name: "여행지 후기",
-  },
-];
-const authenticationStore = useAuthenticationStore();
-const { isLogin, profile } = storeToRefs(authenticationStore);
+    pathname: 'review',
+    name: '여행지 후기'
+  }
+]
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
 
-const searchKeyword = ref("");
+const searchKeyword = ref('')
 const searchByKeyword = () => {
   if (searchKeyword.value === null || searchKeyword.value === '') {
     toast.toast({
@@ -81,15 +75,14 @@ const searchByKeyword = () => {
     <div class="flex items-center">
       <HomeNavigator />
     </div>
-    <div class="flex items-center justify-center">
-
+    <div class="flex items-center justify-center flex-grow">
       <input
-        class="w-[500px] h-[40px] p-2 border-2 border-black rounded-lg"
+        class="w-[50%] h-[40px] p-2 border-2 border-black rounded-lg"
         type="text"
         placeholder="검색어를 입력하세요."
         v-model="searchKeyword"
       />
-      <Search class="ml-2 cursor-pointer" @click="searchByKeyword" />
+      <Search class="mx-2 cursor-pointer" @click="searchByKeyword" />
     </div>
 
     <div class="flex items-center justify-between space-x-4">
@@ -166,7 +159,7 @@ const searchByKeyword = () => {
   position: relative;
   display: inline-block;
 }
-.input-container input[type="text"] {
+.input-container input[type='text'] {
   padding: 10px;
   border: 2px solid black;
   border-radius: 10px;

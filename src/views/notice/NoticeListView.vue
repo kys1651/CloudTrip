@@ -42,7 +42,7 @@ onUpdated(() => {
 })
 
 const pageNumber = ref<number>(1)
-const postsPerPage = ref(10)
+const postsPerPage = ref(7)
 
 const updateCurrentPage = (pageIdx: number) => {
   router.push({ name: 'notice', query: { page: pageIdx } })
