@@ -30,9 +30,9 @@ const props = defineProps({
           <span className="text-sm text-gray-500">{{ userInfo.email }}</span>
         </div>
       </div>
-      <div className="mt-2 text-sm" @click="goSocialDetail">
+      <!-- <div className="mt-2 text-sm" @click="goSocialDetail">
         {{ userInfo.content }}
-      </div>
+      </div> -->
     </CardContent>
   </Card>
 </template>

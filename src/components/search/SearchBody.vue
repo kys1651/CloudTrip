@@ -143,7 +143,7 @@ const goSearchProfile = () => {
       </div>
       <h2 className="text-lg font-semibold mt-10 mb-10">프로필</h2>
       <div className="grid justify-center mt-4">
-        <div className="grid grid-cols-3 gap-4 justify-center">
+        <div className="grid grid-cols-3 gap-10 justify-center">
           <SearchCard
             @click="goUserProfile(user)"
             :user-info="user"
