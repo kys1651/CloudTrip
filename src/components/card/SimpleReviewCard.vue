@@ -7,14 +7,29 @@ import {
   CarouselPrevious
 } from '@/components/ui/carousel'
 import Carousel from '@/components/ui/carousel/Carousel.vue'
+import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
 import { useRouter } from 'vue-router'
-defineProps(['review'])
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
+const props = defineProps(['review'])
+console.log(props.review.userId)
 const router = useRouter()
 </script>
 
 <template>
   <Card class="flex flex-col h-full">
     <div>
+      <div class="flex justify-between">
+        <div></div>
+        <ReviewDropdownMenu
+          v-if="profile?.id === review.userId"
+          class="ml-auto p-2"
+          :reviewId="review.reviewId"
+        />
+      </div>
       <CardHeader>
         <Carousel>
           <CarouselContent class="h-48">

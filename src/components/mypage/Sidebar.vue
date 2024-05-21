@@ -13,7 +13,6 @@ interface MenuItem {
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)
 const route = useRoute()
-const router = useRouter()
 const curPath = ref(route.path)
 const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
   {

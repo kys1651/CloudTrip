@@ -35,6 +35,7 @@ export interface ReviewForm {
 
 export interface SumaryReview {
   reviewId: number
+  userId: number
   content: string
   createdAt: string
   images: string
