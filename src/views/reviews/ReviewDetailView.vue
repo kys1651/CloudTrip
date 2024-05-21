@@ -27,8 +27,8 @@ import { nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
 import ReviewComment from '@/components/review/ReviewComment.vue'
-import FollowButton from '@/components/common/FollowButton.vue'
 import { followRequest, unFollowRequest } from '@/api/user'
+import ReviewShare from '@/components/review/ReviewShare.vue'
 import { toast } from '@/components/ui/toast'
 
 const route = useRoute()
@@ -197,8 +197,7 @@ const scrollToBottom = () => {
               </div>
             </div>
             <Button size="icon" variant="ghost">
-              <Share :size="20" />
-              <span class="sr-only">Share</span>
+              <ReviewShare :review="review" />
             </Button>
           </div>
           <div class="flex items-center text-xs text-gray-500">

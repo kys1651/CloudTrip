@@ -22,6 +22,7 @@ import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import { followRequest, unFollowRequest } from '@/api/user'
 import { toast } from '@/components/ui/toast'
+import ReviewShare from '@/components/review/ReviewShare.vue'
 
 const props = defineProps<{
   review: IReview
@@ -126,7 +127,7 @@ const pushRouter = () => {
           <MessageCircle :size="20" />
         </Button>
         <Button size="icon" variant="ghost">
-          <Send :size="20" />
+          <ReviewShare :review="review" />
         </Button>
         <div class="flex items-center text-xs text-gray-500 ml-auto">
           <IconReviewRating
