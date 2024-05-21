@@ -13,15 +13,17 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
+import { getNoticeDetail, noticeDelete, noticeUpdate } from '@/api/notice'
+import { useToast } from "@/components/ui/toast";
+
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 
 const noticeId = route.params.noticeId
-const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`
 
 const notice = ref({
   title: '',
@@ -44,10 +46,9 @@ onMounted(() => {
     }
   })
 
-  axios
-    .get(addr)
-    .then((response) => {
-      notice.value = response.data
+  getNoticeDetail(noticeId.toString())
+    .then((data) => {
+      notice.value = data
       quill.root.innerHTML = notice.value.content
     })
     .catch((error) => {
@@ -88,15 +89,16 @@ const goDetail = () => {
   router.push({ name: 'notice-view' })
 }
 
-const updateAddr = `http://localhost:8080/api/v1/notice/modify/${noticeId}`
 const updateNotice = () => {
   notice.value.content = quill.root.innerHTML
-  axios
-    .put(updateAddr, {
-      title: notice.value.title,
-      content: notice.value.content
-    })
-    .then((response) => {
+  noticeUpdate(noticeId.toString(), notice.value)
+    .then(() => {
+      toast.toast({
+        title: "공지사항 수정 성공",
+        description: "공지사항 수정에 성공하였습니다.",
+        duration: 2000,
+        variant: "success",
+      });
       console.log('글 수정 성공')
       router.push({ name: 'notice-view' })
     })
@@ -107,12 +109,16 @@ const updateNotice = () => {
     })
 }
 
-const deleteAddr = `http://localhost:8080/api/v1/notice/delete/${noticeId}`
 const deleteNotice = () => {
-  axios
-    .delete(deleteAddr)
-    .then((response) => {
+  noticeDelete(noticeId.toString())
+    .then(() => {
       if (confirm('정말 삭제하시겠습니까?')) {
+        toast.toast({
+        title: "공지사항 삭제 성공",
+        description: "공지사항 삭제에 성공하였습니다.",
+        duration: 2000,
+        variant: "success",
+      });
         console.log('글 삭제 성공')
         router.push({ name: 'adminNotice' })
       }
@@ -147,12 +153,6 @@ const deleteNotice = () => {
             <div id="editor-container" class="h-[400px] mb-5">
               <div id="editor"></div>
             </div>
-            <!-- <Input
-              class="h-[150px]"
-              id="name"
-              placeholder="Name of your project"
-              v-model="notice.content"
-            /> -->
           </div>
         </form>
       </CardContent>

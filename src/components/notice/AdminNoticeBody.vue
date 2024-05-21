@@ -17,58 +17,39 @@ import { ref, onMounted, computed, onUpdated, watch } from 'vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { toast } from '@/components/ui/toast'
 import Pagination from '../common/Pagination.vue'
+import { useQuery } from '@tanstack/vue-query'
+import { noticeListRequest, noticeUpdate, searchNoticeByKeyword } from '@/api/notice'
+import type { INotice } from '@/types/notice.type'
 
 const route = useRoute()
 const router = useRouter()
 const authentication = useAuthenticationStore()
 
-const addr = `http://localhost:8080/api/v1/notice/list`
-const notices = ref([])
-onMounted(() => {
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      notices.value = response.data
-      if (!route.query.page) {
-        router.push({ name: 'adminNotice', query: { page: 1 } })
-      }
-    })
-    .catch((error) => {
-      console.log('공지사항 조회 오류', error)
-    })
+const {data: initNotices} = useQuery({
+  queryKey: ["notices"],
+  queryFn: () => noticeListRequest()
 })
 
-// onUpdated(() => {
-//   pageNumber.value = Number(route.query.page)
-// })
+const isSearch = ref<boolean>(false)
+const searchNotice = ref<INotice[]>([])
 
-const updateAddr = `http://localhost:8080/api/v1/notice/modify/`
-const changeStatus = (notice: Object) => {
-  // 서버로 상태 변경 업데이트
-  axios
-    .patch(updateAddr + notice.noticeId)
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log('공지사항 수정 실패', error)
-    })
-}
+const notices = computed(() => {
+  if ((route.query.page && !searchNotice) || isSearch.value) {
+    return searchNotice.value
+  }
+  return initNotices.value
+})
 
-const deleteAddr = `http://localhost:8080/api/v1/notice/delete/`
 const modifyNotice = (notice: Object) => {
   router.push({ name: 'notice-modify', params: { noticeId: notice.noticeId } })
 }
 
-const searchKeyword = ref('')
-const findByKeywordAddr = `http://localhost:8080/api/v1/notice?keyword=`
+const searchKeyword = ref(route.query.keyword || '')
 const searchNotices = () => {
-  axios
-    .get(findByKeywordAddr + searchKeyword.value)
-    .then((response) => {
-      console.log(response)
-      notices.value = response.data
+  searchNoticeByKeyword(searchKeyword.value.toString())
+    .then((data) => {
+      searchNotice.value = data
+      isSearch.value = true
     })
     .catch((error) => {
       console.log('특정 공지사항 조회 실패', error)
@@ -95,12 +76,14 @@ const updateCurrentPage = (pageIdx: number) => {
 }
 
 const displayedPosts = computed(() => {
+  if (!notices.value) return []
   const startIndex = (pageNumber.value - 1) * postsPerPage.value
   const endIndex = startIndex + postsPerPage.value
   return notices.value.slice(startIndex, endIndex)
 })
 
 const totalPages = computed(() => {
+  if (!notices.value) return 0
   console.log(notices.value.length + ' ' + postsPerPage.value)
   return Math.ceil(notices.value.length / postsPerPage.value)
 })
@@ -158,9 +141,9 @@ const formatDate = (dateString: string) => {
   <div class="w-full mt-6 flex justify-center">
     <Pagination
       @page-number="updateCurrentPage"
-      :total-page="totalPages"
-      :total-post="notices.length"
-      :items-per-page="postsPerPage"
+      :total-page="totalPages.toString()"
+      :total-post="notices?.length.toString()"
+      :items-per-page="postsPerPage.toString()"
     />
   </div>
 </template>
