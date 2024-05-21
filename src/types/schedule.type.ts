@@ -1,4 +1,6 @@
+import type { IDirection } from "@/api/trip";
 import type { ITripPlace } from "@/stores/trip-plan";
+import type { ISimpleTour } from "./trip.type";
 
 export interface ScheduleForm {
   name: string;
@@ -23,10 +25,19 @@ export interface ISchedule {
   thumbnailImage: string
   startDate: string
   endDate: string
-  usernames: string[]
   private: boolean
   multi: boolean
+  finished: boolean
+  publicKey: string
   day: number
+  invitedUsers: InviteUser[]
+}
+
+export interface InviteUser {
+  userId: number
+  nickname: string
+  profileImage: string
+  username: string
 }
 
 export interface ScheduleTripCreate {
@@ -42,7 +53,7 @@ export interface IScheduleTrip {
 }
 
 export interface IScheduleVechile {
-  vehicleId?: number
+  vehicleId: number
   type: string
   fromTourId: number
   toTourId: number
@@ -73,4 +84,31 @@ export interface ITripAndVehicle {
   scheduleId: number
   day: number
   userId: number
+}
+
+export interface ScheduleTripResponse {
+  tour: ISimpleTour
+  day: number
+  order: number
+  room: boolean
+}
+
+export interface ScheduleVehicleResponse {
+  vehicle: IDirection
+  type: string
+  fromTourId: number
+  toTourId: number
+  day: number
+  order: number
+}
+
+export interface PathResponse {
+  trips: ScheduleTripResponse[]
+  vehicles: ScheduleVehicleResponse[]
+}
+
+export interface InviteForm {
+  username: string;
+  name: string;
+  owner: string;
 }

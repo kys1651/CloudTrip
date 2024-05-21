@@ -220,7 +220,7 @@ const onSubmit = () => {
           </div>
         </div>
       </div>
-      <div class="min-h-[50px]" />
+      <div class="min-h-[300px]" />
       <div
         class="w-[350px] bg-white h-16 fixed bottom-0 flex justify-center items-center"
       >

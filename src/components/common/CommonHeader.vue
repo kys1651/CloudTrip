@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { signOutRequest } from "@/api/auth";
-import HomeNavigator from "@/components/common/HomeNavigator.vue";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import { LogOut, Settings, User } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
+import HomeNavigator from "./HomeNavigation.vue";
 
 const authentication = useAuthenticationStore();
 
@@ -37,6 +37,7 @@ const hiddenRoute = [
   "oauth2-redirect",
   "confirm-email",
   "schedule-detail",
+  "schedule",
 ];
 
 const ROUTES: { pathname: string; name: string }[] = [

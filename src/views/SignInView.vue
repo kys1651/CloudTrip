@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import FindPasswordConfirmForm from "@/components/auth/FindPasswordConfirmForm.vue";
+import FindPasswordForm from "@/components/auth/FindPasswordForm.vue";
+import FindPasswordResetForm from "@/components/auth/FindPasswordResetForm.vue";
 import SignInForm from "@/components/auth/SignInForm.vue";
 import SignUpForm from "@/components/auth/SignUpForm.vue";
-import HomeNavigator from "@/components/common/HomeNavigator.vue";
-import { MoveLeft } from "lucide-vue-next";
+import HomeNavigator from "@/components/common/HomeNavigation.vue";
 import { FindPasswordStatus, FormStatus } from "@/types/auth.type";
+import { MoveLeft } from "lucide-vue-next";
 import { ref } from "vue";
-import FindPasswordForm from "@/components/auth/FindPasswordForm.vue";
-import FindPasswordConfirmForm from "@/components/auth/FindPasswordConfirmForm.vue";
-import FindPasswordResetForm from "@/components/auth/FindPasswordResetForm.vue";
 
 const status = ref<FormStatus>(FormStatus.SIGN_IN);
 

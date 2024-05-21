@@ -16,7 +16,8 @@ const INIT_REVIEW: IReview = {
   tourId: 0,
   address: '',
   createdAt: 0,
-  rating: 0
+  rating: 0,
+  likeCount: 0,
 }
 
 export const useReview = defineStore('review', () => {

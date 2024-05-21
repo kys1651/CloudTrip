@@ -57,7 +57,7 @@ export interface DirectionRequest {
   endY: number
 }
 
-export interface Step {
+export interface IStep {
   stepId: number
   vehicleId: number
   mode: string
@@ -68,7 +68,7 @@ export interface Step {
   routeName: string
 }
 
-export interface DirectionResponse {
+export interface IDirection {
   vehicleId: number
   directionId: number
   fare: number
@@ -78,15 +78,15 @@ export interface DirectionResponse {
   distance: number
   walkDistance: number
   path: string
-  steps: Step[]
+  steps: IStep[]
 }
 
 export interface MobilityResponse {
-  walk: DirectionResponse,
-  bike: DirectionResponse,
-  bus?: DirectionResponse,
-  metro?: DirectionResponse,
-  car?: DirectionResponse,
+  walk: IDirection,
+  bike: IDirection,
+  bus?: IDirection,
+  metro?: IDirection,
+  car?: IDirection,
 } 
 
 export const directionRequest = async (direction: DirectionRequest): Promise<MobilityResponse> => {

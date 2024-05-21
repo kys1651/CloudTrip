@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type DirectionResponse } from '@/api/trip';
+import { type IDirection } from '@/api/trip';
 import {
   Tooltip,
   TooltipContent,
@@ -11,7 +11,7 @@ import { ArrowRight, Bus, Search } from "lucide-vue-next";
 
 
 defineProps<{
-  bus?: DirectionResponse;
+  bus?: IDirection;
 }>();
 </script>
 
