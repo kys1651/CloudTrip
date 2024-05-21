@@ -172,6 +172,11 @@ const router = createRouter({
           path: 'admin/notice',
           name: 'adminNotice',
           component: () => import('@/views/notice/AdminNoticeView.vue')
+        },
+        {
+          path: 'admin/review',
+          name: 'adminReview',
+          component: () => import('@/views/notice/AdminReviewView.vue')
         }
       ]
     }

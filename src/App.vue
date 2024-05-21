@@ -29,7 +29,7 @@ if (!isLogin.value && !isRefreshRequest) {
   <CommonHeader />
   <RouterView />
   <Toaster />
-  <CommonFooter />
+  <!-- <CommonFooter /> -->
   <VueQueryDevtools position="left" buttonPosition="bottom-left" />
   <ChatBot v-if="isLogin" />
 </template>

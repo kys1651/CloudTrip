@@ -29,6 +29,20 @@ export const reviewsRequest = async ({
   return data
 }
 
+export const reviewAllRequest = async (): Promise<IReview[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IReview[]>>(`/review/all`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const reviewAllDeleteRequest = async (checkList: number[]) => {
+  await client.delete<BaseResponse<void>>(`/review/all`, {
+    data: checkList
+  })
+}
+
 export const userReviewsRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }

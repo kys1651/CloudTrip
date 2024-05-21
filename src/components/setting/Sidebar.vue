@@ -32,6 +32,14 @@ const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
     ]
   }
 ])
+const ADMIN_ROUTER = ref<{ label: string; items: MenuItem[] }>({
+  label: '관리자 관리',
+  items: [
+    { pathname: '/setting/admin/user', name: 'adminUser', title: '회원 관리' },
+    { pathname: '/setting/admin/notice', name: 'adminNotice', title: '공지사항 관리' },
+    { pathname: '/setting/admin/review', name: 'adminReview', title: '리뷰 관리' }
+  ]
+})
 watch(
   () => route.path,
   (newPath) => {
@@ -57,7 +65,19 @@ watch(
       </div>
     </div>
     <div v-if="profile?.roleType">
-      <h3 class="text-2xl font-bold mt-4 mb-3">관리자 관리</h3>
+      <h3 class="text-2xl font-bold mt-4 mb-3">{{ ADMIN_ROUTER.label }}</h3>
+      <div v-for="route in ADMIN_ROUTER.items" :key="route.name">
+        <Button
+          variant="ghost"
+          class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
+          :class="{ 'text-black': route.pathname === curPath }"
+        >
+          <RouterLink @click="$emit('changeTitle', route.title)" :to="{ name: route.name }">{{
+            route.title
+          }}</RouterLink>
+        </Button>
+      </div>
+      <!--       
       <Button
         variant="ghost"
         class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
@@ -73,7 +93,7 @@ watch(
         :class="{ 'text-black': '/mypage/admin/user' === curPath }"
       >
         <RouterLink :to="{ name: 'adminNotice' }">공지사항 관리</RouterLink>
-      </Button>
+      </Button> -->
     </div>
   </nav>
 </template>

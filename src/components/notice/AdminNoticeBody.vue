@@ -158,9 +158,9 @@ const formatDate = (dateString: string) => {
   <div class="w-full mt-6 flex justify-center">
     <Pagination
       @page-number="updateCurrentPage"
-      :total-page="totalPages"
+      :total-page="Number(totalPages)"
       :total-post="notices.length"
-      :items-per-page="postsPerPage"
+      :items-per-page="Number(postsPerPage)"
     />
   </div>
 </template>
