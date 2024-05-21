@@ -44,3 +44,13 @@ export interface IUserCard {
   profileImage: string
   isFollowing: boolean
 }
+
+export interface IUser {
+  userId: number
+  username: string
+  email: string
+  nickname: string
+  profileImage: string
+  roleType: string
+  isLocked: boolean
+}
