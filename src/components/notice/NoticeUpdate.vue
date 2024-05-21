@@ -35,14 +35,29 @@ onMounted(() => {
   quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
-      toolbar: [
+      // toolbar: [
+      //   [{ header: [1, 2, false] }],
+      //   ['bold', 'italic', 'underline', 'strike'],
+      //   ['blockquote'],
+      //   [{ list: 'ordered' }, { list: 'bullet' }],
+      //   [{ color: [] }, { background: [] }],
+      //   ['image', 'link']
+      // ]
+      toolbar: {
+        container: [
         [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
         [{ list: 'ordered' }, { list: 'bullet' }],
         [{ color: [] }, { background: [] }],
         ['image', 'link']
-      ]
+      ],
+      handlers: {
+        image: () => {
+          getLocalImage()
+        }
+      }
+      }
     }
   })
 
@@ -59,9 +74,9 @@ onMounted(() => {
     notice.value.content = quill.root.innerHTML
   })
 
-  quill.getModule('toolbar').addHandler('image', () => {
-    getLocalImage()
-  })
+  // quill.getModule('toolbar').addHandler('image', () => {
+  //   getLocalImage()
+  // })
 })
 
 const getLocalImage = () => {

@@ -23,7 +23,7 @@ const { data: reviews } = useQuery({
     </div>
     <Separator />
     <div
-      v-if="reviews?.length > 0"
+      v-if="reviews && reviews?.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5"
     >
       <SimpleReviewCard v-for="review in reviews" :key="review.reviewId" :review="review" />

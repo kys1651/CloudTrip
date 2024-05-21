@@ -32,14 +32,22 @@ onMounted(() => {
     theme: 'snow',
     placeholder: '내용을 입력해주세요.',
     modules: {
-      toolbar: [
+      toolbar: {
+        container: [
         [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
         [{ list: 'ordered' }, { list: 'bullet' }],
         [{ color: [] }, { background: [] }],
         ['image', 'link']
-      ]
+      ],
+      handlers: {
+        image: () => {
+          getLocalImage()
+        }
+      }
+      }
+      
     }
   })
 
@@ -47,9 +55,14 @@ onMounted(() => {
     notice.value.content = quill.root.innerHTML
   })
 
-  quill.getModule('toolbar').addHandler('image', () => {
-    getLocalImage()
-  })
+  // 이미지 핸들러 추가
+  // const toolbar = quill.getModule('toolbar')
+  // if (toolbar) {
+  //   toolbar.addHandler('image', () => {
+  //   getLocalImage()
+  // })
+  // }
+
 })
 
 const images = ref<File[]>([])

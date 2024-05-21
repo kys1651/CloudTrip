@@ -1,5 +1,5 @@
 import client, { type BaseResponse } from "@/api/client"
-import { type ISearch } from "@/types/search.type"
+import { type ISearch } from "@/types/search.type";
 
 export const searchResult = async(searchKeyword: string) => {
     const {

@@ -23,7 +23,7 @@ import Button from '../ui/button/Button.vue'
 import { Send } from 'lucide-vue-next'
 
 const userInput = ref('')
-const inputRef = ref(null)
+const inputRef = ref<HTMLInputElement | null>(null)
 const emit = defineEmits(['send-message'])
 
 const send = () => {

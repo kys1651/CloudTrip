@@ -37,8 +37,8 @@ const notices = computed(() => {
   return initNotices.value;
 });
 
-const modifyNotice = (notice: Object) => {
-  router.push({ name: "notice-modify", params: { noticeId: notice.noticeId } });
+const modifyNotice = (noticeId: number) => {
+  router.push({ name: "notice-modify", params: { noticeId: noticeId } });
 };
 
 const searchKeyword = ref(route.query.keyword || "");
@@ -134,7 +134,7 @@ const formatDate = (dateString: string) => {
           formatDate(notice.createdAt.toDateString())
         }}</TableCell>
         <TableCell>
-          <Button @click="modifyNotice(notice)" class="modify-button"
+          <Button @click="modifyNotice(notice.noticeId)" class="modify-button"
             >공지사항 수정</Button
           >
         </TableCell>

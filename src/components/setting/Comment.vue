@@ -22,7 +22,7 @@ const { data: comments } = useQuery({
       <h3 class="text-3xl font-bold mb-5">댓글 모아보기</h3>
     </div>
     <Separator />
-    <div v-if="comments?.length > 0">
+    <div v-if="comments && comments?.length > 0">
       <SimpleCommentCard v-for="comment in comments" :key="comment.commentId" :comment="comment" />
     </div>
     <div v-else class="flex flex-col items-center justify-center min-h-screen">

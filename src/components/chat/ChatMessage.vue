@@ -24,7 +24,7 @@ import BotMessage from './BotMessage.vue'
 
 const props = defineProps<{ messages: IChatBotMessage[] }>()
 
-const chatContainer = ref(null)
+const chatContainer = ref<HTMLDivElement | null>(null)
 
 // 스크롤을 맨 아래로 이동시키는 함수
 const scrollToBottom = () => {

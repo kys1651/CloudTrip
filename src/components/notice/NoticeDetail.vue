@@ -43,7 +43,7 @@ const goUpdate = () => {
 
 const isATagExists = (content: String) => {
   const htmlElement = document.createElement('div')
-  htmlElement.innerHTML = content
+  htmlElement.innerHTML = content.toString()
   return htmlElement.querySelector('a') !== null
 }
 </script>

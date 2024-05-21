@@ -140,3 +140,9 @@ export const follwingRequest = async (userId: number): Promise<IUserCard[]> => {
   if (!isSuccess) throw new Error(message)
   return data
 }
+
+// export const getAllUser = async() => {
+//   const {
+//     data: {isSuccess, data, message}
+//   } = await client.get<BaseResponse
+// }

@@ -34,9 +34,9 @@ onMounted(() => {
     .then((data) => {
       console.log(data)
       datas.value = data
-      reviewLen.value = datas.value.reviews.length
-      noticeLen.value = datas.value.notices.length
-      userLen.value = datas.value.users.length
+      reviewLen.value = datas.value?.reviews.length
+      noticeLen.value = datas.value?.notices.length
+      userLen.value = datas.value?.users.length
     })
     .catch((error) => {
       console.log('전체 조회 실패', error)
@@ -49,8 +49,8 @@ const isATagExists = (content: string) => {
   return htmlElement.querySelector('a') !== null
 }
 
-const goUserProfile = (user: Object) => {
-  router.push({ name: 'userDetail', params: { userId: user.userId } })
+const goUserProfile = (userId: number) => {
+  router.push({ name: 'userDetail', params: { userId: userId } })
 }
 
 // tag
@@ -111,7 +111,7 @@ const goSearchProfile = () => {
           여행 리뷰 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert size="100" class="mb-10" />
+          <OctagonAlert :size="100" class="mb-10" />
           <p>검색 결과에 대한 여행 리뷰가 존재하지 않습니다.</p>
         </div>
       </div>
@@ -153,7 +153,7 @@ const goSearchProfile = () => {
       <div className="grid justify-center mt-4">
         <div className="grid grid-cols-3 gap-10 justify-center">
           <SearchCard
-            @click="goUserProfile(user)"
+            @click="goUserProfile(user.userId)"
             :user-info="user"
             v-for="user in datas.users.slice(0, 6)"
             :key="user.userId"
@@ -169,7 +169,7 @@ const goSearchProfile = () => {
           프로필 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert size="100" class="mb-10" />
+          <OctagonAlert :size="100" class="mb-10" />
           <p>검색 결과에 대한 프로필 정보가 존재하지 않습니다.</p>
         </div>
       </div>
