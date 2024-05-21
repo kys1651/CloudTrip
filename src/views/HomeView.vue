@@ -21,30 +21,28 @@ import {
 } from '@/components/ui/carousel'
 import emblaCarouselVue from 'embla-carousel-vue'
 import Autoplay from 'embla-carousel-autoplay'
+import { imageOrDefault } from '@/lib/image-load'
+import { Star } from 'lucide-vue-next'
+import { UserRound } from 'lucide-vue-next'
+import { PlaneTakeoff } from 'lucide-vue-next'
+import { CalendarCheck } from 'lucide-vue-next'
 
-const noImg = '/src/assets/img/noImg.png'
+const noImg = '/src/assets/img/noImg2.png'
 
 const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true }, [Autoplay()])
 
 const route = useRoute()
 const router = useRouter()
 
-const metrics = ref<MetricProps[]>(
-  [1, 2, 3, 4, 5, 6, 7, 8].map(() => ({
-    name: 'Accommodations',
-    count: Math.floor(Math.random() * 100000)
-  }))
-)
-
 interface HomeData {
-  numberData: Array<{
+  numberData: {
     reviewCount: number
     noticeCount: number
     usersCount: number
     tourCount: number
     scheduleCount: number
-  }>
-  topTours: Array<{
+  }
+  topTours: {
     tourId: number
     name: string
     description: string
@@ -52,62 +50,38 @@ interface HomeData {
     townName: string
     rating: number
     backgroundImage: string | null
-  }>
-  topReviews: Array<{
+  }[]
+  topReviews: {
     reviewId: number
     content: string
     createdAt: string
     name: string
-    image: string
+    image: string | null
     likeCount: number
-  }>
+  }[]
 }
 
-const homeData = ref<HomeData>({
-  numberData: [
-    {
-      reviewCount: 0,
-      noticeCount: 0,
-      usersCount: 0,
-      tourCount: 0,
-      scheduleCount: 0
-    }
-  ],
-  topTours: [],
-  topReviews: []
-})
+const homeData = ref<HomeData>()
 
 const addr = `http://localhost:8080/api/v1/home`
-onMounted(() => {
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      homeData.value = response.data
-    })
-    .catch((error) => {
-      console.log('데이터 불러오기 실패', error)
-    })
-
-  if (emblaApi.value) {
-    console.log(emblaApi.value.slideNodes())
-  }
-})
+axios
+  .get(addr)
+  .then((response) => {
+    homeData.value = response.data
+  })
+  .catch((error) => {
+    console.log('데이터 불러오기 실패', error)
+  })
 
 const goTourDetail = (tour: Object) => {}
 
 const goReviewDetail = (review: Object) => {
   router.push({ name: 'review-detail', params: { id: review.reviewId } })
 }
-
-const getBackgroundImage = (image: string | null | undefined) => {
-  console.log(image !== null ? image : noImg)
-  return image !== null ? image : noImg
-}
 </script>
 
 <template>
-  <main class="w-full flex flex-col items-center">
+  <main v-if="homeData" class="w-full flex flex-col items-center">
     <!-- 메인 화면 - 사이트 소개 -->
     <section class="w-full py-12 md:py-24 lg:py-32 flex justify-center">
       <div class="container px-4 md:px-6">
@@ -116,16 +90,16 @@ const getBackgroundImage = (image: string | null | undefined) => {
         >
           <div class="flex flex-col justify-center space-y-4">
             <div class="space-y-2">
-              <div class="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
+              <!-- <div class="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
                 모두의 여행지 추천 서비스
-              </div>
-              <h2 class="text-3xl font-bold tracking-tighter sm:text-5xl">
-                당신의 민보수를 추천해드립니다
+              </div> -->
+              <h2 class="mb-5 text-3xl font-bold tracking-tighter sm:text-5xl">
+                실시간 공동 여행계획 수립 서비스 : Cloud Trip
               </h2>
               <p
                 class="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
               >
-                저희 민보수에서는 여러분의 행복한 2박 3일 여행지 혹은 계획을 추천해드립니다.
+                친구와 함께 실시간으로 AI를 활용해 여행계획을 세워보는 것은 어떨까요?
               </p>
             </div>
             <div class="flex flex-col gap-2 min-[400px]:flex-row">
@@ -143,8 +117,9 @@ const getBackgroundImage = (image: string | null | undefined) => {
               </a>
             </div>
           </div>
+          <!-- src="http://tong.visitkorea.or.kr/cms2/website/74/3108474.jpg" -->
           <img
-            src="http://tong.visitkorea.or.kr/cms2/website/74/3108474.jpg"
+            src="/src/assets/img/notice_img1.jpg"
             width="550"
             height="550"
             alt="Travel Recommendations"
@@ -160,20 +135,45 @@ const getBackgroundImage = (image: string | null | undefined) => {
       <div class="container px-4 md:px-6">
         <div class="grid gap-6">
           <div class="space-y-2 text-center">
-            <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Key Metrics</h2>
+            <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Cloud Trip</h2>
             <p
               class="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400 pb-4"
             >
-              Check out our latest travel statistics.
+              Cloud Trip 한눈에 보기
             </p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              v-for="(metric, index) in metrics"
-              :key="index"
-              v-bind:name="metric.name"
-              v-bind:count="metric.count"
-            ></MetricCard>
+            <div class="flex flex-col justify-center items-center">
+              <MetricCard
+                :name="'등록된 리뷰'"
+                :count="homeData.numberData.reviewCount"
+              ></MetricCard>
+              <Star size="64" class="mt-5" />
+            </div>
+
+            <div class="flex flex-col justify-center items-center">
+              <MetricCard
+                :name="'등록된 사용자'"
+                :count="homeData.numberData.usersCount"
+              ></MetricCard>
+              <UserRound size="64" class="mt-5" />
+            </div>
+
+            <div class="flex flex-col justify-center items-center">
+              <MetricCard
+                :name="'등록된 여행지'"
+                :count="homeData.numberData.tourCount"
+              ></MetricCard>
+              <PlaneTakeoff size="64" class="mt-5" />
+            </div>
+
+            <div class="flex flex-col justify-center items-center">
+              <MetricCard
+                :name="'등록된 여행 계획'"
+                :count="homeData.numberData.scheduleCount"
+              ></MetricCard>
+              <CalendarCheck size="64" class="mt-5" />
+            </div>
           </div>
         </div>
       </div>
@@ -189,10 +189,9 @@ const getBackgroundImage = (image: string | null | undefined) => {
             <p
               class="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
             >
-              Explore the most sought-after travel destinations around the world.
+              직접 여행을 다녀온 여행객들이 여행지에 대한 평가를 남겨주었어요!
             </p>
           </div>
-
           <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
@@ -200,43 +199,32 @@ const getBackgroundImage = (image: string | null | undefined) => {
             }"
             :plugins="[
               Autoplay({
-                delay: 2000
+                delay: 2000,
+                stopOnFocusIn: true
               })
             ]"
           >
             <CarouselContent>
               <CarouselItem
-                v-for="(topTour, index) in homeData.topTours"
+                v-for="topTour in homeData.topTours"
                 :key="topTour.tourId"
                 class="basis-1/4"
               >
                 <TripCard
                   :name="topTour.name"
-                  :backgroundImage="getBackgroundImage(topTour.backgroundImage)"
+                  :backgroundImage="imageOrDefault(topTour.backgroundImage)"
                   :description="topTour.description"
                   :rating="topTour.rating"
                   :location="topTour.cityName + ' ' + topTour.townName"
                   @click="goTourDetail(topTour)"
-                  class="hover:scale-110"
-                ></TripCard>
+                  class="hover:scale-105 p-3"
+                >
+                </TripCard>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious class="-left-6" />
             <CarouselNext class="-right-6" />
           </Carousel>
-
-          <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TripCard
-              v-for="topTour in homeData.topTours" :key="topTour.tourId"
-              :name='topTour.name'
-              :backgroundImage=topTour.backgroundImage
-              :description=topTour.description
-              :rating=topTour.rating
-              :location="topTour.cityName + ' ' + topTour.townName"
-              @click="goTourDetail(topTour)"
-              class="hover:scale-110"
-            ></TripCard>
-          </div> -->
         </div>
       </div>
     </section>
@@ -247,15 +235,15 @@ const getBackgroundImage = (image: string | null | undefined) => {
         <div class="grid gap-6">
           <div class="space-y-2 text-center">
             <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Featured Blog Posts
+              가장 좋아요가 많은 리뷰
             </h2>
             <p
               class="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
             >
-              Read our latest travel insights and tips.
+              가장 많은 좋아요를 받은 리뷰를 모아봤어요!
             </p>
           </div>
-          <Carousel
+          <!-- <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
               loop: true
@@ -268,51 +256,28 @@ const getBackgroundImage = (image: string | null | undefined) => {
           >
             <CarouselContent>
               <CarouselItem
-                v-for="(topReview, index) in homeData.topReviews"
+                v-for="topReview in homeData.topReviews"
                 :key="topReview.reviewId"
                 class="basis-1/4"
               >
-                <TripCard
+                <PostingCard
                   :name="topReview.name"
-                  :backgroundImage="topReview.image"
+                  :backgroundImage="imageOrDefault(topReview.image)"
                   :description="topReview.content"
                   :createdAt="new Date(topReview.createdAt)"
+                  :views="topReview.likeCount"
                   @click="goReviewDetail(topReview)"
                   class="hover:scale-110"
-                ></TripCard>
+                ></PostingCard>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious class="-left-6" />
             <CarouselNext class="-right-6" />
-          </Carousel>
-          <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <PostingCard v-for="topReview in homeData.topReviews" :key="topReview.reviewId"
-              :backgroundImage="topReview.image"
-              :name="topReview.name"
-              :description="topReview.content"
-              :createdAt="new Date(topReview.createdAt)"
-              :views="topReview.likeCount"
-              @click="goReviewDetail(topReview)"
-              class="hover:scale-110"
-            ></PostingCard>
-          </div> -->
+          </Carousel> -->
         </div>
       </div>
     </section>
   </main>
 </template>
 
-<style scoped>
-.embla {
-  overflow: hidden;
-}
-
-.embla_container {
-  display: flex;
-}
-
-.embla_slide {
-  flex: 0 0 100%;
-  min-width: 0;
-}
-</style>
+<style scoped></style>

@@ -7,20 +7,22 @@
 
 <script setup lang="ts">
 import type { MetricProps } from '@/types/trip.type'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const props = defineProps<MetricProps>()
 
 const shownCount = ref(0)
 
-const counting = setInterval(() => {
-  if (shownCount.value >= props.count) {
-    shownCount.value = props.count
-    clearInterval(counting)
-  } else {
-    shownCount.value += props.count / 100
-  }
-}, 10)
+onMounted(() => {
+  const counting = setInterval(() => {
+    if (shownCount.value >= props.count) {
+      shownCount.value = props.count
+      clearInterval(counting)
+    } else {
+      shownCount.value += props.count / 100
+    }
+  }, 10)
+})
 </script>
 
 <style scoped></style>
