@@ -1,98 +1,95 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { noticeListRequest, searchNoticeByKeyword } from "@/api/notice";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
+  Table,
   TableBody,
-  Table
-} from '@/components/ui/table'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
-import axios from 'axios'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, computed, onUpdated, watch } from 'vue'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { toast } from '@/components/ui/toast'
-import Pagination from '../common/Pagination.vue'
-import { useQuery } from '@tanstack/vue-query'
-import { noticeListRequest, noticeUpdate, searchNoticeByKeyword } from '@/api/notice'
-import type { INotice } from '@/types/notice.type'
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useAuthenticationStore } from "@/stores/authentication";
+import type { INotice } from "@/types/notice.type";
+import { useQuery } from "@tanstack/vue-query";
+import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Pagination from "../common/Pagination.vue";
 
-const route = useRoute()
-const router = useRouter()
-const authentication = useAuthenticationStore()
+const route = useRoute();
+const router = useRouter();
+const authentication = useAuthenticationStore();
 
-const {data: initNotices} = useQuery({
+const { data: initNotices } = useQuery({
   queryKey: ["notices"],
-  queryFn: () => noticeListRequest()
-})
+  queryFn: () => noticeListRequest(),
+});
 
-const isSearch = ref<boolean>(false)
-const searchNotice = ref<INotice[]>([])
+const isSearch = ref<boolean>(false);
+const searchNotice = ref<INotice[]>([]);
 
 const notices = computed(() => {
-  if ((route.query.page && !searchNotice) || isSearch.value) {
-    return searchNotice.value
+  if ((route.query.page && !searchNotice.value) || isSearch.value) {
+    return searchNotice.value;
   }
-  return initNotices.value
-})
+  return initNotices.value;
+});
 
 const modifyNotice = (notice: Object) => {
-  router.push({ name: 'notice-modify', params: { noticeId: notice.noticeId } })
-}
+  router.push({ name: "notice-modify", params: { noticeId: notice.noticeId } });
+};
 
-const searchKeyword = ref(route.query.keyword || '')
+const searchKeyword = ref(route.query.keyword || "");
 const searchNotices = () => {
   searchNoticeByKeyword(searchKeyword.value.toString())
     .then((data) => {
-      searchNotice.value = data
-      isSearch.value = true
+      searchNotice.value = data;
+      isSearch.value = true;
     })
     .catch((error) => {
-      console.log('특정 공지사항 조회 실패', error)
-    })
-}
+      console.log("특정 공지사항 조회 실패", error);
+    });
+};
 
 const makeNotice = () => {
-  router.push({ name: 'notice-create' })
-}
+  router.push({ name: "notice-create" });
+};
 
 // Paging
 watch(
   () => route.query.page,
   (newPage) => {
-    pageNumber.value = Number(newPage) || 1
+    pageNumber.value = Number(newPage) || 1;
   }
-)
+);
 
-const pageNumber = ref<number>(1)
-const postsPerPage = ref(10)
+const pageNumber = ref<number>(1);
+const postsPerPage = ref(10);
 
 const updateCurrentPage = (pageIdx: number) => {
-  router.push({ name: 'adminNotice', query: { page: pageIdx } })
-}
+  router.push({ name: "adminNotice", query: { page: pageIdx } });
+};
 
 const displayedPosts = computed(() => {
-  if (!notices.value) return []
-  const startIndex = (pageNumber.value - 1) * postsPerPage.value
-  const endIndex = startIndex + postsPerPage.value
-  return notices.value.slice(startIndex, endIndex)
-})
+  if (!notices.value) return [];
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value;
+  const endIndex = startIndex + postsPerPage.value;
+  return notices.value.slice(startIndex, endIndex);
+});
 
 const totalPages = computed(() => {
-  if (!notices.value) return 0
-  console.log(notices.value.length + ' ' + postsPerPage.value)
-  return Math.ceil(notices.value.length / postsPerPage.value)
-})
+  if (!notices.value) return 0;
+  console.log(notices.value.length + " " + postsPerPage.value);
+  return Math.ceil(notices.value.length / postsPerPage.value);
+});
 
 // Define the formatDate function within the script setup block
 const formatDate = (dateString: string) => {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-  return new Date(dateString).toLocaleDateString(undefined)
-}
+  const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+  return new Date(dateString).toLocaleDateString(undefined);
+};
 </script>
 
 <template>
@@ -108,7 +105,9 @@ const formatDate = (dateString: string) => {
         placeholder="공지사항 검색"
         v-model="searchKeyword"
       />
-      <Button class="border border-black" variant="outline" @click="searchNotices">검색</Button>
+      <Button class="border border-black" variant="outline" @click="searchNotices"
+        >검색</Button
+      >
       <Button class="border border-black" variant="outline" @click="makeNotice"
         >공지사항 등록하기</Button
       >
@@ -131,9 +130,13 @@ const formatDate = (dateString: string) => {
         </TableCell>
         <TableCell className="font-medium">{{ notice.noticeId }}</TableCell>
         <TableCell className="font-medium">{{ notice.title }}</TableCell>
-        <TableCell className="font-medium">{{ formatDate(notice.createdAt) }}</TableCell>
+        <TableCell className="font-medium">{{
+          formatDate(notice.createdAt.toDateString())
+        }}</TableCell>
         <TableCell>
-          <Button @click="modifyNotice(notice)" class="modify-button">공지사항 수정</Button>
+          <Button @click="modifyNotice(notice)" class="modify-button"
+            >공지사항 수정</Button
+          >
         </TableCell>
       </TableRow>
     </TableBody>

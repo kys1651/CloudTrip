@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, watch } from 'vue'
-import axios from 'axios'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
+import { searchResult } from '@/api/search'
+import ReviewCard from '@/components/review/ReviewCard.vue'
+import SearchCard from '@/components/search/SearchCard.vue'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import ReviewCard from '@/components/review/ReviewCard.vue'
-import SearchCard from '@/components/search/SearchCard.vue'
-import { OctagonAlert } from 'lucide-vue-next'
+import { Badge } from '@/components/ui/badge'
+import { useAuthenticationStore } from '@/stores/authentication'
 import { type ISearch } from '@/types/search.type'
-import { searchResult } from '@/api/search'
+import { OctagonAlert } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -78,7 +75,10 @@ const goSearchProfile = () => {
   <div v-if="datas" className="w-full px-10">
     <div className="flex justify-between mb-10">
       <div className="flex space-x-2 text-sm">
-        <Badge class="badge bg-white text-black border-black" @click="goSearch" variant="default"
+        <Badge
+          class="badge bg-white text-black border-black"
+          @click="goSearch"
+          variant="default"
           >전체</Badge
         >
         <Badge class="badge" @click="goSearchReview">여행 리뷰 {{ reviewLen }}</Badge>
@@ -88,7 +88,9 @@ const goSearchProfile = () => {
     </div>
     <hr />
     <div className="mt-4">
-      <h2 className="text-lg font-semibold flex items-center justify-between">여행 리뷰</h2>
+      <h2 className="text-lg font-semibold flex items-center justify-between">
+        여행 리뷰
+      </h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
           <ReviewCard
@@ -101,7 +103,11 @@ const goSearchProfile = () => {
       <div class="flex justify-end mt-5"></div>
       <!-- "더보기" button -->
       <div class="flex justify-center">
-        <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
+        <button
+          v-if="datas.reviews.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchReview"
+        >
           여행 리뷰 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -131,7 +137,11 @@ const goSearchProfile = () => {
         </Accordion>
       </div>
       <div class="flex justify-center">
-        <button v-if="datas.notices.length > 0" class="mt-10 more-button" @click="goSearchNotice">
+        <button
+          v-if="datas.notices.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchNotice"
+        >
           공지사항 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -151,7 +161,11 @@ const goSearchProfile = () => {
         </div>
       </div>
       <div class="flex justify-center mb-10">
-        <button v-if="datas.users.length > 0" class="mt-10 more-button" @click="goSearchProfile">
+        <button
+          v-if="datas.users.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchProfile"
+        >
           프로필 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
