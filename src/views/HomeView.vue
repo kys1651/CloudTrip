@@ -12,7 +12,6 @@ import { timeStamp } from 'console'
 import ToastProvider from '@/components/ui/toast/ToastProvider.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Card, CardContent } from '@/components/ui/card'
-import Autoplay from 'embla-carousel-autoplay'
 import {
   Carousel,
   CarouselContent,
@@ -20,6 +19,12 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel'
+import emblaCarouselVue from 'embla-carousel-vue'
+import Autoplay from 'embla-carousel-autoplay'
+
+const noImg = '/src/assets/img/noImg.png'
+
+const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true }, [Autoplay()])
 
 const route = useRoute()
 const router = useRouter()
@@ -31,38 +36,47 @@ const metrics = ref<MetricProps[]>(
   }))
 )
 
-const homeData = ref({
+interface HomeData {
+  numberData: Array<{
+    reviewCount: number
+    noticeCount: number
+    usersCount: number
+    tourCount: number
+    scheduleCount: number
+  }>
+  topTours: Array<{
+    tourId: number
+    name: string
+    description: string
+    cityName: string
+    townName: string
+    rating: number
+    backgroundImage: string | null
+  }>
+  topReviews: Array<{
+    reviewId: number
+    content: string
+    createdAt: string
+    name: string
+    image: string
+    likeCount: number
+  }>
+}
+
+const homeData = ref<HomeData>({
   numberData: [
     {
-      reviewCount: Number,
-      noticeCount: Number,
-      usersCount: Number,
-      tourCount: Number,
-      scheduleCount: Number
+      reviewCount: 0,
+      noticeCount: 0,
+      usersCount: 0,
+      tourCount: 0,
+      scheduleCount: 0
     }
   ],
-  topTours: [
-    {
-      tourId: Number,
-      name: String,
-      description: String,
-      cityName: String,
-      townName: String,
-      rating: Number,
-      backgroundImage: String
-    }
-  ],
-  topReviews: [
-    {
-      reviewId: Number,
-      content: String,
-      createdAt: new Date(),
-      name: String,
-      image: String,
-      likeCount: Number
-    }
-  ]
+  topTours: [],
+  topReviews: []
 })
+
 const addr = `http://localhost:8080/api/v1/home`
 onMounted(() => {
   axios
@@ -74,6 +88,10 @@ onMounted(() => {
     .catch((error) => {
       console.log('데이터 불러오기 실패', error)
     })
+
+  if (emblaApi.value) {
+    console.log(emblaApi.value.slideNodes())
+  }
 })
 
 const goTourDetail = (tour: Object) => {}
@@ -82,6 +100,10 @@ const goReviewDetail = (review: Object) => {
   router.push({ name: 'review-detail', params: { id: review.reviewId } })
 }
 
+const getBackgroundImage = (image: string | null | undefined) => {
+  console.log(image !== null ? image : noImg)
+  return image !== null ? image : noImg
+}
 </script>
 
 <template>
@@ -170,19 +192,17 @@ const goReviewDetail = (review: Object) => {
               Explore the most sought-after travel destinations around the world.
             </p>
           </div>
+
           <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
-              loop:true,
+              loop: true
             }"
             :plugins="[
               Autoplay({
-                delay: 2000,
-                stopOnFocusIn: false,
-              }),
-              
+                delay: 2000
+              })
             ]"
-            
           >
             <CarouselContent>
               <CarouselItem
@@ -192,7 +212,7 @@ const goReviewDetail = (review: Object) => {
               >
                 <TripCard
                   :name="topTour.name"
-                  :backgroundImage="topTour.backgroundImage"
+                  :backgroundImage="getBackgroundImage(topTour.backgroundImage)"
                   :description="topTour.description"
                   :rating="topTour.rating"
                   :location="topTour.cityName + ' ' + topTour.townName"
@@ -204,6 +224,7 @@ const goReviewDetail = (review: Object) => {
             <CarouselPrevious class="-left-6" />
             <CarouselNext class="-right-6" />
           </Carousel>
+
           <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <TripCard
               v-for="topTour in homeData.topTours" :key="topTour.tourId"
@@ -234,17 +255,17 @@ const goReviewDetail = (review: Object) => {
               Read our latest travel insights and tips.
             </p>
           </div>
-          <Carousel 
+          <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
-              loop:true,
+              loop: true
             }"
             :plugins="[
               Autoplay({
-                delay: 2500,
-                stopOnFocusIn: false,
+                delay: 2000
               })
-            ]">
+            ]"
+          >
             <CarouselContent>
               <CarouselItem
                 v-for="(topReview, index) in homeData.topReviews"
@@ -262,7 +283,7 @@ const goReviewDetail = (review: Object) => {
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious class="-left-6" />
-            <CarouselNext class="-right-6"/>
+            <CarouselNext class="-right-6" />
           </Carousel>
           <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <PostingCard v-for="topReview in homeData.topReviews" :key="topReview.reviewId"
@@ -281,4 +302,17 @@ const goReviewDetail = (review: Object) => {
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+.embla {
+  overflow: hidden;
+}
+
+.embla_container {
+  display: flex;
+}
+
+.embla_slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+</style>
