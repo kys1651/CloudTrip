@@ -145,7 +145,7 @@ const goSearchProfile = () => {
           공지사항 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert size="100" class="mb-10" />
+          <OctagonAlert :size="100" class="mb-10" />
           <p>검색 결과에 대한 공지사항이 존재하지 않습니다.</p>
         </div>
       </div>

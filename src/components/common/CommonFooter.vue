@@ -1,10 +1,14 @@
-<script setup>
-import { Twitter } from 'lucide-vue-next'
-import { Instagram } from 'lucide-vue-next'
-import { Facebook } from 'lucide-vue-next'
-import { Youtube } from 'lucide-vue-next'
+<script setup lang="ts">
+import { Facebook, Instagram, Twitter, Youtube } from "lucide-vue-next";
 
-const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'schedule-detail']
+const hiddenRoute = [
+  "sign-in",
+  "sign-up",
+  "oauth2-redirect",
+  "confirm-email",
+  "schedule-detail",
+  "schedule",
+];
 </script>
 
 <template>
@@ -17,7 +21,9 @@ const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', '
         <div className="flex items-center">
           <BracketsIcon className="h-8 w-8 text-[#00B4E6]" />
           <div className="ml-4">
-            <p className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider">
+            <p
+              className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider"
+            >
               Cloud Trip
             </p>
             <p className="text-sm text-gray-500">주식회사 클라우드트립 | 대표 민보수</p>
@@ -64,7 +70,9 @@ const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', '
                 class="google-store-img"
               />
             </Link>
-            <ArrowUpIcon className="h-6 w-6 text-gray-400 hover:text-gray-500 cursor-pointer" />
+            <ArrowUpIcon
+              className="h-6 w-6 text-gray-400 hover:text-gray-500 cursor-pointer"
+            />
           </div>
         </div>
       </div>

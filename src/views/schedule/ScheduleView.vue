@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HomeNavigation from "@/components/common/HomeNavigation.vue";
 import ScheduleCreate from "@/components/schedule/ScheduleCreate.vue";
 import Button from "@/components/ui/button/Button.vue";
 import { Dialog } from "@/components/ui/dialog";
@@ -12,7 +13,7 @@ import DialogTrigger from "@/components/ui/dialog/DialogTrigger.vue";
       class="flex flex-row h-screen w-screen bg-center bg-cover relative isolate after:absolute after:z-10"
       style="background-image: url('/images/trip.jpg')"
     >
-      <HomeNavigator />
+      <HomeNavigation class="absolute top-4 left-4 z-30" />
       <div
         class="absolute inset-0 bg-black bg-opacity-20 z-20 flex flex-row items-center justify-around"
       >
