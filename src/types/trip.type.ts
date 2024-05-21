@@ -69,3 +69,12 @@ export enum TripStep {
 export interface SearchTripWithDistance extends SearchTrip {
   distance: number;
 }
+
+export interface ISimpleTour {
+  tourId: number
+  name: string
+  backgroundImage: string
+  latitude: number
+  longitude: number
+  address: string
+}

@@ -1,19 +1,19 @@
 <script setup>
-import { AvatarFallback, Avatar, AvatarImage } from '@/components/ui/avatar'
-import { CardContent, Card } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from "vue-router";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 const goSocialDetail = () => {
-  router.push({ name: 'social-detail', params: { socialId: props.userInfo.userId } })
-}
+  router.push({ name: "social-detail", params: { socialId: props.userInfo.userId } });
+};
 
 const props = defineProps({
-  userInfo: Object
-})
+  userInfo: Object,
+});
 </script>
 
 <template>

@@ -1,6 +1,6 @@
-import client, { type BaseResponse } from '@/api/client'
-import { toDate } from '@/lib/formatter'
-import type { IChat, ISchedule, ITripAndVehicle, ScheduleForm, ScheduleTripCreate } from '@/types/schedule.type'
+import client, { type BaseResponse } from '@/api/client';
+import { toDate } from '@/lib/formatter';
+import type { IChat, InviteForm, ISchedule, ITripAndVehicle, PathResponse, ScheduleForm, ScheduleTripCreate } from '@/types/schedule.type';
 
 export const scheduleCreateRequest = async (
   form: ScheduleForm,
@@ -48,7 +48,13 @@ export const scheduleDetailRequest = async (scheduleId: number): Promise<ISchedu
 export const scheduleTripCreateRequest = async (scheduleId: number, schedules: ScheduleTripCreate) => {
   const {
     data: { isSuccess, message, data }
-  } = await client.post<BaseResponse<void>>(`/schedule/${scheduleId}`, schedules)
+  } = await client.post<BaseResponse<void>>(`/schedule/${scheduleId}`, {
+    trips: schedules.trips,
+    vehicles: schedules.vehicles.map((vehicle) => ({
+      ...vehicle,
+      toTourId: vehicle.toTourId === 0 ? undefined : vehicle.toTourId
+    }))
+  })
   if (!isSuccess) throw new Error(message)
   return data
 }
@@ -67,4 +73,50 @@ export const scheduleTripAndVehicleRequest = async (scheduleId: number): Promise
   } = await client.get<BaseResponse<ITripAndVehicle>>(`/schedule/${scheduleId}/trip`)
   if (!isSuccess) throw new Error(message)
   return data
+}
+
+export const schedulePathRequest = async (scheduleId: number): Promise<PathResponse> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<PathResponse>>(`/schedule/${scheduleId}/path`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const schedulePublicRequest = async (scheduleId: number): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/schedule/${scheduleId}/public`)
+  if (!isSuccess) throw new Error(message)
+}
+
+export const scheduleRevokeRequest = async (scheduleId: number): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.delete<BaseResponse<void>>(`/schedule/${scheduleId}/revoke`)
+  if (!isSuccess) throw new Error(message)
+}
+
+
+export const scheduleInviteRequest = async (scheduleId: number, invite: InviteForm): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/schedule/${scheduleId}/invite`, invite)
+  if (!isSuccess) throw new Error(message)
+}
+
+interface InviteConfirmRequest {
+  scheduleId: number
+  email: string
+  code: string
+}
+
+export const scheduleInviteConfirmRequest = async (request: InviteConfirmRequest): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.post<BaseResponse<void>>(`/schedule/${request.scheduleId}/invite/confirm`, {
+    email: request.email,
+    code: request.code
+  })
+  if (!isSuccess) throw new Error(message)
 }

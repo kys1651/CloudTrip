@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type DirectionResponse } from '@/api/trip';
+import { type IDirection } from '@/api/trip';
 import {
   Tooltip,
   TooltipContent,
@@ -10,7 +10,7 @@ import { convertDistance, convertTime } from '@/lib/formatter';
 import { ArrowRight, Search, TramFront } from "lucide-vue-next";
 
 defineProps<{
-  metro?: DirectionResponse;
+  metro?: IDirection;
 }>();
 </script>
 

@@ -20,6 +20,7 @@ export const useAuthenticationStore = defineStore('authentication', () => {
 
   const clearAuthentication = () => {
     accessToken.value = undefined
+    profile.value = undefined
   }
 
   const updateProfile = (newProfile: Profile) => {

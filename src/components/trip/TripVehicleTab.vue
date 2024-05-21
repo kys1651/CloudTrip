@@ -4,6 +4,8 @@ import { directionRequest } from "@/api/trip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useTripPlanStore } from "@/stores/trip-plan";
 import { useScheduleSocket } from "@/stores/web-stomp";
+import type { ScheduleTripCreate } from "@/types/schedule.type";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import {
   ArrowRightLeft,
   Bike,
@@ -45,9 +47,38 @@ const route = useRoute();
 const scheduleId = route.params.scheduleId;
 
 const toast = useToast();
+const queryClient = useQueryClient();
+
+const { mutate } = useMutation({
+  mutationKey: ["trip", "direction"],
+  mutationFn: (schedules: ScheduleTripCreate) =>
+    scheduleTripCreateRequest(Number(scheduleId), schedules),
+  onSuccess: () => {
+    toast.toast({
+      title: "여행 계획",
+      description: "여행 경로 저장이 완료되었습니다.",
+      variant: "success",
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["schedule", scheduleId],
+    });
+  },
+  onError: () => {
+    toast.toast({
+      title: "여행 계획",
+      description: "여행 경로 저장에 실패했습니다.",
+      duration: 2000,
+      variant: "destructive",
+    });
+  },
+});
 
 const onSubmit = () => {
-  if (tripVehicles.value.some((vehicle) => vehicle.type === "none")) {
+  if (
+    tripVehicles.value
+      .filter((vehicle) => vehicle.toTourId !== 0)
+      .some((vehicle) => vehicle.type === "none" || vehicle.vehicleId === 0)
+  ) {
     toast.toast({
       title: "이동수단을 선택해주세요.",
       description: "이동수단을 선택해주세요.",
@@ -56,8 +87,7 @@ const onSubmit = () => {
     });
     return;
   }
-
-  scheduleTripCreateRequest(Number(scheduleId), {
+  mutate({
     trips: trips.value.flatMap((dayTrips, day) =>
       dayTrips.map((trip, index) => ({
         tourId: trip.tourId,
@@ -66,22 +96,8 @@ const onSubmit = () => {
         room: trip.room,
       }))
     ),
-    vehicles: tripVehicles.value,
-  })
-    .then(() => {
-      toast.toast({
-        title: "여행 계획",
-        description: "여행 경로 저장이 완료되었습니다.",
-        variant: "success",
-      });
-    })
-    .catch(() => {
-      toast.toast({
-        title: "여행 계획",
-        description: "여행 경로 저장에 실패했습니다.",
-        variant: "destructive",
-      });
-    });
+    vehicles: tripVehicles.value.filter((vehicle) => vehicle.toTourId !== 0),
+  });
 };
 
 const updateVehicle = (day: number, idx: number, vehicleType: string) => {
@@ -173,7 +189,7 @@ onMounted(() => {
         </ToggleGroupItem>
       </ToggleGroup>
     </div>
-    <div class="flex flex-col space-y-5 overflow-scroll h-screen">
+    <div class="flex flex-col space-y-5 overflow-scroll h-screen scrollbar-hide">
       <div
         v-for="(dayVehicles, day) in tripVehicleList"
         :key="day"
@@ -268,12 +284,12 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <div class="min-h-[300px]" />
       <div
         class="w-[350px] bg-white h-16 fixed bottom-0 flex justify-center items-center"
       >
         <Button variant="default" class="w-full" @click="onSubmit">저장하기</Button>
       </div>
-      <div class="v-[10vh] w-full" />
     </div>
   </div>
 </template>

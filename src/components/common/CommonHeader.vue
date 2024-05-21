@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { signOutRequest } from '@/api/auth'
-import HomeNavigator from '@/components/common/HomeNavigator.vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { signOutRequest } from "@/api/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,62 +8,69 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { useMutation } from '@tanstack/vue-query'
-import { LogOut, Settings, User } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-import { RouterLink, useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { useToast } from '@/components/ui/toast'
-import { Search } from 'lucide-vue-next'
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/toast";
+import { useAuthenticationStore } from "@/stores/authentication";
+import { useMutation } from "@tanstack/vue-query";
+import { LogOut, Search, Settings, User } from "lucide-vue-next";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import HomeNavigation from "./HomeNavigation.vue";
 
-const authentication = useAuthenticationStore()
-const router = useRouter()
-const toast = useToast()
+const authentication = useAuthenticationStore();
+const router = useRouter();
+const toast = useToast();
 
 const { mutate } = useMutation({
-  mutationKey: ['sign-out'],
+  mutationKey: ["sign-out"],
   mutationFn: signOutRequest,
   onSuccess: () => {
-    authentication.clearAuthentication()
-    router.replace('/')
-  }
-})
+    authentication.clearAuthentication();
+    router.replace("/");
+  },
+});
 
-const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'schedule-detail']
+const hiddenRoute = [
+  "sign-in",
+  "sign-up",
+  "oauth2-redirect",
+  "confirm-email",
+  "schedule-detail",
+  "schedule",
+];
 
 const ROUTES: { pathname: string; name: string }[] = [
   {
-    pathname: 'notice',
-    name: '공지사항'
+    pathname: "notice",
+    name: "공지사항",
   },
   {
-    pathname: 'schedule',
-    name: '여행지 추천'
+    pathname: "schedule",
+    name: "여행지 추천",
   },
   {
-    pathname: 'review',
-    name: '여행지 후기'
-  }
-]
-const authenticationStore = useAuthenticationStore()
-const { isLogin, profile } = storeToRefs(authenticationStore)
+    pathname: "review",
+    name: "여행지 후기",
+  },
+];
+const authenticationStore = useAuthenticationStore();
+const { isLogin, profile } = storeToRefs(authenticationStore);
 
-const searchKeyword = ref('')
+const searchKeyword = ref("");
 const searchByKeyword = () => {
-  if (searchKeyword.value === null || searchKeyword.value === '') {
+  if (searchKeyword.value === null || searchKeyword.value === "") {
     toast.toast({
-      title: '검색어 입력 실패',
-      description: '검색어를 입력해주세요.',
+      title: "검색어 입력 실패",
+      description: "검색어를 입력해주세요.",
       duration: 2000,
-      variant: 'destructive'
-    })
-    return
+      variant: "destructive",
+    });
+    return;
   }
-  router.push({ name: 'search', query: { keyword: searchKeyword.value } })
-}
+  router.push({ name: "search", query: { keyword: searchKeyword.value } });
+};
 </script>
 
 <template>
@@ -73,7 +79,7 @@ const searchByKeyword = () => {
     class="flex items-center justify-between bg-white px-4 py-3 shadow-sm dark:bg-gray-900 sm:px-6 lg:px-8"
   >
     <div class="flex items-center">
-      <HomeNavigator />
+      <HomeNavigation />
     </div>
     <div class="flex items-center justify-center flex-grow">
       <input
@@ -121,7 +127,9 @@ const searchByKeyword = () => {
         <DropdownMenuContent class="w-56">
           <DropdownMenuLabel
             >{{ profile.nickname
-            }}<span class="text-gray-400">({{ profile.username }})</span></DropdownMenuLabel
+            }}<span class="text-gray-400"
+              >({{ profile.username }})</span
+            ></DropdownMenuLabel
           >
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
@@ -168,7 +176,7 @@ const searchByKeyword = () => {
   position: relative;
   display: inline-block;
 }
-.input-container input[type='text'] {
+.input-container input[type="text"] {
   padding: 10px;
   border: 2px solid black;
   border-radius: 10px;

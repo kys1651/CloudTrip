@@ -1,75 +1,66 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, watch } from 'vue'
-import axios from 'axios'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion'
-import ReviewCard from '@/components/review/ReviewCard.vue'
-import SearchCard from './SearchCard.vue'
-import SearchHeader from '@/components/search/SearchHeader.vue'
+import ReviewCard from "@/components/review/ReviewCard.vue";
+import SearchHeader from "@/components/search/SearchHeader.vue";
+import { Badge } from "@/components/ui/badge";
+import { useAuthenticationStore } from "@/stores/authentication";
+import axios from "axios";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const authentication = useAuthenticationStore()
+const authentication = useAuthenticationStore();
 
-const datas = ref([])
-const reviewLen = ref()
-const noticeLen = ref()
-const userLen = ref()
+const datas = ref([]);
+const reviewLen = ref();
+const noticeLen = ref();
+const userLen = ref();
 onMounted(() => {
-  const keyword = route.query.keyword
-  console.log(keyword)
-  const addr = `http://localhost:8080/api/v1/search?searchKeyword=${keyword}`
+  const keyword = route.query.keyword;
+  console.log(keyword);
+  const addr = `http://localhost:8080/api/v1/search?searchKeyword=${keyword}`;
 
   axios
     .get(addr)
     .then((response) => {
-      console.log(response)
-      datas.value = response.data
-      reviewLen.value = datas.value.reviews.length
-      noticeLen.value = datas.value.notices.length
-      userLen.value = datas.value.users.length
+      console.log(response);
+      datas.value = response.data;
+      reviewLen.value = datas.value.reviews.length;
+      noticeLen.value = datas.value.notices.length;
+      userLen.value = datas.value.users.length;
     })
     .catch((error) => {
-      console.log('전체 조회 실패', error)
-    })
-})
+      console.log("전체 조회 실패", error);
+    });
+});
 
 const isATagExists = (content: string) => {
-  const htmlElement = document.createElement('div')
-  htmlElement.innerHTML = content
-  return htmlElement.querySelector('a') !== null
-}
+  const htmlElement = document.createElement("div");
+  htmlElement.innerHTML = content;
+  return htmlElement.querySelector("a") !== null;
+};
 
 const goUserProfile = (user: Object) => {
-  router.push({ name: 'userDetail', params: { userId: user.userId } })
-}
+  router.push({ name: "userDetail", params: { userId: user.userId } });
+};
 
 // tag
 const goSearch = () => {
-  router.push({ name: 'search', query: { keyword: route.query.keyword } })
-}
+  router.push({ name: "search", query: { keyword: route.query.keyword } });
+};
 
 const goSearchReview = () => {
-  router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
-}
+  router.push({ name: "search-review", query: { keyword: route.query.keyword } });
+};
 
 const goSearchNotice = () => {
-  router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
-}
+  router.push({ name: "search-notice", query: { keyword: route.query.keyword } });
+};
 
 const goSearchProfile = () => {
-  router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
-}
+  router.push({ name: "search-profile", query: { keyword: route.query.keyword } });
+};
 </script>
 
 <template>
@@ -88,10 +79,16 @@ const goSearchProfile = () => {
       </div>
       <hr />
       <div className="mt-4">
-        <h2 className="text-lg font-semibold flex items-center justify-between">여행 리뷰</h2>
+        <h2 className="text-lg font-semibold flex items-center justify-between">
+          여행 리뷰
+        </h2>
         <div className="grid gap-6 mt-4">
           <div className="grid grid-cols-3 gap-4">
-            <ReviewCard v-for="review in datas.reviews" :key="review.reviewId" :review="review" />
+            <ReviewCard
+              v-for="review in datas.reviews"
+              :key="review.reviewId"
+              :review="review"
+            />
           </div>
         </div>
         <div class="flex justify-end mt-5"></div>

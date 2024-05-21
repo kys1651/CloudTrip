@@ -1,9 +1,19 @@
-import { type DirectionResponse, type MobilityResponse } from '@/api/trip'
+import { type IDirection, type MobilityResponse } from '@/api/trip'
 import { calculateDistance, calculateSum, type Point } from '@/lib/distance'
 import type { IVehicle } from '@/types/schedule.type'
 import type { SearchTrip } from '@/types/trip.type'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+
+export const HOVER_COLORS = [
+  'bg-blue-300 hover:bg-blue-200 border-blue-600',
+  'bg-green-300 hover:bg-green-200 border-green-600',
+  'bg-yellow-300 hover:bg-yellow-200 border-yellow-600',
+  'bg-red-300 hover:bg-red-200 border-red-600',
+  'bg-indigo-300 hover:bg-indigo-200 border-indigo-600',
+  'bg-purple-300 hover:bg-purple-200  border-purple-600',
+  'bg-pink-300 hover:bg-pink-200 border-pink-600'
+]
 
 export const COLORS = [
   'bg-blue-300',
@@ -95,6 +105,7 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
           fromTourId: trip.tourId,
           name: trip.name,
           toTourId: 0,
+          vehicleId: 0,
           type: 'none',
           day: day,
           order: index
@@ -135,7 +146,7 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
     tripVehicles.value[vehicleIndex] = newVehicle
   }
 
-  const findVehicle = (fromTourId: number, toTourId: number | undefined, vehicleType: string): DirectionResponse | undefined => {
+  const findVehicle = (fromTourId: number, toTourId: number | undefined, vehicleType: string): IDirection | undefined => {
     const vehicle = vehicles.value[`${fromTourId}-${toTourId}`]
     if (!vehicle) return
     switch (vehicleType) {
@@ -163,8 +174,7 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
         newVehicle.vehicleId = vehicle.vehicleId
       }
       return newVehicle
-    })  
-    console.log(tripVehicles)
+    })
   }
 
   const distances = computed(() => {

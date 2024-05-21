@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { DirectionResponse } from "@/api/trip";
+import type { IDirection } from "@/api/trip";
 import { convertDistance, convertTime } from "@/lib/formatter";
 import { Bike } from "lucide-vue-next";
 
 defineProps<{
-  bike?: DirectionResponse;
+  bike?: IDirection;
 }>();
 </script>
 
