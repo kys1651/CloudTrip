@@ -23,10 +23,13 @@ import { useReview } from '@/stores/review'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { Heart, MapPin, Share } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
 import ReviewComment from '@/components/review/ReviewComment.vue'
+import FollowButton from '@/components/common/FollowButton.vue'
+import { followRequest, unFollowRequest } from '@/api/user'
+import { toast } from '@/components/ui/toast'
 
 const route = useRoute()
 const router = useRouter()
@@ -55,6 +58,7 @@ const { data: review } = useQuery({
       profileImage: storedReview.value.user.profileImage
     },
     isLiked: storedReview.value.isLiked,
+    isFollowing: storedReview.value.isFollowing,
     likeCount: 0,
     rating: 0,
     createdAt: storedReview.value.createdAt,
@@ -69,7 +73,6 @@ const { data: comments } = useQuery({
 })
 
 const isLiked = ref<boolean>(storedReview.value.isLiked)
-
 watch(review, (newReview) => {
   isLiked.value = newReview.isLiked
 })
@@ -81,6 +84,31 @@ const { mutate: mutateLike } = useMutation({
     isLiked.value = !isLiked.value
     queryClient.invalidateQueries({
       queryKey: ['reviews', reviewId]
+    })
+  }
+})
+
+const isFollowing = ref<boolean>(storedReview.value.isFollowing)
+watch(review, (newReview) => {
+  isFollowing.value = newReview.isFollowing
+})
+
+const { mutate: followMutate } = useMutation({
+  mutationKey: ['reviews', 'follow', review.value.user.userId],
+  mutationFn: () =>
+    isFollowing.value
+      ? unFollowRequest(review.value.user.userId)
+      : followRequest(review.value.user.userId),
+  onSuccess: () => {
+    isFollowing.value = !isFollowing.value
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', 'follow', review.value.user.userId]
+    })
+    const action = isFollowing.value ? '팔로우' : '언팔로우'
+    toast({
+      title: `${action} 성공`,
+      description: `${review.value.user.nickname}을/를 ${action} 하였습니다.`,
+      variant: 'success'
     })
   }
 })
@@ -201,16 +229,30 @@ const scrollToBottom = () => {
     >
       <div class="p-3 border-b border-gray-200 dark:border-gray-700">
         <!-- 작성자 정보 출력 -->
-        <div @click="router.push(`/user/${review.user.userId}`)" class="flex items-center gap-4">
-          <Avatar class="w-10 h-10 border">
-            <AvatarImage :alt="review.user.nickname" :src="review.user.profileImage" />
-            <AvatarFallback>{{ review.user.userId }}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h4 class="font-medium">{{ review.user.nickname }}</h4>
+        <div class="flex items-center justify-between">
+          <div
+            @click="router.push(`/user/${review.user.userId}`)"
+            class="flex items-center gap-4 cursor-pointer"
+          >
+            <Avatar class="w-10 h-10 border">
+              <AvatarImage :alt="review.user.nickname" :src="review.user.profileImage" />
+              <AvatarFallback>{{ review.user.userId }}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h4 class="font-medium">{{ review.user.nickname }}</h4>
+            </div>
           </div>
+          <Button
+            @click="followMutate"
+            v-if="profile && review.user.userId !== profile.id"
+            class="mr-auto ml-2"
+            :variant="isFollowing ? 'outline' : 'default'"
+            size="xs"
+            >{{ isFollowing ? '팔로잉' : '팔로우' }}
+          </Button>
         </div>
       </div>
+
       <!-- 작성자 정보 출력 종료 -->
       <div class="text-sm m-2 text-gray-500 dark:text-gray-400">댓글({{ comments.length }}개)</div>
       <!-- 댓글 창 시작 -->

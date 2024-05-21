@@ -1,4 +1,3 @@
-
 export interface Authentication {
   isLogin: boolean
   profile?: Profile
@@ -36,4 +35,12 @@ export interface SimpleProfile {
   profileImage: string
   city: string
   town: string
+  isFollowing: boolean
+}
+
+export interface IUserCard {
+  userId: number
+  nickname: string
+  profileImage: string
+  isFollowing: boolean
 }

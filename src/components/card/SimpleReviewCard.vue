@@ -40,7 +40,7 @@ const router = useRouter()
     </div>
     <div class="flex flex-col items-center mb-3">
       <CardDescription id="content" class="text-center">
-        {{ review.createdAt }}
+        {{ new Date(review.createdAt).toLocaleDateString() }}
       </CardDescription>
     </div>
   </Card>

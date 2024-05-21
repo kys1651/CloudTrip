@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div
-      v-if="userReviews?.length > 0"
+      v-if="userReviews && userReviews?.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5"
     >
       <SimpleReviewCard v-for="review in userReviews" :key="review.reviewId" :review="review" />

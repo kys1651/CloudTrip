@@ -17,6 +17,7 @@ export interface IReview {
     profileImage: string
   }
   isLiked: boolean
+  isFollowing: boolean
   likeCount: number
   images: string[]
   content: string
@@ -90,6 +91,7 @@ export interface ReviewDetail {
   likeCount: number
   rating: number
   address: string
+  isFollowing: boolean
   isLiked: boolean
   images: string[]
   user: {

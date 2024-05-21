@@ -11,17 +11,18 @@ import {
 import ReviewDropdownMenu from './ReviewDropdownMenu.vue'
 import { useReview } from '@/stores/review'
 import type { IReview } from '@/types/board.type'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { Heart, MapPin, MessageCircle, Send } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CommonAvatar from '../common/CommonAvatar.vue'
 import Carousel from '../ui/carousel/Carousel.vue'
 import IconReviewRating from '../icons/IconReviewRating.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
-import { followCheckRequest, followRequest, unFollowRequest } from '@/api/user'
-import { toast } from '../ui/toast'
+import { followRequest, unFollowRequest } from '@/api/user'
+import { toast } from '@/components/ui/toast'
+
 const props = defineProps<{
   review: IReview
 }>()
@@ -33,7 +34,6 @@ const reviewStore = useReview()
 const router = useRouter()
 
 const isLiked = ref<boolean>(props.review.isLiked)
-
 const { mutate } = useMutation({
   mutationKey: ['reviews', 'like', props.review.reviewId],
   mutationFn: () =>
@@ -48,60 +48,26 @@ const { mutate } = useMutation({
   }
 })
 
-const isFollow = ref<boolean>(false)
-const { data: followData } = useQuery<boolean>({
-  queryKey: ['follow', profile?.value?.id, props.review.user.userId],
-  queryFn: () => followCheckRequest(props.review.user.userId),
-  enabled: !!profile.value
-})
-watch(followData, (newData) => {
-  if (newData !== undefined) {
-    isFollow.value = newData
+const isFollowing = ref<boolean>(props.review.isFollowing)
+const { mutate: followMutate } = useMutation({
+  mutationKey: ['reviews', 'follow', props.review.user.userId],
+  mutationFn: () =>
+    isFollowing.value
+      ? unFollowRequest(props.review.user.userId)
+      : followRequest(props.review.user.userId),
+  onSuccess: () => {
+    isFollowing.value = !isFollowing.value
+    queryClient.invalidateQueries({
+      queryKey: ['reviews', 'follow', props.review.user.userId]
+    })
+    const action = isFollowing.value ? '팔로우' : '언팔로우'
+    toast({
+      title: `${action} 성공`,
+      description: `${props.review.user.nickname}을/를 ${action} 하였습니다.`,
+      variant: 'success'
+    })
   }
 })
-
-const followUnFollow = async () => {
-  if (isFollow.value) {
-    const isSuccess = await unFollowRequest(props.review.user.userId)
-    if (isSuccess) {
-      toast({
-        title: '언팔로우 성공',
-        description: `${props.review.user.nickname}을/를 언팔로우 하였습니다.`,
-        variant: 'success'
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['follow', profile?.value?.id, props.review.user.userId]
-      })
-      isFollow.value = !isFollow.value
-    } else {
-      toast({
-        title: '언팔로우 실패',
-        description: `${props.review.user.nickname}을/를 언팔로우를 실패했습니다. 다시 시도해주세요.`,
-        variant: 'destructive'
-      })
-    }
-  } else {
-    const isSuccess = await followRequest(props.review.user.userId)
-    if (isSuccess) {
-      toast({
-        title: '팔로우 성공',
-        description: `${props.review.user.nickname}을/를 팔로우 하였습니다.`,
-        variant: 'success'
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['follow', profile?.value?.id, props.review.user.userId]
-      })
-      isFollow.value = !isFollow.value
-    } else {
-      toast({
-        title: '팔로우 실패',
-        description: '사용자 팔로우를 실패했습니다. 다시 시도해주세요.',
-        variant: 'destructive'
-      })
-    }
-  }
-}
-
 const pushRouter = () => {
   reviewStore.updateReview(props.review)
   router.push({ name: 'review-detail', params: { id: props.review.reviewId } })
@@ -119,14 +85,18 @@ const pushRouter = () => {
         <span>{{ review.user.nickname }}</span>
       </a>
       <Button
+        @click="followMutate"
         v-if="profile && review.user.userId !== profile.id"
         class="mr-auto ml-2"
+        :variant="isFollowing ? 'outline' : 'default'"
         size="xs"
-        @click="followUnFollow"
-        >{{ isFollow ? '팔로잉' : '팔로우' }}</Button
-      >
+        >{{ isFollowing ? '팔로잉' : '팔로우' }}
+      </Button>
 
-      <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
+      <ReviewDropdownMenu
+        v-if="profile && profile.id === review.user.userId"
+        :reviewId="review.reviewId"
+      />
     </CardHeader>
 
     <CardContent class="p-0">

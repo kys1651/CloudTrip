@@ -1,43 +1,131 @@
 <script setup lang="ts">
-import { simpleProfileRequest } from '@/api/user'
-import { useQuery } from '@tanstack/vue-query'
+import {
+  followCountRequest,
+  followRequest,
+  followingCountRequest,
+  simpleProfileRequest,
+  unFollowRequest
+} from '@/api/user'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
 import Label from '@/components/ui/label/Label.vue'
+import Button from '@/components/ui/button/Button.vue'
+import { userReviewsRequest } from '@/api/review'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
+import FollowerList from '@/components/user/FollowerList.vue'
+import FollowingList from '@/components/user/FollowingList.vue'
 
-const authenticationStore = useAuthenticationStore()
-const { profile } = storeToRefs(authenticationStore)
+import { ref, watch } from 'vue'
+import { toast } from '@/components/ui/toast'
 
 const route = useRoute()
-const userId = route.params.userId
+const userId = Number(route.params.userId)
+const authenticationStore = useAuthenticationStore()
+const { profile } = storeToRefs(authenticationStore)
+const queryClient = useQueryClient()
+
 const { data: userProfile } = useQuery({
-  queryKey: ['simpleProfile', userId],
+  queryKey: ['user', userId, 'profile'],
   queryFn: () => simpleProfileRequest(userId)
 })
+
+const { data: userReviews } = useQuery({
+  queryKey: ['user', userId, 'review'],
+  queryFn: () => userReviewsRequest(userId)
+})
+
+const { data: followerCount } = useQuery({
+  queryKey: ['user', userId, 'followCount'],
+  queryFn: () => followCountRequest(userId)
+})
+
+const { data: followingCount } = useQuery({
+  queryKey: ['user', userId, 'followingCount'],
+  queryFn: () => followingCountRequest(userId)
+})
+
+const isFollowing = ref<boolean>(false)
+watch(userProfile, (newProfile) => {
+  if (newProfile) {
+    isFollowing.value = newProfile.isFollowing || false
+  }
+})
+const { mutate: followMutate } = useMutation({
+  mutationKey: ['user', userProfile.value?.userId, 'follow'],
+  mutationFn: () => {
+    if (userProfile.value) {
+      return isFollowing.value
+        ? unFollowRequest(userProfile.value.userId)
+        : followRequest(userProfile.value.userId)
+    }
+    return Promise.reject('User profile is not loaded yet')
+  },
+  onSuccess: () => {
+    isFollowing.value = !isFollowing.value
+    queryClient.invalidateQueries({
+      queryKey: ['user', userProfile.value?.userId]
+    })
+    const action = isFollowing.value ? '팔로우' : '언팔로우'
+    toast({
+      title: `${action} 성공`,
+      description: `${userProfile.value?.nickname}을/를 ${action} 하였습니다.`,
+      variant: 'success'
+    })
+  }
+})
+
+const isOpenFollowing = ref(false)
+const isOpenFollower = ref(false)
 </script>
 
 <template>
-  <div class="container mx-auto mt-10 p-8 bg-white rounded-lg shadow-md text-center max-w-3xl">
+  <div
+    v-if="userProfile"
+    class="container mx-auto mt-10 p-8 bg-white rounded-lg shadow-md text-center max-w-5xl"
+  >
     <h1 @click="$router.push(`/user/${userId}`)" class="text-3xl font-bold mb-8">프로필</h1>
     <div class="flex items-center justify-center">
       <img
-        :src="userProfile?.profileImage"
+        :src="userProfile.profileImage"
         alt="프로필 이미지"
-        class="w-60 h-60 rounded-full border-4 border-gray-300 mr-10"
+        class="w-80 h-80 rounded-full border-4 border-gray-300 mr-10"
       />
-      <div class="text-left">
-        <div class="mb-4">
-          <Label class="text-2xl">닉네임: {{ userProfile?.nickname }}</Label>
+      <div class="text-left p-4">
+        <div class="grid grid-cols-3 gap-4 text-center mb-4">
+          <div>
+            <span class="block text-3xl font-bold">{{ userReviews ? userReviews.length : 0 }}</span>
+            <span class="text-sm text-gray-600">전체 리뷰 수</span>
+          </div>
+          <div @click="isOpenFollower = true">
+            <span class="block text-3xl font-bold">{{ followerCount }}</span>
+            <span class="text-sm text-gray-600">팔로워</span>
+          </div>
+          <div @click="isOpenFollowing = true">
+            <span class="block text-3xl font-bold">{{ followingCount }}</span>
+            <span class="text-sm text-gray-600">팔로잉</span>
+          </div>
+        </div>
+        <div class="mb-4 flex justify-between items-center">
+          <Label class="text-2xl">닉네임: {{ userProfile.nickname }}</Label>
+          <Button
+            @click="followMutate"
+            v-if="profile && userProfile.userId !== profile.id"
+            class="ml-auto"
+            :variant="isFollowing ? 'outline' : 'default'"
+            size="xs"
+          >
+            {{ isFollowing ? '팔로잉' : '팔로우' }}
+          </Button>
         </div>
         <div class="mb-4">
-          <Label class="text-2xl">이메일: {{ userProfile?.email }}</Label>
+          <Label class="text-2xl">이메일: {{ userProfile.email }}</Label>
         </div>
         <div class="mb-4">
-          <Label class="text-2xl">지역: {{ userProfile?.city }}</Label>
+          <Label class="text-2xl">지역: {{ userProfile.city }}</Label>
         </div>
         <div class="mb-4">
-          <Label class="text-2xl">상세 지역: {{ userProfile?.town }}</Label>
+          <Label class="text-2xl">상세 지역: {{ userProfile.town }}</Label>
         </div>
       </div>
     </div>
@@ -61,6 +149,18 @@ const { data: userProfile } = useQuery({
       </ul>
     </nav>
     <RouterView />
+    <FollowerList
+      :open="isOpenFollower"
+      :nickname="userProfile.nickname"
+      :userId="userProfile.userId"
+      @update:open="isOpenFollower = $event"
+    />
+    <FollowingList
+      :open="isOpenFollowing"
+      :nickname="userProfile.nickname"
+      :userId="userProfile.userId"
+      @update:open="isOpenFollowing = $event"
+    ></FollowingList>
   </div>
 </template>
 

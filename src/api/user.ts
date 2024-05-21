@@ -1,6 +1,6 @@
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
-import type { Authentication, IMyPage, Profile, SimpleProfile } from '@/types/user.type'
+import type { Authentication, IMyPage, IUserCard, Profile, SimpleProfile } from '@/types/user.type'
 
 export const userDataRequest = async () => {
   const {
@@ -102,11 +102,41 @@ export const followRequest = async (userId: number): Promise<boolean> => {
 
 export const unFollowRequest = async (userId: number): Promise<boolean> => {
   try {
-    const {
-      data: { isSuccess, data, code, errors }
-    } = await client.delete<BaseResponse<void>>(`/user/${userId}/unfollow`)
+    await client.delete<BaseResponse<void>>(`/user/${userId}/unfollow`)
     return true
   } catch (e) {
     return false
   }
+}
+
+export const followCountRequest = async (userId: number): Promise<number> => {
+  const {
+    data: { isSuccess, data, message }
+  } = await client.get<BaseResponse<number>>(`/user/${userId}/followerCount`)
+  if (!isSuccess) throw Error(message)
+  return data
+}
+
+export const followingCountRequest = async (userId: number): Promise<number> => {
+  const {
+    data: { isSuccess, data, message }
+  } = await client.get<BaseResponse<number>>(`/user/${userId}/followingCount`)
+  if (!isSuccess) throw Error(message)
+  return data
+}
+
+export const follwerRequest = async (userId: number): Promise<IUserCard[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IUserCard[]>>(`/user/${userId}/follower`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const follwingRequest = async (userId: number): Promise<IUserCard[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IUserCard[]>>(`/user/${userId}/following`)
+  if (!isSuccess) throw new Error(message)
+  return data
 }
