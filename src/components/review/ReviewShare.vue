@@ -18,8 +18,11 @@ const likeCount = Number(review.likeCount)
 // Kakao SDK 초기화 설정을 모듈로 분리
 const useKakao = (elementRef: Ref<HTMLAnchorElement | null>) => {
   const initializeKakao = () => {
-    if (window.Kakao) {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
       window.Kakao.init(`${import.meta.env.VITE_APP_KAKAO_JS_API_KEY}`)
+    }
+
+    if (window.Kakao) {
       window.Kakao.Share.createDefaultButton({
         container: elementRef.value,
         objectType: 'feed',
@@ -38,7 +41,6 @@ const useKakao = (elementRef: Ref<HTMLAnchorElement | null>) => {
         },
         social: {
           likeCount: likeCount
-          // commentCount: 45
         },
         buttons: [
           {
@@ -61,12 +63,7 @@ const useKakao = (elementRef: Ref<HTMLAnchorElement | null>) => {
   }
 
   onMounted(() => {
-    const script = document.createElement('script')
-    script.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.1/kakao.min.js'
-    script.integrity = 'sha384-kDljxUXHaJ9xAb2AzRd59KxjrFjzHa5TAoFQ6GbYTCAG0bjM55XohjjDT7tDDC01'
-    script.crossOrigin = 'anonymous'
-    script.onload = initializeKakao
-    document.head.appendChild(script)
+    initializeKakao()
   })
 }
 const kakaoTalkSharing = ref<HTMLAnchorElement | null>(null)
