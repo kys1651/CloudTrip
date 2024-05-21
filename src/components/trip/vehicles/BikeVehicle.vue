@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { DirectionResponse } from "@/api/trip";
 import { convertDistance, convertTime } from "@/lib/formatter";
 import { Bike } from "lucide-vue-next";
 
 defineProps<{
-  time: number;
-  distance: number;
+  bike?: DirectionResponse;
 }>();
 </script>
 
@@ -14,8 +14,8 @@ defineProps<{
     <div
       class="text-gray-500 dark:text-gray-400 py-4 flex flex-col justify-start text-xs"
     >
-      <span>소요시간: {{ convertTime(time) }}</span>
-      <span>거리: {{ convertDistance(distance) }}</span>
+      <span>소요시간: {{ convertTime(bike?.spentTime || 0) }}</span>
+      <span>거리: {{ convertDistance(bike?.spentTime || 0) }}</span>
     </div>
   </div>
 </template>

@@ -25,7 +25,7 @@ import { useReview } from '@/stores/review'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { Heart, MapPin, Share } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
 import ReviewComment from '@/components/review/ReviewComment.vue'
@@ -99,8 +99,25 @@ const { mutate: mutateComment } = useMutation({
 })
 
 const onSubmit = () => {
-  if (comment.value.length === 0) return
+  if (comment.value.trim().length === 0) return
   mutateComment(comment.value)
+}
+
+// 댓글 데이터를 감시하여 변경될 때마다 스크롤을 맨 아래로 이동
+watch(comments, (newComments, oldComments) => {
+  if (newComments.length !== oldComments.length) {
+    nextTick(() => {
+      scrollToBottom()
+    })
+  }
+})
+
+const commentsContainer = ref<HTMLElement | null>(null)
+// 스크롤을 맨 아래로 이동시키는 함수
+const scrollToBottom = () => {
+  if (commentsContainer.value) {
+    commentsContainer.value.scrollTop = commentsContainer.value.scrollHeight
+  }
 }
 </script>
 
@@ -198,7 +215,8 @@ const onSubmit = () => {
       <div class="text-sm m-2 text-gray-500 dark:text-gray-400">댓글({{ comments.length }}개)</div>
       <!-- 댓글 창 시작 -->
       <div
-        class="px-4 py-2 max-h-[520px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"
+        class="comments-container px-4 py-2 max-h-[720px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"
+        ref="commentsContainer"
       >
         <!-- 댓글 출력 -->
         <ReviewComment
@@ -206,7 +224,7 @@ const onSubmit = () => {
           :key="comment.commentId"
           :comment="comment"
           :reviewId="review.reviewId"
-        />
+        />바나나 킥 AND WAXING
         <div class="h-12"></div>
       </div>
       <!-- 댓글 출력 종료 -->

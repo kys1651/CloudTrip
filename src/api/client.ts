@@ -3,7 +3,7 @@ import type { JwtToken } from '@/types/auth.type'
 import axios from 'axios'
 import { storeToRefs } from 'pinia'
 
-const BACKEND_URL = 'http://localhost:8080'
+const BACKEND_URL = 'http://121.147.38.29:8080'
 const BASE_URL = `${BACKEND_URL}/api/v1`
 
 export const NAVER_LOGIN_URL = `${BACKEND_URL}/oauth2/authorization/naver`
@@ -61,13 +61,10 @@ instance.interceptors.response.use(
         data: {
           isSuccess,
           message,
-          data: { accessToken: newAccessToken, refreshToken }
+          data: { accessToken: newAccessToken }
         }
       } = await instance.post<BaseResponse<JwtToken>>(REFRESH_URI)
       if (!isSuccess) throw new Error(message)
-
-      sessionStorage.setItem('accessToken', newAccessToken)
-      sessionStorage.setItem('refreshToken', refreshToken)
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
       authentication.setAccessToken(newAccessToken)
@@ -75,6 +72,7 @@ instance.interceptors.response.use(
     } catch (error) {
       console.error(error)
       authentication.clearAuthentication()
+      
       throw new Error('인증 과정에서 에러가 발생하였습니다.')
     }
   }

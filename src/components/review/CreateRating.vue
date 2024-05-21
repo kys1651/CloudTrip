@@ -4,7 +4,7 @@
       v-for="(star, index) in 5"
       :key="index"
       :filled="currentRating >= index + 1"
-      @click="() => setRating(index + 1)"
+      @mouseenter="() => setRating(index + 1)"
     />
     <span v-if="currentRating" class="font-semibold">({{ currentRating }})</span>
   </div>

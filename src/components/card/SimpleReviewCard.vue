@@ -1,15 +1,15 @@
 <script setup>
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
-import { useRouter } from 'vue-router'
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
-import Carousel from '@/components/ui/carousel/Carousel.vue'
-defineProps(['review'])
-const router = useRouter()
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Carousel from "@/components/ui/carousel/Carousel.vue";
+import { useRouter } from "vue-router";
+defineProps(["review"]);
+const router = useRouter();
 </script>
 
 <template>

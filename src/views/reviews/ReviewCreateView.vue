@@ -195,7 +195,7 @@ const currentRating = ref(0)
         @click="isDialogOpen = true"
         class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2"
       >
-        <Dialog :open="isDialogOpen">
+        <Dialog>
           <DialogTrigger>
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
@@ -296,7 +296,7 @@ const currentRating = ref(0)
       </div>
       <div class="flex flex-row space-x-4 overflow-x-scroll w-full flex-nowrap scrollbar-hide">
         <div
-          class="w-24 h-24 border rounded-md overflow-hidden flex flex-col items-center justify-center space-y-2 cursor-pointer flex-shrink-0"
+          class="relative w-24 h-24 border rounded-md overflow-hidden flex flex-col items-center justify-center space-y-2 cursor-pointer flex-shrink-0"
           v-for="(image, index) in imageSrcs"
           :key="index"
           :class="{
@@ -305,57 +305,64 @@ const currentRating = ref(0)
           }"
           @click="imageIndex = index"
         >
-          <img :src="image" />
-          <Button size="icon" variant="ghost" @click.stop="removeImage(index)">
+          <img :src="image" class="w-full h-full object-cover" />
+          <button
+            class="absolute -top-2.5 -right-0.5 w-5 h-5 bg-black text-white border border-gray-300 flex items-center justify-center opacity-75 hover:opacity-100"
+            @click.stop="removeImage(index)"
+          >
             <span class="sr-only">Remove image</span>
             &times;
-          </Button>
+          </button>
         </div>
       </div>
     </div>
     <!-- 이미지 출력 종료 -->
 
     <!-- 글 작성 부분 -->
-    <div class="flex flex-col border border-gray-400 rounded-md px-4 py-2 h-52">
+    <div class="flex flex-col border border-gray-400 rounded-md px-4 py-2 h-72">
       <FormField v-slot="{ componentField }" name="content">
         <FormItem>
-          <FormLabel
-            for="content"
-            class="text-lg font-semibold flex flex-row items-center cursor-pointer space-x-3 py-1 w-full"
-          >
-            후기 작성
-          </FormLabel>
+          <div class="flex justify-between items-center py-1 w-full">
+            <FormLabel
+              for="content"
+              class="text-lg font-semibold flex items-center cursor-pointer space-x-3"
+            >
+              후기 작성
+            </FormLabel>
+            <FormMessage />
+            <div class="flex justify-end">
+              <AlertDialog>
+                <AlertDialogTrigger @click.prevent="reviewRecommend">
+                  <Button> AI추천 작성 <WandSparkles class="size-4 ml-1" /></Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle class="mb-3">AI추천 작성</AlertDialogTitle>
+                    <div v-if="isLoading" class="flex justify-center items-center h-40">
+                      <LoaderCircle class="h-16 w-16 animate-spin" />
+                    </div>
+                    <AlertDialogDescription v-else>{{ responseContent }}</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel @click="initContent">취소</AlertDialogCancel>
+                    <AlertDialogAction v-if="isRecommend" @click="changeContent"
+                      >결정</AlertDialogAction
+                    >
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
           <FormControl>
             <Textarea
-              class="h-3/4 resize-none border-none focus:border-none focus:ring-0 w-full focus-visible:ring-0 focus-visible:ring-offset-0"
+              class="h-52 resize-none border-none focus:border-none focus:ring-0 w-full focus-visible:ring-0 focus-visible:ring-offset-0"
               placeholder="Write a caption..."
-              rows="{5}"
+              rows="{10}"
               v-bind="componentField"
             />
           </FormControl>
-          <FormMessage />
         </FormItem>
       </FormField>
-    </div>
-    <div class="flex justify-end">
-      <AlertDialog>
-        <AlertDialogTrigger @click.prevent="reviewRecommend">
-          <Button> AI추천 작성 <WandSparkles class="size-4 ml-1" /></Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle class="mb-3">AI추천 작성</AlertDialogTitle>
-            <div v-if="isLoading" class="flex justify-center items-center h-40">
-              <LoaderCircle class="h-16 w-16 animate-spin" />
-            </div>
-            <AlertDialogDescription v-else>{{ responseContent }}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel @click="initContent">취소</AlertDialogCancel>
-            <AlertDialogAction v-if="isRecommend" @click="changeContent">결정</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   </form>
 </template>

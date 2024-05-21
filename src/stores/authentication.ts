@@ -10,6 +10,10 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     () => accessToken.value !== undefined && accessToken.value.length > 0 && profile
   )
 
+  const authUserId = computed(() => {
+    return profile.value?.id || 0
+  })
+
   const setAccessToken = (newAccessToken: string) => {
     accessToken.value = newAccessToken
   }
@@ -22,5 +26,11 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     profile.value = newProfile
   }
 
-  return { accessToken, profile, isLogin, clearAuthentication, setAccessToken, updateProfile }
-})
+  return { accessToken, profile, authUserId, isLogin, clearAuthentication, setAccessToken, updateProfile }
+}, { 
+  persist: {
+    storage: sessionStorage,
+    key: 'authentication',
+    paths: ['accessToken', 'profile']
+  }
+ })

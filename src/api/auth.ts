@@ -1,5 +1,5 @@
-import { useAuthenticationStore } from '@/stores/authentication'
 import client, { type BaseResponse } from '@/api/client'
+import { useAuthenticationStore } from '@/stores/authentication'
 import type {
   EmailConfirmForm,
   FindPasswordForm,
@@ -14,13 +14,10 @@ export const signInRequest = async (signIn: SignInForm) => {
     data: {
       isSuccess,
       message,
-      data: { accessToken, refreshToken }
+      data: { accessToken }
     }
   } = await client.post<BaseResponse<JwtToken>>(`/auth/sign-in`, signIn)
   if (!isSuccess) throw new Error(message)
-
-  sessionStorage.setItem('accessToken', accessToken)
-  sessionStorage.setItem('refreshToken', refreshToken)
 
   const authentication = useAuthenticationStore()
   authentication.setAccessToken(accessToken)
@@ -57,8 +54,8 @@ export const emailConfirmRequest = async (confirm: EmailConfirmForm) => {
 
 export const signOutRequest = async () => {
   await client.delete<BaseResponse<void>>(`/auth/sign-out`)
-  sessionStorage.removeItem('accessToken')
-  sessionStorage.removeItem('refreshToken')
+  const { clearAuthentication } = useAuthenticationStore()
+  clearAuthentication()
 }
 
 export const refreshRequest = async () => {
@@ -66,13 +63,10 @@ export const refreshRequest = async () => {
     data: {
       isSuccess,
       message,
-      data: { accessToken, refreshToken }
+      data: { accessToken }
     }
   } = await client.post<BaseResponse<JwtToken>>(`/auth/refresh`)
   if (!isSuccess) throw new Error(message)
-
-  sessionStorage.setItem('accessToken', accessToken)
-  sessionStorage.setItem('refreshToken', refreshToken)
 
   const authentication = useAuthenticationStore()
   authentication.setAccessToken(accessToken)

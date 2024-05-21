@@ -7,7 +7,7 @@
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <RouterLink :to="{ name: 'review-update' }">
+      <RouterLink :to="{ name: 'review-update', params: { reviewId: reviewId } }">
         <DropdownMenuItem>
           <PenLine class="w-4 h-4 mr-2" />
           수정하기

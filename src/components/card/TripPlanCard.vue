@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
 import { imageOrDefault } from "@/lib/image-load";
 import { useTripPlanStore } from "@/stores/trip-plan";
+import { useScheduleSocket } from "@/stores/web-stomp";
 import type { SearchTrip } from "@/types/trip.type";
 import { useImage } from "@vueuse/core";
 import { Heart, Locate, Star } from "lucide-vue-next";
@@ -15,7 +16,8 @@ const props = defineProps<{
 const backgroundImage = imageOrDefault(props.trip.backgroundImage);
 const { isLoading } = useImage({ src: backgroundImage });
 
-const { addTrip, exists } = useTripPlanStore();
+const { addTrip, exists, updateVehicles } = useTripPlanStore();
+const { lock } = useScheduleSocket();
 
 const toast = useToast();
 
@@ -27,7 +29,9 @@ const pickTrip = () => {
     duration: 2000,
     variant: "success",
   });
-  addTrip(1, props.trip);
+  addTrip(0, props.trip);
+  updateVehicles();
+  lock();
 };
 </script>
 

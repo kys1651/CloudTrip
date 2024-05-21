@@ -61,7 +61,7 @@ const router = createRouter({
       component: () => import('@/views/reviews/ReviewCreateView.vue')
     },
     {
-      path: '/review/update',
+      path: '/review/update/:reviewId',
       name: 'review-update',
       component: () => import('@/views/reviews/ReviewUpdateView.vue')
     },
@@ -123,9 +123,14 @@ const router = createRouter({
       ]
     },
     {
-      path: '/planning/:cityId',
-      name: 'planning',
-      component: () => import('@/views/PlanningView.vue')
+      path: '/schedule',
+      name: 'schedule',
+      component: () => import('@/views/schedule/ScheduleView.vue')
+    },
+    {
+      path: '/schedule/:scheduleId',
+      name: 'schedule-detail',
+      component: () => import('@/views/schedule/ScheduleDetailView.vue')
     },
     {
       path: '/mypage',
