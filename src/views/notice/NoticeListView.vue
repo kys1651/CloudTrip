@@ -13,6 +13,8 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import NoticeHeader from '@/components/notice/NoticeHeader.vue'
+import { useQuery } from '@tanstack/vue-query'
+import { noticeListRequest } from '@/api/notice'
 
 const authentication = useAuthenticationStore()
 const { isLogin } = storeToRefs(authentication)
@@ -20,21 +22,9 @@ const { isLogin } = storeToRefs(authentication)
 const route = useRoute()
 const router = useRouter()
 
-const addr = 'http://localhost:8080/api/v1/notice/list'
-const notices = ref<INotice[]>([])
-onMounted(() => {
-  axios
-    .get(addr)
-    .then((response) => {
-      notices.value = response.data
-      console.log(route.query.page)
-      if (!route.query.page) {
-        router.push({ name: 'notice', query: { page: 1 } })
-      }
-    })
-    .catch((error) => {
-      console.log('공지사항 조회 오류', error)
-    })
+const {data: notices} = useQuery({
+  queryKey: ["notices"],
+  queryFn: () => noticeListRequest()
 })
 
 onUpdated(() => {
@@ -51,12 +41,12 @@ const updateCurrentPage = (pageIdx: number) => {
 const displayedPosts = computed(() => {
   const startIndex = (pageNumber.value - 1) * postsPerPage.value
   const endIndex = startIndex + postsPerPage.value
-  return notices.value.slice(startIndex, endIndex)
+  return notices.value?.slice(startIndex, endIndex)
 })
 
 const totalPages = computed(() => {
-  console.log(notices.value.length + ' ' + postsPerPage.value)
-  return Math.ceil(notices.value.length / postsPerPage.value)
+  console.log(notices.value?.length + ' ' + postsPerPage.value)
+  return Math.ceil((notices.value?.length || 0) / postsPerPage.value)
 })
 
 const isATagExists = (content: string) => {
@@ -84,7 +74,7 @@ const formatDate = (dateString: string) => {
         <AccordionTrigger
           ><div class="flex justify-between items-center w-full">
             <span>📢 {{ notice.title }}</span>
-            <span class="mx-5 text-gray-500 text-sm">{{ formatDate(notice.createdAt) }}</span>
+            <span class="mx-5 text-gray-500 text-sm">{{ formatDate(notice.createdAt.toDateString()) }}</span>
           </div></AccordionTrigger
         >
         <AccordionContent>
@@ -104,9 +94,9 @@ const formatDate = (dateString: string) => {
     <div class="w-full mt-6 flex justify-center">
       <Pagination
         @page-number="updateCurrentPage"
-        :total-page="totalPages"
-        :total-post="notices.length"
-        :items-per-page="postsPerPage"
+        :total-page="totalPages.toString()"
+        :total-post="notices?.length.toString()"
+        :items-per-page="postsPerPage.toString()"
       />
     </div>
   </div>
