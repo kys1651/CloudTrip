@@ -8,6 +8,7 @@ import { RouterView } from 'vue-router'
 import { refreshRequest } from './api/auth'
 import { userDataRequest } from './api/user'
 import { useAuthenticationStore } from './stores/authentication'
+import ChatBot from './components/chat/ChatBot.vue'
 
 const { isLogin, profile } = storeToRefs(useAuthenticationStore())
 const isRefreshRequest = sessionStorage.getItem('isRefreshRequest')

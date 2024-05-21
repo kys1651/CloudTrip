@@ -24,7 +24,6 @@ export const signInRequest = async (signIn: SignInForm) => {
 }
 
 export const signUpRequest = async (signUp: SignUpForm) => {
-  console.log(signUp)
   const {
     data: { isSuccess, message }
   } = await client.post<BaseResponse<void>>(`/auth/sign-up`, signUp)

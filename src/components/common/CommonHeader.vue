@@ -119,16 +119,25 @@ const searchByKeyword = () => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-56">
-          <DropdownMenuLabel>{{ profile.username }}</DropdownMenuLabel>
+          <DropdownMenuLabel
+            >{{ profile.nickname
+            }}<span class="text-gray-400">({{ profile.username }})</span></DropdownMenuLabel
+          >
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <User class="mr-2 h-4 w-4" />
-              <span><RouterLink :to="{ name: 'mypage' }">MyPage</RouterLink></span>
+              <span>
+                <RouterLink :to="{ name: 'userDetail', params: { userId: profile.id } }"
+                  >MyProfile</RouterLink
+                >
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings class="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>
+                <RouterLink :to="{ name: 'setting' }">Settings</RouterLink>
+              </span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />

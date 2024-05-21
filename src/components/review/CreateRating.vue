@@ -13,23 +13,17 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, watch } from 'vue'
 import IconReviewRating from '@/components/icons/IconReviewRating.vue'
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    required: true
-  }
-})
-
-const emit = defineEmits(['update:modelValue'])
-const currentRating = ref(props.modelValue)
+const props = defineProps(['rating'])
+const emit = defineEmits(['update:rating'])
+const currentRating = ref(props.rating)
 
 const setRating = (rating: number) => {
   currentRating.value = rating
-  emit('update:modelValue', currentRating.value)
+  emit('update:rating', rating)
 }
 
 watch(
-  () => props.modelValue,
+  () => props.rating,
   (newValue) => {
     currentRating.value = newValue
   }

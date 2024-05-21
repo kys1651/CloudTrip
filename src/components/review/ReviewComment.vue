@@ -129,7 +129,7 @@ const onDelete = async () => {
           >
         </div>
       </form>
-      <p v-else class="px-2 text-xs text-gray-400">{{ comment.content }}</p>
+      <p v-else class="px-2 text-xs text-gray-800">{{ comment.content }}</p>
     </div>
   </div>
 </template>

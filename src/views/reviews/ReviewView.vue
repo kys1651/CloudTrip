@@ -9,18 +9,23 @@ import { ref } from 'vue'
 
 const scrollRef = ref<HTMLElement | null>(null)
 
-const { data: pages, fetchNextPage } = useInfiniteQuery({
+const {
+  data: pages,
+  fetchNextPage,
+  hasNextPage
+} = useInfiniteQuery({
   queryKey: ['reviews'],
   queryFn: reviewsRequest,
-  getNextPageParam: (lastPage) => lastPage.nextCursor + 1,
+  getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
   initialPageParam: 0
 })
 
 useInfiniteScroll(
   scrollRef,
   async () => {
-    if (!pages.value?.pages[pages.value.pages.length - 1].hasNext) return
-    await fetchNextPage()
+    if (hasNextPage.value) {
+      await fetchNextPage()
+    }
   },
   {
     distance: 10

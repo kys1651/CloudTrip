@@ -47,6 +47,7 @@ const tours = ref<
   }[]
 >([])
 
+const open = ref(false)
 const toast = useToast()
 const router = useRouter()
 
@@ -102,11 +103,10 @@ const onSubmit = handleSubmit(async (values) => {
   }
 })
 
-const isDialogOpen = ref(false)
 const pickAddress = (name: string, tourId: number) => {
   setFieldValue('name', name)
   setFieldValue('tourId', tourId)
-  isDialogOpen.value = false
+  open.value = false
 }
 
 // 이미지가 추가 된 경우 호출하는 메서드
@@ -180,7 +180,11 @@ const initContent = () => {
   isRecommend.value = false
 }
 
-const currentRating = ref(0)
+const currentRating = ref(Number(0))
+const updateRating = (rating: number) => {
+  currentRating.value = rating
+  setFieldValue('rating', rating)
+}
 </script>
 
 <template>
@@ -191,11 +195,8 @@ const currentRating = ref(0)
     </div>
     <div class="flex flex-row space-x-4">
       <!-- 위치 선택 부분 -->
-      <div
-        @click="isDialogOpen = true"
-        class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2"
-      >
-        <Dialog>
+      <div class="border border-gray-400 flex-grow flex items-center rounded-md px-4 py-2">
+        <Dialog v-model:open="open">
           <DialogTrigger>
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
@@ -258,7 +259,11 @@ const currentRating = ref(0)
         <FormField v-slot="{ componentField }" name="rating">
           <FormItem>
             <FormControl>
-              <CreateRating v-model="currentRating" v-bind="componentField" />
+              <CreateRating
+                :rating="currentRating"
+                @update:rating="updateRating"
+                v-bind="componentField"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
