@@ -4,7 +4,7 @@ import Button from '@/components/ui/button/Button.vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 interface MenuItem {
   pathname: string
   name: string
@@ -18,16 +18,16 @@ const ROUTES = ref<{ label: string; items: MenuItem[] }[]>([
   {
     label: '사용자 관리',
     items: [
-      { pathname: '/mypage', name: 'myProfile', title: '프로필 관리' },
-      { pathname: '/mypage/account', name: 'myAccount', title: '계정 관리' }
+      { pathname: '/setting', name: 'myProfile', title: '프로필 관리' },
+      { pathname: '/setting/account', name: 'myAccount', title: '계정 관리' }
     ]
   },
   {
-    label: '사용자 활동',
+    label: '사용자 활동 관리',
     items: [
-      { pathname: '/mypage/reviews', name: 'myReviews', title: '내가 작성한 글' },
-      { pathname: '/mypage/comments', name: 'myComments', title: '나의 댓글' },
-      { pathname: '/custom/likedReview', name: 'myLikedReview', title: '좋아요한 글' }
+      { pathname: '/setting/reviews', name: 'myReviews', title: '내가 작성한 글' },
+      { pathname: '/setting/comments', name: 'myComments', title: '나의 댓글' },
+      { pathname: '/setting/likedReview', name: 'myLikedReview', title: '좋아요한 글' }
     ]
   }
 ])
@@ -62,7 +62,9 @@ watch(
         class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
         :class="{ 'text-black': '/mypage/admin/user' === curPath }"
       >
-        <RouterLink :to="{ name: 'adminUser' }">회원 관리</RouterLink>
+        <RouterLink @click="$emit('changeTitle', '관리자 관리')" :to="{ name: 'adminUser' }"
+          >회원 관리</RouterLink
+        >
       </Button>
     </div>
   </nav>

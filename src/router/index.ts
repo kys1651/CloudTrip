@@ -132,35 +132,35 @@ const router = createRouter({
       component: () => import('@/views/schedule/ScheduleDetailView.vue')
     },
     {
-      path: '/mypage',
-      name: 'mypage',
-      component: () => import('@/views/MyPageView.vue'),
+      path: '/setting',
+      name: 'setting',
+      component: () => import('@/views/SettingView.vue'),
       redirect: { name: 'myProfile' }, // 기본 경로로 리디렉션 추가
       children: [
         {
           path: '',
           name: 'myProfile',
-          component: () => import('@/components/mypage/Profile.vue')
+          component: () => import('@/components/setting/Profile.vue')
         },
         {
           path: 'account',
           name: 'myAccount',
-          component: () => import('@/components/mypage/Account.vue')
+          component: () => import('@/components/setting/Account.vue')
         },
         {
           path: 'reviews',
           name: 'myReviews',
-          component: () => import('@/components/mypage/Review.vue')
+          component: () => import('@/components/setting/Review.vue')
         },
         {
           path: 'comments',
           name: 'myComments',
-          component: () => import('@/components/mypage/Comment.vue')
+          component: () => import('@/components/setting/Comment.vue')
         },
         {
           path: 'likedReview',
           name: 'myLikedReview',
-          component: () => import('@/components/mypage/LikedReview.vue')
+          component: () => import('@/components/setting/LikedReview.vue')
         },
         {
           path: 'admin/user',

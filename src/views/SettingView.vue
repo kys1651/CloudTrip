@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Separator from '@/components/ui/separator/Separator.vue'
-import Sidebar from '@/components/mypage/Sidebar.vue'
+import Sidebar from '@/components/setting/Sidebar.vue'
 
-const title = ref('마이페이지')
+const title = ref('관리 페이지')
 const changeTitle = (newTitle: string) => {
   title.value = newTitle
 }

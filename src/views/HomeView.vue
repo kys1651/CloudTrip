@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { userDataRequest } from '@/api/user'
 import MetricCard from '@/components/card/MetricCard.vue'
 import PostingCard from '@/components/card/PostingCard.vue'
 import TripCard from '@/components/card/TripCard.vue'
-import { useToast } from '@/components/ui/toast'
 import type { MetricProps } from '@/types/trip.type'
-import { useQuery } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
 const metrics = ref<MetricProps[]>(

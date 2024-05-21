@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { signOutRequest } from "@/api/auth";
-import HomeNavigator from "@/components/common/HomeNavigator.vue";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOutRequest } from '@/api/auth'
+import HomeNavigator from '@/components/common/HomeNavigator.vue'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,57 +9,51 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAuthenticationStore } from "@/stores/authentication";
-import { useMutation } from "@tanstack/vue-query";
-import { LogOut, Settings, User } from "lucide-vue-next";
-import { storeToRefs } from "pinia";
-import { ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { useMutation } from '@tanstack/vue-query'
+import { LogOut, Settings, User } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 
-const authentication = useAuthenticationStore();
+const authentication = useAuthenticationStore()
 
-const router = useRouter();
+const router = useRouter()
 
 const { mutate } = useMutation({
-  mutationKey: ["sign-out"],
+  mutationKey: ['sign-out'],
   mutationFn: signOutRequest,
   onSuccess: () => {
-    authentication.clearAuthentication();
-    router.replace("/");
-  },
-});
+    authentication.clearAuthentication()
+    router.replace('/')
+  }
+})
 
-const hiddenRoute = [
-  "sign-in",
-  "sign-up",
-  "oauth2-redirect",
-  "confirm-email",
-  "schedule-detail",
-];
+const hiddenRoute = ['sign-in', 'sign-up', 'oauth2-redirect', 'confirm-email', 'schedule-detail']
 
 const ROUTES: { pathname: string; name: string }[] = [
   {
-    pathname: "notice",
-    name: "공지사항",
+    pathname: 'notice',
+    name: '공지사항'
   },
   {
-    pathname: "schedule",
-    name: "여행지 추천",
+    pathname: 'schedule',
+    name: '여행지 추천'
   },
   {
-    pathname: "review",
-    name: "여행지 후기",
-  },
-];
-const authenticationStore = useAuthenticationStore();
-const { isLogin, profile } = storeToRefs(authenticationStore);
+    pathname: 'review',
+    name: '여행지 후기'
+  }
+]
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
 
-const searchKeyword = ref("");
+const searchKeyword = ref('')
 const searchByKeyword = () => {
-  router.push({ name: "search", query: { keyword: searchKeyword.value } });
-};
+  router.push({ name: 'search', query: { keyword: searchKeyword.value } })
+}
 </script>
 
 <template>
@@ -108,16 +102,25 @@ const searchByKeyword = () => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-56">
-          <DropdownMenuLabel>{{ profile.username }}</DropdownMenuLabel>
+          <DropdownMenuLabel
+            >{{ profile.nickname
+            }}<span class="text-gray-400">({{ profile.username }})</span></DropdownMenuLabel
+          >
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <User class="mr-2 h-4 w-4" />
-              <span><RouterLink :to="{ name: 'mypage' }">MyPage</RouterLink></span>
+              <span>
+                <RouterLink :to="{ name: 'userDetail', params: { userId: profile.id } }"
+                  >MyProfile</RouterLink
+                >
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Settings class="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>
+                <RouterLink :to="{ name: 'setting' }">Settings</RouterLink>
+              </span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -148,7 +151,7 @@ const searchByKeyword = () => {
   position: relative;
   display: inline-block;
 }
-.input-container input[type="text"] {
+.input-container input[type='text'] {
   padding: 10px;
   border: 2px solid black;
   border-radius: 10px;

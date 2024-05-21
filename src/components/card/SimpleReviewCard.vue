@@ -14,8 +14,7 @@ import { storeToRefs } from 'pinia'
 
 const authenticationStore = useAuthenticationStore()
 const { isLogin, profile } = storeToRefs(authenticationStore)
-const props = defineProps(['review'])
-console.log(props.review.userId)
+defineProps(['review'])
 const router = useRouter()
 </script>
 
