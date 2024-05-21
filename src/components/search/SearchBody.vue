@@ -15,30 +15,28 @@ import {
 import ReviewCard from '@/components/review/ReviewCard.vue'
 import SearchCard from '@/components/search/SearchCard.vue'
 import { OctagonAlert } from 'lucide-vue-next'
+import { type ISearch } from '@/types/search.type'
+import { searchResult } from '@/api/search'
 
 const route = useRoute()
 const router = useRouter()
 
 const authentication = useAuthenticationStore()
 
-const datas = ref({
-  reviews: [],
-  notices: [],
-  users: []
-})
+const datas = ref<ISearch>()
 const reviewLen = ref()
 const noticeLen = ref()
 const userLen = ref()
 onMounted(() => {
   const keyword = route.query.keyword
   console.log(keyword)
-  const addr = `http://localhost:8080/api/v1/search?searchKeyword=${keyword}`
+  if (!keyword) return;
+  console.log(keyword)
 
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      datas.value = response.data
+  searchResult(keyword?.toString())
+    .then((data) => {
+      console.log(data)
+      datas.value = data
       reviewLen.value = datas.value.reviews.length
       noticeLen.value = datas.value.notices.length
       userLen.value = datas.value.users.length
@@ -77,7 +75,7 @@ const goSearchProfile = () => {
 </script>
 
 <template>
-  <div className="w-full px-10">
+  <div v-if="datas" className="w-full px-10">
     <div className="flex justify-between mb-10">
       <div className="flex space-x-2 text-sm">
         <Badge class="badge bg-white text-black border-black" @click="goSearch" variant="default"

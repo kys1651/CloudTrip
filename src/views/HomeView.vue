@@ -26,6 +26,8 @@ import { Star } from 'lucide-vue-next'
 import { UserRound } from 'lucide-vue-next'
 import { PlaneTakeoff } from 'lucide-vue-next'
 import { CalendarCheck } from 'lucide-vue-next'
+import type { IHome } from '@/types/home.type'
+import { homeList } from '@/api/home'
 
 const noImg = '/src/assets/img/noImg2.png'
 
@@ -34,40 +36,11 @@ const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true }, [Autoplay()])
 const route = useRoute()
 const router = useRouter()
 
-interface HomeData {
-  numberData: {
-    reviewCount: number
-    noticeCount: number
-    usersCount: number
-    tourCount: number
-    scheduleCount: number
-  }
-  topTours: {
-    tourId: number
-    name: string
-    description: string
-    cityName: string
-    townName: string
-    rating: number
-    backgroundImage: string | null
-  }[]
-  topReviews: {
-    reviewId: number
-    content: string
-    createdAt: string
-    name: string
-    image: string | null
-    likeCount: number
-  }[]
-}
+const homeData = ref<IHome>()
 
-const homeData = ref<HomeData>()
-
-const addr = `http://localhost:8080/api/v1/home`
-axios
-  .get(addr)
-  .then((response) => {
-    homeData.value = response.data
+  homeList()
+  .then((data) => {
+    homeData.value = data
   })
   .catch((error) => {
     console.log('데이터 불러오기 실패', error)

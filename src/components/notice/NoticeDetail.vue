@@ -7,29 +7,26 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { getNoticeDetail } from '@/api/notice'
 
 const route = useRoute()
 const router = useRouter()
 
 const noticeId = route.params.noticeId
-const addr = `http://localhost:8080/api/v1/notice/view/${noticeId}`
 
 const notice = ref({
   title: '',
   content: ''
 })
 onMounted(() => {
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      notice.value = response.data
+  getNoticeDetail(noticeId.toString())
+    .then((data) => {
+      console.log(data)
+      notice.value = data
     })
     .catch((error) => {
       console.log('공지사항 조회 오류 발생', error)
