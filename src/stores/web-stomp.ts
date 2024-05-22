@@ -66,8 +66,7 @@ export const useScheduleSocket = defineStore('schedule-socket', () => {
 
   const connect = (scheduleId: number, day: number) => {
     client.value = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
-      // brokerURL: 'ws://121.147.38.29:8080/ws',
+      brokerURL: import.meta.env.VITE_WEB_SOCKET_URL,
       onConnect: () => {
         client.value!!.subscribe(`/sub/schedule/${scheduleId}/chat`, (message) => {
           const chat = JSON.parse(message.body) as IChat
