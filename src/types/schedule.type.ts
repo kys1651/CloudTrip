@@ -29,6 +29,7 @@ export interface IScheduleSearch {
   private: boolean
   multi: boolean
   finished: boolean
+  usernames: string[]
   day: number
 }
 
