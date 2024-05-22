@@ -53,8 +53,8 @@ public class ScheduleData {
         private String access;
         private String mode;
         private List<String> names;
-        private int minCount;
-        private int maxCount;
+        private int minCount = 0;
+        private int maxCount = 100;
     }
 
     @Data
