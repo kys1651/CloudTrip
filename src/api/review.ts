@@ -43,6 +43,16 @@ export const reviewAllDeleteRequest = async (checkList: number[]) => {
   })
 }
 
+export const reviewSearchRequest = async (keyword: string): Promise<IReview[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IReview[]>>(`/review/search`, {
+    params: { keyword }
+  })
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
 export const userReviewsRequest = async (userId: number): Promise<SumaryReview[]> => {
   const {
     data: { isSuccess, message, data }

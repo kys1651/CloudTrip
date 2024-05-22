@@ -64,7 +64,7 @@ watch(
         </Button>
       </div>
     </div>
-    <div v-if="profile?.roleType">
+    <div v-if="profile?.roleType === 'ADMIN'">
       <h3 class="text-2xl font-bold mt-4 mb-3">{{ ADMIN_ROUTER.label }}</h3>
       <div v-for="route in ADMIN_ROUTER.items" :key="route.name">
         <Button
@@ -77,23 +77,6 @@ watch(
           }}</RouterLink>
         </Button>
       </div>
-      <!--       
-      <Button
-        variant="ghost"
-        class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
-        :class="{ 'text-black': '/mypage/admin/user' === curPath }"
-      >
-        <RouterLink @click="$emit('changeTitle', '관리자 관리')" :to="{ name: 'adminUser' }"
-          >회원 관리</RouterLink
-        >
-      </Button>
-      <Button
-        variant="ghost"
-        class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
-        :class="{ 'text-black': '/mypage/admin/user' === curPath }"
-      >
-        <RouterLink :to="{ name: 'adminNotice' }">공지사항 관리</RouterLink>
-      </Button> -->
     </div>
   </nav>
 </template>

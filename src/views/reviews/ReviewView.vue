@@ -6,7 +6,7 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useInfiniteScroll } from '@vueuse/core'
 import { Pencil } from 'lucide-vue-next'
 import { ref } from 'vue'
-
+import { LoaderCircle } from 'lucide-vue-next'
 const scrollRef = ref<HTMLElement | null>(null)
 
 const {
@@ -47,8 +47,13 @@ useInfiniteScroll(
         class="justify-center grid grid-cols-1 gap-10 m-auto overflow-scroll scrollbar-hide px-10"
         ref="scrollRef"
       >
-        <template v-for="(page, index) in pages?.pages" :key="index">
-          <ReviewCard v-for="review in page.contents" :key="review.reviewId" :review="review" />
+        <template v-if="pages">
+          <template v-for="(page, index) in pages.pages" :key="index">
+            <ReviewCard v-for="review in page.contents" :key="review.reviewId" :review="review" />
+          </template>
+        </template>
+        <template v-else>
+          <LoaderCircle class="mr-2 h-16 w-16 animate-spin" />
         </template>
       </div>
     </div>
