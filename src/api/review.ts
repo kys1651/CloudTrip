@@ -113,6 +113,7 @@ export const reviewUpdateRequest = async (
   removeImagesSrc: string[]
 ) => {
   const formData = new FormData()
+  formData.append('images', '')
   images.forEach((image) => {
     formData.append('images', image)
   })

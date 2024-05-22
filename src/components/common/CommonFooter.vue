@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-vue-next";
-
+import { Facebook, Instagram, Twitter, Youtube } from 'lucide-vue-next'
+import { Link, BracketsIcon, ArrowUpIcon } from 'lucide-vue-next'
+import Button from '@/components/ui/button/Button.vue'
 const hiddenRoute = [
-  "sign-in",
-  "sign-up",
-  "oauth2-redirect",
-  "confirm-email",
-  "schedule-detail",
-  "schedule",
-];
+  'sign-in',
+  'sign-up',
+  'oauth2-redirect',
+  'confirm-email',
+  'schedule-detail',
+  'schedule'
+]
 </script>
 
 <template>
@@ -19,11 +20,8 @@ const hiddenRoute = [
         className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 flex justify-between items-center"
       >
         <div className="flex items-center">
-          <BracketsIcon className="h-8 w-8 text-[#00B4E6]" />
           <div className="ml-4">
-            <p
-              className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider"
-            >
+            <p className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider">
               Cloud Trip
             </p>
             <p className="text-sm text-gray-500">주식회사 클라우드트립 | 대표 민보수</p>
@@ -54,24 +52,17 @@ const hiddenRoute = [
             <Youtube className="h-6 w-6 text-gray-400 hover:text-gray-500" />
           </div>
           <div className="flex items-center space-x-4">
-            <Link className="block" href="#">
-              <img
-                alt="Download on the App Store"
-                height="24"
-                src="/src/assets/img/appstore.png"
-                class="app-store-img"
-              />
-            </Link>
-            <Link className="block" href="#">
-              <img
-                alt="Get it on Google Play"
-                height="24"
-                src="/src/assets/img/googleplay.png"
-                class="google-store-img"
-              />
-            </Link>
-            <ArrowUpIcon
-              className="h-6 w-6 text-gray-400 hover:text-gray-500 cursor-pointer"
+            <img
+              alt="Download on the App Store"
+              height="24"
+              src="/src/assets/img/appstore.png"
+              class="app-store-img"
+            />
+            <img
+              alt="Get it on Google Play"
+              height="24"
+              src="/src/assets/img/googleplay.png"
+              class="google-store-img"
             />
           </div>
         </div>

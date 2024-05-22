@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ChatBot from '@/components/chat/ChatBot.vue'
 import CommonFooter from '@/components/common/CommonFooter.vue'
 import CommonHeader from '@/components/common/CommonHeader.vue'
 import Toaster from '@/components/ui/toast/Toaster.vue'
@@ -9,6 +8,7 @@ import { RouterView } from 'vue-router'
 import { refreshRequest } from './api/auth'
 import { userDataRequest } from './api/user'
 import { useAuthenticationStore } from './stores/authentication'
+import ChattingBot from '@/components/chat/ChattingBot.vue'
 
 const { isLogin, profile } = storeToRefs(useAuthenticationStore())
 const isRefreshRequest = sessionStorage.getItem('isRefreshRequest')
@@ -31,5 +31,5 @@ if (!isLogin.value && !isRefreshRequest) {
   <Toaster />
   <CommonFooter />
   <VueQueryDevtools position="left" buttonPosition="bottom-left" />
-  <ChatBot v-if="isLogin" />
+  <ChattingBot v-if="isLogin" />
 </template>
