@@ -160,7 +160,10 @@ const scrollToBottom = () => {
             <MapPin class="w-3 h-3 mr-1 text-gray-500" />{{ review.address }}
           </span>
         </div>
-        <ReviewDropdownMenu v-if="profile?.id === review.user.userId" :reviewId="review.reviewId" />
+        <ReviewDropdownMenu
+          v-if="profile && (profile.id === review.user.userId || profile.roleType == 'ADMIN')"
+          :reviewId="review.reviewId"
+        />
       </div>
       <!-- 디테일 뷰 좌측 컨텐츠 부분 -->
       <div class="grid gap-2">

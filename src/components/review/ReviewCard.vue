@@ -95,7 +95,7 @@ const pushRouter = () => {
       </Button>
 
       <ReviewDropdownMenu
-        v-if="profile && profile.id === review.user.userId"
+        v-if="profile && (profile.id === review.user.userId || profile.roleType == 'ADMIN')"
         :reviewId="review.reviewId"
       />
     </CardHeader>
