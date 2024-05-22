@@ -71,8 +71,8 @@ const router = createRouter({
       component: () => import('@/views/reviews/ReviewDetailView.vue')
     },
     {
-      path: '/oauth/redirect',
-      name: 'oauth-redirect',
+      path: '/redirect/oauth2',
+      name: 'redirect-oauth',
       component: () => import('@/callback/OAuthRedirect.vue')
     },
     {
