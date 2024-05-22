@@ -7,9 +7,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
-import { Send } from 'lucide-vue-next'
-import { FRONTEND_URL } from '@/api/kakao'
+import { FRONTEND_URL } from '@/api/kakao';
+import { Send } from 'lucide-vue-next';
+import { onMounted, ref, type Ref } from 'vue';
 
 const props = defineProps(['review'])
 const review = props.review
@@ -18,12 +18,12 @@ const likeCount = Number(review.likeCount)
 // Kakao SDK 초기화 설정을 모듈로 분리
 const useKakao = (elementRef: Ref<HTMLAnchorElement | null>) => {
   const initializeKakao = () => {
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(`${import.meta.env.VITE_APP_KAKAO_JS_API_KEY}`)
+    if (window.kakao && !window.kakao.isInitialized()) {
+      window.kakao.init(`${import.meta.env.VITE_APP_KAKAO_JS_API_KEY}`)
     }
 
-    if (window.Kakao) {
-      window.Kakao.Share.createDefaultButton({
+    if (window.kakao) {
+      window.kakao.Share.createDefaultButton({
         container: elementRef.value,
         objectType: 'feed',
         itemContent: {

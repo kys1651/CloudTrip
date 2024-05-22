@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, watch } from 'vue'
-import { useAuthenticationStore } from '@/stores/authentication'
+import { searchResult } from '@/api/search'
 import SearchCard from '@/components/search/SearchCard.vue'
 import SearchHeader from '@/components/search/SearchHeader.vue'
-import { searchResult } from '@/api/search'
+import { Badge } from '@/components/ui/badge'
+import { useAuthenticationStore } from '@/stores/authentication'
 import { type ISearch } from '@/types/search.type'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,9 +14,9 @@ const router = useRouter()
 const authentication = useAuthenticationStore()
 
 const datas = ref<ISearch>()
-const reviewLen = ref()
-const noticeLen = ref()
-const userLen = ref()
+const reviewLen = ref<number>(0)
+const noticeLen = ref<number>(0)
+const userLen = ref<number>(0)
 onMounted(() => {
   const keyword = route.query.keyword
   if (!keyword) return
@@ -83,9 +83,9 @@ const goSearchProfile = () => {
       <div className="grid justify-center mt-4">
         <div className="grid grid-cols-3 gap-4 justify-center">
           <SearchCard
+            v-for="user in datas.users"
             @click="goUserProfile(user.userId)"
             :user-info="user"
-            v-for="user in datas.users"
             :key="user.userId"
           />
         </div>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import Separator from '@/components/ui/separator/Separator.vue'
-import Sidebar from '@/components/setting/Sidebar.vue'
+import SidebarSetting from "@/components/setting/SidebarSetting.vue";
+import Separator from "@/components/ui/separator/Separator.vue";
+import { ref } from "vue";
 
-const title = ref('관리 페이지')
+const title = ref("관리 페이지");
 const changeTitle = (newTitle: string) => {
-  title.value = newTitle
-}
+  title.value = newTitle;
+};
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const changeTitle = (newTitle: string) => {
     <Separator class="my-6" />
     <div class="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
       <aside class="-mx-4 lg:w-1/5">
-        <Sidebar @changeTitle="changeTitle" />
+        <SidebarSetting @changeTitle="changeTitle" />
       </aside>
       <div class="flex-1">
         <div class="space-y-6">

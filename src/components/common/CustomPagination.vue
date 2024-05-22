@@ -7,19 +7,18 @@ import {
   PaginationList,
   PaginationListItem,
   PaginationNext,
-  PaginationPrev
-} from '@/components/ui/pagination'
+  PaginationPrev,
+} from "@/components/ui/pagination";
 
-import { Button } from '@/components/ui/button'
-import { ref, computed } from 'vue'
+import { Button } from "@/components/ui/button";
 
-const emit = defineEmits(['pageNumber'])
+const emit = defineEmits(["pageNumber"]);
 
 const props = defineProps<{
-  totalPage: number
-  totalPost: number
-  itemsPerPage: number
-}>()
+  totalPage: number | string;
+  totalPost: number | string;
+  itemsPerPage: number | string;
+}>();
 </script>
 
 <template>
@@ -37,7 +36,12 @@ const props = defineProps<{
       <PaginationPrev @click="$emit('pageNumber', page - 1)" />
 
       <template v-for="(item, index) in items">
-        <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
+        <PaginationListItem
+          v-if="item.type === 'page'"
+          :key="index"
+          :value="item.value"
+          as-child
+        >
           <Button
             @click="$emit('pageNumber', item.value)"
             class="w-10 h-10 p-0"

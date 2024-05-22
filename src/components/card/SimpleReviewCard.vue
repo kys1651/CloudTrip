@@ -1,21 +1,24 @@
-<script setup>
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+<script setup lang="ts">
+import ReviewDropdownMenu from "@/components/review/ReviewDropdownMenu.vue";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
-import Carousel from '@/components/ui/carousel/Carousel.vue'
-import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
-import { useRouter } from 'vue-router'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Carousel from "@/components/ui/carousel/Carousel.vue";
+import { useAuthenticationStore } from "@/stores/authentication";
+import type { SumaryReview } from "@/types/board.type";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 
-const authenticationStore = useAuthenticationStore()
-const { isLogin, profile } = storeToRefs(authenticationStore)
-defineProps(['review'])
-const router = useRouter()
+const authenticationStore = useAuthenticationStore();
+const { isLogin, profile } = storeToRefs(authenticationStore);
+defineProps<{
+  review: SumaryReview;
+}>();
+const router = useRouter();
 </script>
 
 <template>

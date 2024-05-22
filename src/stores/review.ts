@@ -11,6 +11,7 @@ const INIT_REVIEW: IReview = {
   },
   isLiked: false,
   images: [],
+  isFollowing: false,
   content: '',
   tourName: '',
   tourId: 0,

@@ -4,46 +4,46 @@ import {
   commentsRequest,
   reviewDisLikeRequest,
   reviewLikeRequest,
-  reviewRequest
-} from '@/api/review'
-import IconReviewRating from '@/components/icons/IconReviewRating.vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Button from '@/components/ui/button/Button.vue'
+  reviewRequest,
+} from "@/api/review";
+import { followRequest, unFollowRequest } from "@/api/user";
+import IconReviewRating from "@/components/icons/IconReviewRating.vue";
+import ReviewComment from "@/components/review/ReviewComment.vue";
+import ReviewDropdownMenu from "@/components/review/ReviewDropdownMenu.vue";
+import ReviewShare from "@/components/review/ReviewShare.vue";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Button from "@/components/ui/button/Button.vue";
 import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
-import Carousel from '@/components/ui/carousel/Carousel.vue'
-import Input from '@/components/ui/input/Input.vue'
-import Separator from '@/components/ui/separator/Separator.vue'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { useReview } from '@/stores/review'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { Heart, MapPin, Share } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-import { nextTick, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import ReviewDropdownMenu from '@/components/review/ReviewDropdownMenu.vue'
-import ReviewComment from '@/components/review/ReviewComment.vue'
-import { followRequest, unFollowRequest } from '@/api/user'
-import ReviewShare from '@/components/review/ReviewShare.vue'
-import { toast } from '@/components/ui/toast'
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Carousel from "@/components/ui/carousel/Carousel.vue";
+import Input from "@/components/ui/input/Input.vue";
+import Separator from "@/components/ui/separator/Separator.vue";
+import { toast } from "@/components/ui/toast";
+import { useAuthenticationStore } from "@/stores/authentication";
+import { useReview } from "@/stores/review";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { Heart, MapPin } from "lucide-vue-next";
+import { storeToRefs } from "pinia";
+import { nextTick, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const route = useRoute()
-const router = useRouter()
-const reviewStore = useReview()
-const { review: storedReview } = storeToRefs(reviewStore)
-const reviewId = Number(route.params.id)
-const authenticationStore = useAuthenticationStore()
-const { profile, isLogin } = storeToRefs(authenticationStore)
-const queryClient = useQueryClient()
+const route = useRoute();
+const router = useRouter();
+const reviewStore = useReview();
+const { review: storedReview } = storeToRefs(reviewStore);
+const reviewId = Number(route.params.id);
+const authenticationStore = useAuthenticationStore();
+const { profile, isLogin } = storeToRefs(authenticationStore);
+const queryClient = useQueryClient();
 
-const comment = ref<string>('')
+const comment = ref<string>("");
 
 const { data: review } = useQuery({
-  queryKey: ['reviews', reviewId],
+  queryKey: ["reviews", reviewId],
   queryFn: () => reviewRequest(reviewId),
   initialData: {
     reviewId: storedReview.value.reviewId,
@@ -55,96 +55,97 @@ const { data: review } = useQuery({
     user: {
       userId: storedReview.value.user.userId,
       nickname: storedReview.value.user.nickname,
-      profileImage: storedReview.value.user.profileImage
+      profileImage: storedReview.value.user.profileImage,
     },
     isLiked: storedReview.value.isLiked,
     isFollowing: storedReview.value.isFollowing,
     likeCount: 0,
     rating: 0,
     createdAt: storedReview.value.createdAt,
-    updatedAt: 0
-  }
-})
+    updatedAt: 0,
+  },
+});
 
 const { data: comments } = useQuery({
-  queryKey: ['reviews', reviewId, 'comments'],
+  queryKey: ["reviews", reviewId, "comments"],
   queryFn: () => commentsRequest(reviewId),
-  initialData: []
-})
+  initialData: [],
+});
 
-const isLiked = ref<boolean>(storedReview.value.isLiked)
+const isLiked = ref<boolean>(storedReview.value.isLiked);
 watch(review, (newReview) => {
-  isLiked.value = newReview.isLiked
-})
+  isLiked.value = newReview.isLiked;
+});
 
 const { mutate: mutateLike } = useMutation({
-  mutationKey: ['reviews', 'like', reviewId],
-  mutationFn: () => (isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId)),
+  mutationKey: ["reviews", "like", reviewId],
+  mutationFn: () =>
+    isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId),
   onSuccess: () => {
-    isLiked.value = !isLiked.value
+    isLiked.value = !isLiked.value;
     queryClient.invalidateQueries({
-      queryKey: ['reviews', reviewId]
-    })
-  }
-})
+      queryKey: ["reviews", reviewId],
+    });
+  },
+});
 
-const isFollowing = ref<boolean>(storedReview.value.isFollowing)
+const isFollowing = ref<boolean>(storedReview.value.isFollowing);
 watch(review, (newReview) => {
-  isFollowing.value = newReview.isFollowing
-})
+  isFollowing.value = newReview.isFollowing;
+});
 
 const { mutate: followMutate } = useMutation({
-  mutationKey: ['reviews', 'follow', review.value.user.userId],
+  mutationKey: ["reviews", "follow", review.value.user.userId],
   mutationFn: () =>
     isFollowing.value
       ? unFollowRequest(review.value.user.userId)
       : followRequest(review.value.user.userId),
   onSuccess: () => {
-    isFollowing.value = !isFollowing.value
+    isFollowing.value = !isFollowing.value;
     queryClient.invalidateQueries({
-      queryKey: ['reviews', 'follow', review.value.user.userId]
-    })
-    const action = isFollowing.value ? '팔로우' : '언팔로우'
+      queryKey: ["reviews", "follow", review.value.user.userId],
+    });
+    const action = isFollowing.value ? "팔로우" : "언팔로우";
     toast({
       title: `${action} 성공`,
       description: `${review.value.user.nickname}을/를 ${action} 하였습니다.`,
-      variant: 'success'
-    })
-  }
-})
+      variant: "success",
+    });
+  },
+});
 
 const { mutate: mutateComment } = useMutation({
-  mutationKey: ['reviews', 'comments', reviewId],
+  mutationKey: ["reviews", "comments", reviewId],
   mutationFn: (content: string) => commentCreateRequest(reviewId, content),
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['reviews', reviewId, 'comments']
-    })
-    comment.value = ''
-  }
-})
+      queryKey: ["reviews", reviewId, "comments"],
+    });
+    comment.value = "";
+  },
+});
 
 const onSubmit = () => {
-  if (comment.value.trim().length === 0) return
-  mutateComment(comment.value)
-}
+  if (comment.value.trim().length === 0) return;
+  mutateComment(comment.value);
+};
 
 // 댓글 데이터를 감시하여 변경될 때마다 스크롤을 맨 아래로 이동
 watch(comments, (newComments, oldComments) => {
   if (newComments.length !== oldComments.length) {
     nextTick(() => {
-      scrollToBottom()
-    })
+      scrollToBottom();
+    });
   }
-})
+});
 
-const commentsContainer = ref<HTMLElement | null>(null)
+const commentsContainer = ref<HTMLElement | null>(null);
 // 스크롤을 맨 아래로 이동시키는 함수
 const scrollToBottom = () => {
   if (commentsContainer.value) {
-    commentsContainer.value.scrollTop = commentsContainer.value.scrollHeight
+    commentsContainer.value.scrollTop = commentsContainer.value.scrollHeight;
   }
-}
+};
 </script>
 
 <template>
@@ -161,7 +162,9 @@ const scrollToBottom = () => {
           </span>
         </div>
         <ReviewDropdownMenu
-          v-if="profile && (profile.id === review.user.userId || profile.roleType == 'ADMIN')"
+          v-if="
+            profile && (profile.id === review.user.userId || profile.roleType == 'ADMIN')
+          "
           :reviewId="review.reviewId"
         />
       </div>
@@ -219,7 +222,9 @@ const scrollToBottom = () => {
         <!-- 리뷰 내용 및 날짜 출력 -->
         <div class="relative ml-3">
           <p class="text-sm mb-5">{{ review.content }}</p>
-          <div class="absolute bottom-0 right-0 text-sm text-gray-500 dark:text-gray-400 mt-4">
+          <div
+            class="absolute bottom-0 right-0 text-sm text-gray-500 dark:text-gray-400 mt-4"
+          >
             {{ new Date(review.createdAt).toLocaleDateString() }}
           </div>
         </div>
@@ -250,13 +255,15 @@ const scrollToBottom = () => {
             class="mr-auto ml-2"
             :variant="isFollowing ? 'outline' : 'default'"
             size="xs"
-            >{{ isFollowing ? '팔로잉' : '팔로우' }}
+            >{{ isFollowing ? "팔로잉" : "팔로우" }}
           </Button>
         </div>
       </div>
 
       <!-- 작성자 정보 출력 종료 -->
-      <div class="text-sm m-2 text-gray-500 dark:text-gray-400">댓글({{ comments.length }}개)</div>
+      <div class="text-sm m-2 text-gray-500 dark:text-gray-400">
+        댓글({{ comments.length }}개)
+      </div>
       <!-- 댓글 창 시작 -->
       <div
         class="comments-container px-4 py-2 max-h-[720px] flex-grow overflow-scroll scrollbar-hide relative space-y-2"
@@ -289,7 +296,11 @@ const scrollToBottom = () => {
           <span
             @click.enter.prevent.stop="onSubmit"
             class="text-sm pr-2"
-            :class="comment.length > 0 ? 'text-blue-500 font-bold cursor-pointer' : 'text-gray-400'"
+            :class="
+              comment.length > 0
+                ? 'text-blue-500 font-bold cursor-pointer'
+                : 'text-gray-400'
+            "
             >작성
           </span>
         </div>

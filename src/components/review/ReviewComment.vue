@@ -1,87 +1,94 @@
-<!-- eslint-disable vue/multi-word-component-names -->
-<script setup>
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+<script setup lang="ts">
+import { commentDeleteRequest, commentUpdateRequest } from "@/api/review";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem
-} from '@/components/ui/dropdown-menu'
-import Button from '../ui/button/Button.vue'
-import { useRouter } from 'vue-router'
-import { Ellipsis, PenLine, Eraser } from 'lucide-vue-next'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
-import { commentDeleteRequest, commentUpdateRequest } from '@/api/review'
-import { ref } from 'vue'
-import { toast } from '@/components/ui/toast'
-import { useQueryClient } from '@tanstack/vue-query'
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuthenticationStore } from "@/stores/authentication";
+import type { IComment } from "@/types/board.type";
+import { useQueryClient } from "@tanstack/vue-query";
+import { Ellipsis, Eraser, PenLine } from "lucide-vue-next";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "../ui/toast";
 
-const router = useRouter()
-const props = defineProps(['comment', 'reviewId'])
+const router = useRouter();
+const props = defineProps<{
+  comment: IComment;
+  reviewId: number;
+}>();
 
-const authenticationStore = useAuthenticationStore()
-const queryClient = useQueryClient()
-const { profile } = storeToRefs(authenticationStore)
+const toast = useToast();
 
-const isUpdate = ref(false)
-const updatedComment = ref(props.comment.content)
+const queryClient = useQueryClient();
+const { profile } = storeToRefs(useAuthenticationStore());
+
+const isUpdate = ref(false);
+const updatedComment = ref(props.comment.content);
 
 const cancle = () => {
-  isUpdate.value = false
-  updatedComment.value = props.comment.content
-}
+  isUpdate.value = false;
+  updatedComment.value = props.comment.content;
+};
 
 const onUpdate = async () => {
-  if (!confirm('댓글을 수정하시겠습니까?')) {
-    return
+  if (!confirm("댓글을 수정하시겠습니까?")) {
+    return;
   }
-  const isSuccess = await commentUpdateRequest(props.comment.commentId, updatedComment.value)
+  const isSuccess = await commentUpdateRequest(
+    props.comment.commentId,
+    updatedComment.value
+  );
   if (isSuccess) {
-    toast({
-      title: '댓글 수정 성공',
-      description: '댓글이 수정되었습니다.',
+    toast.toast({
+      title: "댓글 수정 성공",
+      description: "댓글이 수정되었습니다.",
       duration: 2000,
-      variant: 'success'
-    })
+      variant: "success",
+    });
     queryClient.invalidateQueries({
-      queryKey: ['reviews', props.reviewId, 'comments']
-    })
-    isUpdate.value = false
+      queryKey: ["reviews", props.reviewId, "comments"],
+    });
+    isUpdate.value = false;
   } else {
-    toast({
-      title: '댓글 수정 실패',
-      description: '댓글 수정 요청이 실패하였습니다. 잠시후 다시 시도해주세요',
+    toast.toast({
+      title: "댓글 수정 실패",
+      description: "댓글 수정 요청이 실패하였습니다. 잠시후 다시 시도해주세요",
       duration: 2000,
-      variant: 'destructive'
-    })
+      variant: "destructive",
+    });
   }
-}
+};
 
 const onDelete = async () => {
-  if (!confirm('댓글을 삭제하시겠습니까?')) {
-    return
+  if (!confirm("댓글을 삭제하시겠습니까?")) {
+    return;
   }
-  const isSuccess = await commentDeleteRequest(props.comment.commentId)
+  const isSuccess = await commentDeleteRequest(props.comment.commentId);
   if (isSuccess) {
-    toast({
-      title: '댓글 삭제 성공',
-      description: '댓글이 삭제되었습니다.',
+    toast.toast({
+      title: "댓글 삭제 성공",
+      description: "댓글이 삭제되었습니다.",
       duration: 2000,
-      variant: 'success'
-    })
+      variant: "success",
+    });
     queryClient.invalidateQueries({
-      queryKey: ['reviews', props.reviewId, 'comments']
-    })
+      queryKey: ["reviews", props.reviewId, "comments"],
+    });
   } else {
-    toast({
-      title: '댓글 삭제 실패',
-      description: '댓글 삭제 요청이 실패하였습니다. 잠시후 다시 시도해주세요',
+    toast.toast({
+      title: "댓글 삭제 실패",
+      description: "댓글 삭제 요청이 실패하였습니다. 잠시후 다시 시도해주세요",
       duration: 2000,
-      variant: 'destructive'
-    })
+      variant: "destructive",
+    });
   }
-}
+};
 </script>
 
 <template>
@@ -97,7 +104,10 @@ const onDelete = async () => {
           {{ new Date(comment.createdAt).toLocaleDateString() }}
         </span>
         <div
-          v-if="profile && (comment.user.userId === profile.id || profile.roleType === 'ADMIN')"
+          v-if="
+            profile &&
+            (comment.user.userId === profile.id || profile.roleType === 'ADMIN')
+          "
           class="ml-auto"
         >
           <DropdownMenu>
@@ -119,8 +129,16 @@ const onDelete = async () => {
           </DropdownMenu>
         </div>
       </div>
-      <form v-if="isUpdate" @submit.prevent="onUpdate" class="flex flex-col space-y-1 px-2">
-        <textarea class="border p-2 text-sm text-gray-700" v-model="updatedComment" rows="2" />
+      <form
+        v-if="isUpdate"
+        @submit.prevent="onUpdate"
+        class="flex flex-col space-y-1 px-2"
+      >
+        <textarea
+          class="border p-2 text-sm text-gray-700"
+          v-model="updatedComment"
+          rows="2"
+        />
         <div class="flex gap-1 mt-1">
           <Button type="submit" size="sm">수정</Button>
           <Button

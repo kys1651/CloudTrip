@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import {
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
-  TableBody,
-  Table
-} from '@/components/ui/table'
-import { Checkbox } from '@/components/ui/checkbox'
+import { dropUserByAdmin, getAllUser, getUserByKeyword, updateIsLocked } from '@/api/user'
 import { Badge } from '@/components/ui/badge'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, computed, watch } from 'vue'
-import { useAuthenticationStore } from '@/stores/authentication'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { toast } from '@/components/ui/toast'
-import Pagination from '../common/Pagination.vue'
-import { getAllUser, updateIsLocked, dropUserByAdmin } from '@/api/user'
+import { useAuthenticationStore } from '@/stores/authentication'
 import { type IUser } from '@/types/user.type'
-import { getUserByKeyword } from '@/api/user'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import CustomPagination from '../common/CustomPagination.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -149,7 +148,7 @@ const totalPages = computed(() => {
         <TableCell>{{ user.nickname }}</TableCell>
         <TableCell>
           <Badge :variant="user.isLocked ? 'secondary' : 'default'">{{
-            user.isLocked ? '비활성화' : '활성화'
+            user.isLocked ? "비활성화" : "활성화"
           }}</Badge>
         </TableCell>
         <TableCell>{{ user.roleType }}</TableCell>
@@ -162,7 +161,7 @@ const totalPages = computed(() => {
             class="mx-2"
             :class="user.isLocked ? 'deactivate-button' : 'activate-button'"
           >
-            {{ user.isLocked ? '비활성화' : '활성화' }}
+            {{ user.isLocked ? "비활성화" : "활성화" }}
           </Button>
           <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
@@ -170,10 +169,10 @@ const totalPages = computed(() => {
     </TableBody>
   </Table>
   <div class="w-full mt-6 flex justify-center">
-    <Pagination
+    <CustomPagination
       @page-number="updateCurrentPage"
-      :total-page="totalPages?.toString()"
-      :total-post="users?.length.toString()"
+      :total-page="totalPages || 0"
+      :total-post="users?.length || 0"
       :items-per-page="postsPerPage.toString()"
     />
   </div>

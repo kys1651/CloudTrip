@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { cn } from '@/lib/utils'
+import { Check, ChevronsUpDown } from 'lucide-vue-next'
 import { onMounted, ref, watch } from 'vue'
 import * as yup from 'yup'
-import { Check, ChevronsUpDown } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
 
-import { FormControl, FormItem, FormLabel, FormMessage, FormField } from '@/components/ui/form'
-import Input from '@/components/ui/input/Input.vue'
-import Separator from '@/components/ui/separator/Separator.vue'
+import { citiesRequest, townsRequest } from '@/api/trip'
+import { userDataModifyImageRequest } from '@/api/user'
+import Button from '@/components/ui/button/Button.vue'
 import {
   Command,
   CommandEmpty,
@@ -15,17 +15,17 @@ import {
   CommandItem,
   CommandList
 } from '@/components/ui/command'
-import Button from '@/components/ui/button/Button.vue'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import Input from '@/components/ui/input/Input.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import Separator from '@/components/ui/separator/Separator.vue'
 import { toast } from '@/components/ui/toast/use-toast'
 import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
-import { useForm } from 'vee-validate'
-import { userDataModifyImageRequest, userDataModifyRequest } from '@/api/user'
-import { useQuery } from '@tanstack/vue-query'
-import { citiesRequest, townsRequest } from '@/api/trip'
 import { type ITown } from '@/types/trip.type'
 import type { IMyPage } from '@/types/user.type'
+import { useQuery } from '@tanstack/vue-query'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
 
 const authenticationStore = useAuthenticationStore()
 const { profile } = storeToRefs(authenticationStore)
@@ -53,7 +53,6 @@ const { handleSubmit, setFieldValue } = useForm<IMyPage>({
     nickname: profile.value?.nickname,
     cityCode: profile.value?.cityCode,
     townCode: profile.value?.townCode,
-    birth: '',
     isDefault: false
   }
 })
@@ -218,12 +217,14 @@ onMounted(async () => {
                   variant="outline"
                   role="combobox"
                   :aria-expanded="open"
-                  :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
+                  :class="
+                    cn('w-[200px] justify-between', !value && 'text-muted-foreground')
+                  "
                 >
                   {{
                     value && cities
                       ? cities.find((city) => city.cityCode === value)?.name
-                      : '-- 지역 선택 --'
+                      : "-- 지역 선택 --"
                   }}
                   <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -241,15 +242,18 @@ onMounted(async () => {
                       :value="city.name"
                       @select="
                         () => {
-                          selectedCity = city.cityCode
-                          setFieldValue('cityCode', city.cityCode)
-                          open = false
+                          selectedCity = city.cityCode;
+                          setFieldValue('cityCode', city.cityCode);
+                          open = false;
                         }
                       "
                     >
                       <Check
                         :class="
-                          cn('mr-2 h-4 w-4', value === city.cityCode ? 'opacity-100' : 'opacity-0')
+                          cn(
+                            'mr-2 h-4 w-4',
+                            value === city.cityCode ? 'opacity-100' : 'opacity-0'
+                          )
                         "
                       />
                       {{ city.name }}
@@ -272,12 +276,14 @@ onMounted(async () => {
                   variant="outline"
                   role="combobox"
                   :aria-expanded="detailOpen"
-                  :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
+                  :class="
+                    cn('w-[200px] justify-between', !value && 'text-muted-foreground')
+                  "
                 >
                   {{
                     value && towns
                       ? towns.find((town) => town.townCode === value)?.name
-                      : '-- 상세 지역 선택 --'
+                      : "-- 상세 지역 선택 --"
                   }}
                   <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -295,14 +301,17 @@ onMounted(async () => {
                       :value="town.name"
                       @select="
                         () => {
-                          setFieldValue('townCode', town.townCode)
-                          detailOpen = false
+                          setFieldValue('townCode', town.townCode);
+                          detailOpen = false;
                         }
                       "
                     >
                       <Check
                         :class="
-                          cn('mr-2 h-4 w-4', value === town.townCode ? 'opacity-100' : 'opacity-0')
+                          cn(
+                            'mr-2 h-4 w-4',
+                            value === town.townCode ? 'opacity-100' : 'opacity-0'
+                          )
                         "
                       />
                       {{ town.name }}

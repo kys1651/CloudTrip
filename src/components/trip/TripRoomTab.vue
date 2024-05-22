@@ -196,7 +196,7 @@ const onSubmit = () => {
               />
               <div class="flex w-12 h-12 aspect-square">
                 <img
-                  :src="imageOrDefault(rooms[index].backgroundImage)"
+                  :src="imageOrDefault(rooms[index]?.backgroundImage)"
                   alt="avatar"
                   class="w-full h-full rounded-md object-cover"
                 />
@@ -208,12 +208,12 @@ const onSubmit = () => {
                 <div
                   className="font-semibold w-40 text-sm text-ellipsis whitespace-nowrap overflow-hidden"
                 >
-                  {{ rooms[index].name }}
+                  {{ rooms[index]?.name }}
                 </div>
                 <div
                   className="flex flex-row justify-start space-x-1 items-center text-xs text-gray-600"
                 >
-                  <span>{{ rooms[index].address }}</span>
+                  <span>{{ rooms[index]?.address }}</span>
                 </div>
               </div>
             </Card>

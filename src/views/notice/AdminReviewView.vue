@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import {
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
-  TableBody,
-  Table
-} from '@/components/ui/table'
-import { toDateTime } from '@/lib/formatter'
-import Input from '@/components/ui/input/Input.vue'
-import Button from '@/components/ui/button/Button.vue'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { reviewAllDeleteRequest, reviewAllRequest, reviewSearchRequest } from '@/api/review'
+import Pagination from '@/components/common/CustomPagination.vue'
+import Button from '@/components/ui/button/Button.vue'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
-import { useRouter } from 'vue-router'
-import Pagination from '@/components/common/Pagination.vue'
+import Input from '@/components/ui/input/Input.vue'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { toast } from '@/components/ui/toast'
+import { toDateTime } from '@/lib/formatter'
 import type { IReview } from '@/types/board.type'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 // 초기 리뷰 데이터를 가져오는 useQuery 훅
 const { data: reviews, refetch: refetchReviews } = useQuery({

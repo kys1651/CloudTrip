@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { changePasswordRequest, deleteRequest } from "@/api/user";
 import Button from "@/components/ui/button/Button.vue";
