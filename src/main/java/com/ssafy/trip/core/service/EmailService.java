@@ -8,6 +8,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
     private final AuthCacheRepository authCacheRepository;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     public void sendScheduleInviteEmail(String code, ScheduleData.Invite invite, String scheduleId) {
         try {
@@ -110,7 +114,7 @@ public class EmailService {
     }
 
     private String createURI(String type, String code, String email, String id) {
-        return UriComponentsBuilder.fromUriString("http://localhost:5173/confirm/email")
+        return UriComponentsBuilder.fromUriString(frontendUrl + "/confirm/email")
                 .queryParam("type", type)
                 .queryParam("code", code)
                 .queryParam("email", email)

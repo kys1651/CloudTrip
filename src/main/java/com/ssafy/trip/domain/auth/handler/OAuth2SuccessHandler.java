@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtTokenService jwtTokenService;
     private final AuthProperties authProperties;
 
+    @Value("${frontend.url}")
+    private String frontEnd;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
@@ -31,14 +35,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String redirectUrl;
         if (principal.isEnabled()) {
             JwtToken token = jwtTokenService.generateTokenByOAuth2(principal);
-            redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/oauth2/redirect")
+            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/oauth2/redirect")
                     .queryParam("access_token", token.getAccessToken())
                     .queryParam("refresh_token", token.getRefreshToken())
                     .toUriString();
             Cookie cookie = createCookie(token.getRefreshToken());
             response.addCookie(cookie);
         } else {
-            redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/oauth2/redirect")
+            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/oauth2/redirect")
                     .queryParam("isNew", principal.isNew())
                     .queryParam("error", "이메일 인증을 완료해주세요.")
                     .toUriString();

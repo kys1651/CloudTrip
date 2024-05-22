@@ -72,7 +72,7 @@ public class SecurityConfig {
         return request -> {
             var cors = new CorsConfiguration();
             cors.setAllowCredentials(true);
-            cors.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8000"));
+            cors.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8000", "https://www.cloud-trip.kro.kr"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
