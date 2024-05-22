@@ -1,7 +1,10 @@
-<script setup>
-import { useRouter } from 'vue-router'
-const router = useRouter()
-defineProps(['comment'])
+<script setup lang="ts">
+import type { SimpleCommentDetail } from "@/types/board.type";
+import { useRouter } from "vue-router";
+const router = useRouter();
+defineProps<{
+  comment: SimpleCommentDetail;
+}>();
 </script>
 
 <template>
@@ -21,7 +24,7 @@ defineProps(['comment'])
       <p>
         {{
           comment.reviewContent.length > 50
-            ? comment.reviewContent.substring(0, 50) + '...'
+            ? comment.reviewContent.substring(0, 50) + "..."
             : comment.reviewContent
         }}
       </p>

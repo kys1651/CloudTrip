@@ -17,7 +17,7 @@ import {
 } from '@internationalized/date';
 import { Image, X } from "lucide-vue-next";
 import { useForm } from "vee-validate";
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 import * as yup from "yup";
 
 import { scheduleCreateRequest } from "@/api/schedule";
@@ -58,10 +58,10 @@ const df = new DateFormatter('ko-kr', {
   dateStyle: 'medium',
 })
 
-const range = ref<DateRange>({
+const range = ref({
   start: undefined,
   end: undefined
-})
+}) as Ref<DateRange>
 
 const toast = useToast()
 

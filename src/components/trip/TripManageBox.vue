@@ -129,12 +129,12 @@ const onSubmit = () => {
         </VueDraggableNext>
         <div
           className="mt-4 bg-white w-full dark:bg-gray-800 rounded-lg p-2 border-red-200 border-2 dark:border-gray-700 cursor-pointer"
-          v-if="rooms[index]"
+          v-if="rooms && rooms[index]"
         >
           <Card className="relative flex justify-between items-center cursor-pointer">
             <div class="flex w-12 h-12 aspect-square">
               <img
-                :src="imageOrDefault(rooms[index].backgroundImage)"
+                :src="imageOrDefault(rooms[index]?.backgroundImage)"
                 alt="avatar"
                 class="w-full h-full rounded-md object-cover"
               />
@@ -146,12 +146,12 @@ const onSubmit = () => {
               <div
                 className="font-semibold w-40 text-sm text-ellipsis whitespace-nowrap overflow-hidden"
               >
-                {{ rooms[index].name }}
+                {{ rooms[index]?.name }}
               </div>
               <div
                 className="flex flex-row justify-start space-x-1 items-center text-xs text-gray-600"
               >
-                <span>{{ rooms[index].address }}</span>
+                <span>{{ rooms[index]?.address }}</span>
               </div>
             </div>
           </Card>

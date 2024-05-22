@@ -146,22 +146,22 @@ const router = createRouter({
         {
           path: '',
           name: 'myProfile',
-          component: () => import('@/components/setting/Profile.vue')
+          component: () => import('@/components/setting/ProfileSetting.vue')
         },
         {
           path: 'account',
           name: 'myAccount',
-          component: () => import('@/components/setting/Account.vue')
+          component: () => import('@/components/setting/AccountSetting.vue')
         },
         {
           path: 'reviews',
           name: 'myReviews',
-          component: () => import('@/components/setting/Review.vue')
+          component: () => import('@/components/setting/ReviewSetting.vue')
         },
         {
           path: 'comments',
           name: 'myComments',
-          component: () => import('@/components/setting/Comment.vue')
+          component: () => import('@/components/setting/CommentSetting.vue')
         },
         {
           path: 'likedReview',

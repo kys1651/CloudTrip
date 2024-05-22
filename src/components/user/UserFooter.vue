@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Pagination from '@/components/common/Pagination.vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import CustomPagination from '@/components/common/CustomPagination.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const totalPages = ref(5)
 const users = ref([])
@@ -16,7 +16,7 @@ const updateCurrentPage = (pageIdx: number) => {
 
 <template>
   <div class="w-full mt-6 flex justify-center">
-    <Pagination
+    <CustomPagination
       @page-number="updateCurrentPage"
       :total-page="totalPages.toString()"
       :total-post="users.length.toString()"

@@ -25,5 +25,8 @@ export interface ISearch {
     }[],
     users: {
         userId: number
+        email: string
+        profileImage?: string
+        nickname: string
     }[],
 }

@@ -1,8 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { imageOrDefault } from "@/lib/image-load";
 
 import { useRoute, useRouter } from "vue-router";
+
+const props = defineProps<{
+  userInfo: {
+    userId: number;
+    profileImage?: string;
+    email: string;
+    nickname: string;
+  };
+}>();
 
 const route = useRoute();
 const router = useRouter();
@@ -10,10 +20,6 @@ const router = useRouter();
 const goSocialDetail = () => {
   router.push({ name: "social-detail", params: { socialId: props.userInfo.userId } });
 };
-
-const props = defineProps({
-  userInfo: Object,
-});
 </script>
 
 <template>
@@ -21,7 +27,7 @@ const props = defineProps({
     <CardContent>
       <div className="flex items-center space-x-3">
         <Avatar>
-          <AvatarImage :src="userInfo.profileImage" alt="No Img" />
+          <AvatarImage :src="imageOrDefault(userInfo.profileImage)" alt="No Img" />
           <AvatarFallback></AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
@@ -30,11 +36,6 @@ const props = defineProps({
           <span className="text-sm text-gray-500">{{ userInfo.email }}</span>
         </div>
       </div>
-      <!-- <div className="mt-2 text-sm" @click="goSocialDetail">
-        {{ userInfo.content }}
-      </div> -->
     </CardContent>
   </Card>
 </template>
-
-<style scoped></style>
