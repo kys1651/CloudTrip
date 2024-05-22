@@ -1,40 +1,36 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
-import axios from 'axios'
 import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import ReviewCard from '@/components/review/ReviewCard.vue'
-import SearchCard from '@/components/search/SearchCard.vue'
 import SearchHeader from '@/components/search/SearchHeader.vue'
+import { searchResult } from '@/api/search'
+import { type ISearch } from '@/types/search.type'
 
 const route = useRoute()
 const router = useRouter()
 
 const authentication = useAuthenticationStore()
 
-const datas = ref([])
+const datas = ref<ISearch>()
 const reviewLen = ref()
 const noticeLen = ref()
 const userLen = ref()
 onMounted(() => {
   const keyword = route.query.keyword
+  if (!keyword) return
   console.log(keyword)
-  const addr = `http://localhost:8080/api/v1/search?searchKeyword=${keyword}`
 
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      datas.value = response.data
+  searchResult(keyword?.toString())
+    .then((data) => {
+      console.log(data)
+      datas.value = data
       reviewLen.value = datas.value.reviews.length
       noticeLen.value = datas.value.notices.length
       userLen.value = datas.value.users.length
@@ -69,7 +65,7 @@ const goSearchProfile = () => {
 </script>
 
 <template>
-  <div class="container justify-center flex flex-col my-6 items-start">
+  <div v-if="datas" class="container justify-center flex flex-col my-6 items-start">
     <SearchHeader />
     <div className="w-full px-10">
       <div className="flex justify-between mb-10">

@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { userDataRequest } from '@/api/user'
 import MetricCard from '@/components/card/MetricCard.vue'
 import PostingCard from '@/components/card/PostingCard.vue'
 import TripCard from '@/components/card/TripCard.vue'
 import { useToast } from '@/components/ui/toast'
 import type { MetricProps } from '@/types/trip.type'
-import { useQuery } from '@tanstack/vue-query'
 import { onMounted, ref } from 'vue'
-import axios from 'axios'
-import { timeStamp } from 'console'
-import ToastProvider from '@/components/ui/toast/ToastProvider.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -38,7 +33,7 @@ const router = useRouter()
 
 const homeData = ref<IHome>()
 
-  homeList()
+homeList()
   .then((data) => {
     homeData.value = data
   })
@@ -48,8 +43,8 @@ const homeData = ref<IHome>()
 
 const goTourDetail = (tour: Object) => {}
 
-const goReviewDetail = (review: Object) => {
-  router.push({ name: 'review-detail', params: { id: review.reviewId } })
+const goReviewDetail = (reviewId: number) => {
+  router.push({ name: 'review-detail', params: { id: reviewId } })
 }
 </script>
 
@@ -121,7 +116,7 @@ const goReviewDetail = (review: Object) => {
                 :name="'등록된 리뷰'"
                 :count="homeData.numberData.reviewCount"
               ></MetricCard>
-              <Star size="64" class="mt-5" />
+              <Star :size="64" class="mt-5" />
             </div>
 
             <div class="flex flex-col justify-center items-center">
@@ -129,7 +124,7 @@ const goReviewDetail = (review: Object) => {
                 :name="'등록된 사용자'"
                 :count="homeData.numberData.usersCount"
               ></MetricCard>
-              <UserRound size="64" class="mt-5" />
+              <UserRound :size="64" class="mt-5" />
             </div>
 
             <div class="flex flex-col justify-center items-center">
@@ -137,7 +132,7 @@ const goReviewDetail = (review: Object) => {
                 :name="'등록된 여행지'"
                 :count="homeData.numberData.tourCount"
               ></MetricCard>
-              <PlaneTakeoff size="64" class="mt-5" />
+              <PlaneTakeoff :size="64" class="mt-5" />
             </div>
 
             <div class="flex flex-col justify-center items-center">
@@ -145,7 +140,7 @@ const goReviewDetail = (review: Object) => {
                 :name="'등록된 여행 계획'"
                 :count="homeData.numberData.scheduleCount"
               ></MetricCard>
-              <CalendarCheck size="64" class="mt-5" />
+              <CalendarCheck :size="64" class="mt-5" />
             </div>
           </div>
         </div>
@@ -185,7 +180,7 @@ const goReviewDetail = (review: Object) => {
               >
                 <TripCard
                   :name="topTour.name"
-                  :backgroundImage="imageOrDefault(topTour.backgroundImage)"
+                  :backgroundImage="imageOrDefault(topTour.backgroundImage!)"
                   :description="topTour.description"
                   :rating="topTour.rating"
                   :location="topTour.cityName + ' ' + topTour.townName"

@@ -11,58 +11,53 @@ import {
 } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { toast } from '@/components/ui/toast'
 import Pagination from '../common/Pagination.vue'
+import { getAllUser, updateIsLocked, dropUserByAdmin } from '@/api/user'
+import { type IUser } from '@/types/user.type'
+import { getUserByKeyword } from '@/api/user'
 
 const route = useRoute()
 const router = useRouter()
 const authentication = useAuthenticationStore()
 
-const addr = `http://localhost:8080/api/v1/user/list`
-const users = ref([])
-onMounted(() => {
-  axios
-    .get(addr)
-    .then((response) => {
-      console.log(response)
-      // ADMIN은 표시하지 X
-      users.value = response.data.filter((user) => user.roleType === 'USER')
+const users = ref<IUser[]>()
 
-      if (!route.query.page) {
-        router.push({ name: 'adminUser', query: { page: 1 } })
-      }
-    })
-    .catch((error) => {
-      console.log('회원 조회 오류', error)
-    })
-})
+getAllUser()
+  .then((data) => {
+    console.log(data)
+    // ADMIN은 표시하지 X
+    users.value = data.filter((user) => user.roleType === 'USER')
 
-const updateAddr = `http://localhost:8080/api/v1/user/update/`
-const changeStatus = (user: Object) => {
+    if (!route.query.page) {
+      router.push({ name: 'adminUser', query: { page: 1 } })
+    }
+  })
+  .catch((error) => {
+    console.log('회원 조회 오류', error)
+  })
+
+const changeStatus = (user: IUser) => {
   // view에 활성 상태 변경
-  user.locked = !user.locked
+  user.isLocked = !user.isLocked
   // 서버로 상태 변경 업데이트
-  axios
-    .patch(updateAddr + user.userId)
-    .then((response) => {
-      console.log(response)
+  updateIsLocked(user.userId.toString())
+    .then((data) => {
+      console.log(data)
     })
     .catch((error) => {
       console.log('활성 상태 변경 실패', error)
     })
 }
 
-const deleteAddr = `http://localhost:8080/api/v1/user/delete/`
-const dropUser = (user: Object) => {
+const dropUser = (user: IUser) => {
   if (confirm('정말 탈퇴하시겠습니까?') && confirm('확인을 누르시면 탈퇴가 완료됩니다.')) {
-    axios
-      .delete(deleteAddr + user.userId)
-      .then((response) => {
-        console.log(response)
+    dropUserByAdmin(user.userId.toString())
+      .then((data) => {
+        console.log(data)
         toast({
           title: '회원 탈퇴',
           description: '회원이 탈퇴되었습니다.',
@@ -78,13 +73,11 @@ const dropUser = (user: Object) => {
 }
 
 const searchKeyword = ref('')
-const findByKeywordAddr = `http://localhost:8080/api/v1/user?keyword=`
 const searchUser = () => {
-  axios
-    .get(findByKeywordAddr + searchKeyword.value)
-    .then((response) => {
-      console.log(response)
-      users.value = response.data
+  getUserByKeyword(searchKeyword.value)
+    .then((data) => {
+      console.log(data)
+      users.value = data
     })
     .catch((error) => {
       console.log('특정 회원 조회 실패', error)
@@ -109,10 +102,13 @@ const updateCurrentPage = (pageIdx: number) => {
 const displayedPosts = computed(() => {
   const startIndex = (pageNumber.value - 1) * postsPerPage.value
   const endIndex = startIndex + postsPerPage.value
-  return users.value.slice(startIndex, endIndex)
+  return users.value ? users.value.slice(startIndex, endIndex) : []
 })
 
 const totalPages = computed(() => {
+  if (!users.value) {
+    return
+  }
   console.log(users.value.length + ' ' + postsPerPage.value)
   return Math.ceil(users.value.length / postsPerPage.value)
 })
@@ -152,8 +148,8 @@ const totalPages = computed(() => {
         <TableCell className="font-medium">{{ user.username }}</TableCell>
         <TableCell>{{ user.nickname }}</TableCell>
         <TableCell>
-          <Badge :variant="user.locked ? 'secondary' : ''">{{
-            user.locked ? '비활성화' : '활성화'
+          <Badge :variant="user.isLocked ? 'secondary' : 'default'">{{
+            user.isLocked ? '비활성화' : '활성화'
           }}</Badge>
         </TableCell>
         <TableCell>{{ user.roleType }}</TableCell>
@@ -164,9 +160,9 @@ const totalPages = computed(() => {
           <Button
             @click="changeStatus(user)"
             class="mx-2"
-            :class="user.locked ? 'deactivate-button' : 'activate-button'"
+            :class="user.isLocked ? 'deactivate-button' : 'activate-button'"
           >
-            {{ user.locked ? '비활성화' : '활성화' }}
+            {{ user.isLocked ? '비활성화' : '활성화' }}
           </Button>
           <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>
@@ -176,9 +172,9 @@ const totalPages = computed(() => {
   <div class="w-full mt-6 flex justify-center">
     <Pagination
       @page-number="updateCurrentPage"
-      :total-page="totalPages"
-      :total-post="users.length"
-      :items-per-page="postsPerPage"
+      :total-page="totalPages?.toString()"
+      :total-post="users?.length.toString()"
+      :items-per-page="postsPerPage.toString()"
     />
   </div>
 </template>

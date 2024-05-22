@@ -1,6 +1,13 @@
 import client, { type BaseResponse } from '@/api/client'
 import { useAuthenticationStore } from '@/stores/authentication'
-import type { Authentication, IMyPage, IUserCard, Profile, SimpleProfile } from '@/types/user.type'
+import type {
+  Authentication,
+  IMyPage,
+  IUser,
+  IUserCard,
+  Profile,
+  SimpleProfile
+} from '@/types/user.type'
 
 export const userDataRequest = async () => {
   const {
@@ -141,8 +148,36 @@ export const follwingRequest = async (userId: number): Promise<IUserCard[]> => {
   return data
 }
 
-// export const getAllUser = async() => {
-//   const {
-//     data: {isSuccess, data, message}
-//   } = await client.get<BaseResponse
-// }
+export const getAllUser = async (): Promise<IUser[]> => {
+  const {
+    data: { isSuccess, data, message }
+  } = await client.get<BaseResponse<IUser[]>>(`/user`)
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const getUserByKeyword = async (keyword: string): Promise<IUser[]> => {
+  const {
+    data: { isSuccess, data, message }
+  } = await client.get<BaseResponse<IUser[]>>(`/user/search`, {
+    params: {
+      keyword: keyword
+    }
+  })
+  if (!isSuccess) throw new Error(message)
+  return data
+}
+
+export const updateIsLocked = async (userId: string): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.patch<BaseResponse<void>>(`/user/${userId}`)
+  if (!isSuccess) throw new Error(message)
+}
+
+export const dropUserByAdmin = async (userId: string): Promise<void> => {
+  const {
+    data: { isSuccess, message }
+  } = await client.delete<BaseResponse<void>>(`/user/admin/${userId}`)
+  if (!isSuccess) throw new Error(message)
+}

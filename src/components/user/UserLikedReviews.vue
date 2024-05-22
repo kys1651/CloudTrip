@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div
-      v-if="userLikedReviews?.length > 0"
+      v-if="userLikedReviews && userLikedReviews?.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5"
     >
       <SimpleReviewCard

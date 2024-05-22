@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="userComments?.length > 0">
+    <div v-if="userComments && userComments?.length > 0">
       <SimpleCommentCard
         v-for="comment in userComments"
         :key="comment.commentId"

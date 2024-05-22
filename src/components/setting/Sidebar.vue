@@ -62,7 +62,9 @@ watch(
         class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
         :class="{ 'text-black': '/mypage/admin/user' === curPath }"
       >
-      <RouterLink @click="$emit('changeTitle', '관리자 관리')" :to="{ name: 'adminUser' }"
+        <RouterLink
+          @click="$emit('changeTitle', '관리자 관리')"
+          :to="{ name: 'adminUser', query: { page: 1 } }"
           >회원 관리</RouterLink
         >
       </Button>
@@ -71,7 +73,7 @@ watch(
         class="w-full text-left justify-start p-4 text-lg text-gray-400 font-semibold"
         :class="{ 'text-black': '/mypage/admin/user' === curPath }"
       >
-      <RouterLink :to="{ name: 'adminNotice' }">공지사항 관리</RouterLink>
+        <RouterLink :to="{ name: 'adminNotice', query: { page: 1 } }">공지사항 관리</RouterLink>
       </Button>
     </div>
   </nav>

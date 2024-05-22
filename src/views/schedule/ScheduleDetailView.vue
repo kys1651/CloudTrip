@@ -2,32 +2,29 @@
 import {
   scheduleDetailRequest,
   schedulePathRequest,
-  scheduleTripAndVehicleRequest,
-} from "@/api/schedule";
-import CircularLoading from "@/components/common/CircularLoading.vue";
-import ChatMessage from "@/components/trip/ChatMessage.vue";
-import ScheduleInvite from "@/components/trip/ScheduleInvite.vue";
-import TripMainTab from "@/components/trip/TripMainTab.vue";
-import TripRoomTab from "@/components/trip/TripRoomTab.vue";
-import TripVehicleTab from "@/components/trip/TripVehicleTab.vue";
-import Dialog from "@/components/ui/dialog/Dialog.vue";
-import DialogContent from "@/components/ui/dialog/DialogContent.vue";
-import DialogTrigger from "@/components/ui/dialog/DialogTrigger.vue";
-import { useToast } from "@/components/ui/toast";
-import { convertDistance, convertTime, toDate } from "@/lib/formatter";
-import { imageOrDefault } from "@/lib/image-load";
-import { cn } from "@/lib/utils";
-import { useAuthenticationStore } from "@/stores/authentication";
-import { STORKE_COLORS, useRoadStore, type LatLng } from "@/stores/road";
+  scheduleTripAndVehicleRequest
+} from '@/api/schedule'
+import CircularLoading from '@/components/common/CircularLoading.vue'
+import ChatMessage from '@/components/trip/ChatMessage.vue'
+import ScheduleInvite from '@/components/trip/ScheduleInvite.vue'
+import TripMainTab from '@/components/trip/TripMainTab.vue'
+import TripRoomTab from '@/components/trip/TripRoomTab.vue'
+import TripVehicleTab from '@/components/trip/TripVehicleTab.vue'
+import Dialog from '@/components/ui/dialog/Dialog.vue'
+import DialogContent from '@/components/ui/dialog/DialogContent.vue'
+import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue'
+import { useToast } from '@/components/ui/toast'
+import { convertDistance, convertTime, toDate } from '@/lib/formatter'
+import { imageOrDefault } from '@/lib/image-load'
+import { cn } from '@/lib/utils'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { STORKE_COLORS, useRoadStore, type LatLng } from '@/stores/road'
 
-import { COLORS, HOVER_COLORS, TEXT_COLORS, useTripPlanStore } from "@/stores/trip-plan";
-import { useScheduleSocket } from "@/stores/web-stomp";
-import type {
-  ScheduleTripResponse,
-  ScheduleVehicleResponse,
-} from "@/types/schedule.type";
-import { TripStep } from "@/types/trip.type";
-import { useQuery } from "@tanstack/vue-query";
+import { COLORS, HOVER_COLORS, TEXT_COLORS, useTripPlanStore } from '@/stores/trip-plan'
+import { useScheduleSocket } from '@/stores/web-stomp'
+import type { ScheduleTripResponse, ScheduleVehicleResponse } from '@/types/schedule.type'
+import { TripStep } from '@/types/trip.type'
+import { useQuery } from '@tanstack/vue-query'
 import {
   ArrowRight,
   Bike,
@@ -38,156 +35,158 @@ import {
   Footprints,
   Share2,
   TramFront
-} from "lucide-vue-next";
+} from 'lucide-vue-next'
 
-import { storeToRefs } from "pinia";
-import { computed, ref, watch, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { KakaoMap, KakaoMapCustomOverlay, KakaoMapPolyline } from "vue3-kakao-maps";
+import { storeToRefs } from 'pinia'
+import { computed, ref, watch, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { KakaoMap, KakaoMapCustomOverlay, KakaoMapPolyline } from 'vue3-kakao-maps'
 
-const step = ref<TripStep>(TripStep.PLAN);
+const step = ref<TripStep>(TripStep.PLAN)
 const stepMessage = computed(() => {
   switch (step.value) {
     case TripStep.PLAN:
-      return "여행지를 선택해주세요.";
+      return '여행지를 선택해주세요.'
     case TripStep.STAY:
-      return "숙소를 선택해주세요.";
+      return '숙소를 선택해주세요.'
     case TripStep.VEHICLE:
-      return "이동수단을 선택해주세요.";
+      return '이동수단을 선택해주세요.'
     default:
-      return "";
+      return ''
   }
-});
+})
 
-const route = useRoute();
-const scheduleId = route.params.scheduleId;
-const toast = useToast();
+const route = useRoute()
+const scheduleId = route.params.scheduleId
+const toast = useToast()
 
-const map = ref<kakao.maps.Map>();
+const map = ref<kakao.maps.Map>()
 
 const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
-  map.value = mapRef;
-};
-const { updateLock, updatedUser, profileDictionary } = storeToRefs(useScheduleSocket());
-const { connect, unLock, sendUpdate } = useScheduleSocket();
-const { setTripDay, initTripAndVehicle } = useTripPlanStore();
+  map.value = mapRef
+}
+const { updateLock, updatedUser, profileDictionary } = storeToRefs(useScheduleSocket())
+const { connect, unLock, sendUpdate } = useScheduleSocket()
+const { setTripDay, initTripAndVehicle } = useTripPlanStore()
 
-const { coordinates, centercoordinate, rooms } = storeToRefs(useTripPlanStore());
-const { profile } = storeToRefs(useAuthenticationStore());
+const { coordinates, centercoordinate, rooms } = storeToRefs(useTripPlanStore())
+const { profile } = storeToRefs(useAuthenticationStore())
 
-const { roads, isLoading: isRoadLoading } = storeToRefs(useRoadStore());
-const { initRoads } = useRoadStore();
+const { roads, isLoading: isRoadLoading } = storeToRefs(useRoadStore())
+const { initRoads } = useRoadStore()
 
 watch(centercoordinate, (center) => {
   if (map.value && center) {
-    map.value.setBounds(center);
+    map.value.setBounds(center)
   }
-});
+})
 
 const { data: schedule, isLoading } = useQuery({
-  queryKey: ["schedule", scheduleId],
+  queryKey: ['schedule', scheduleId],
   queryFn: async () => {
     try {
-      const response = await scheduleDetailRequest(Number(scheduleId));
-      return response;
+      const response = await scheduleDetailRequest(Number(scheduleId))
+      return response
     } catch (error) {
-      router.push({ name: "home" }).then(() => {
+      router.push({ name: 'home' }).then(() => {
         toast.toast({
-          title: "존재하지 않은 일정입니다.",
-          description: "해당 일정은 존재하지 않습니다. 다시 확인해주세요.",
+          title: '존재하지 않은 일정입니다.',
+          description: '해당 일정은 존재하지 않습니다. 다시 확인해주세요.',
           duration: 2000,
-          variant: "destructive",
-        });
-      });
+          variant: 'destructive'
+        })
+      })
     }
-  },
-});
+  }
+})
 
-const router = useRouter();
+const router = useRouter()
 
 const { data: initTrips } = useQuery({
-  queryKey: ["schedule", scheduleId, "trip"],
+  queryKey: ['schedule', scheduleId, 'trip'],
   queryFn: () => scheduleTripAndVehicleRequest(Number(scheduleId)),
   enabled() {
-    return schedule.value?.multi;
-  },
-});
+    return schedule.value?.multi
+  }
+})
 
 watchEffect(() => {
   if (initTrips.value) {
-    initTripAndVehicle(initTrips.value.trips, initTrips.value.vehicles);
+    initTripAndVehicle(initTrips.value.trips, initTrips.value.vehicles)
   }
-});
+})
 
 interface DayTrip {
-  type: string;
-  trip?: ScheduleTripResponse;
-  vehicle?: ScheduleVehicleResponse;
+  type: string
+  trip?: ScheduleTripResponse
+  vehicle?: ScheduleVehicleResponse
 }
 
 const { data: schedulePath } = useQuery({
-  queryKey: ["schedule", scheduleId, "path"],
+  queryKey: ['schedule', scheduleId, 'path'],
   queryFn: () => schedulePathRequest(Number(scheduleId)),
   enabled() {
-    return !!schedule.value?.finished;
+    return !!schedule.value?.finished
   },
   select: (data) => {
-    const days: DayTrip[][] = Array.from({ length: schedule.value!!.day }, (_) => []);
-    [1, 2, 3, 4, 5].forEach((day) => {
-      const dayTrips = data.trips.filter((trip) => trip.day === day);
-      const dayVehicles = data.vehicles.filter((vehicle) => vehicle.day === day - 1);
+    const days: DayTrip[][] = Array.from({ length: schedule.value!!.day }, (_) => [])
+    ;[1, 2, 3, 4, 5].forEach((day) => {
+      const dayTrips = data.trips.filter((trip) => trip.day === day)
+      const dayVehicles = data.vehicles.filter((vehicle) => vehicle.day === day - 1)
       dayTrips.forEach((trip, index) => {
-        days[trip.day - 1].push({ type: "trip", trip: dayTrips[index] });
+        days[trip.day - 1].push({ type: 'trip', trip: dayTrips[index] })
         if (index !== dayVehicles.length) {
-          days[trip.day - 1].push({ type: "vehicle", vehicle: dayVehicles[index] });
+          days[trip.day - 1].push({ type: 'vehicle', vehicle: dayVehicles[index] })
         }
-      });
-    });
-    return days;
-  },
-});
+      })
+    })
+    return days
+  }
+})
 
 const scheduleTrips = computed(() => {
   if (schedulePath.value) {
     return schedulePath.value.map((trips) =>
-      trips.filter((trip) => trip.type === "trip" && trip.trip).map((trip) => trip.trip!!)
-    );
+      trips.filter((trip) => trip.type === 'trip' && trip.trip).map((trip) => trip.trip!!)
+    )
   }
-  return [];
-});
+  return []
+})
 
-const days = ref<number>(0);
-const tripIndex = ref<number>(-1);
-const roadIndex = ref<number>(-1);
+const days = ref<number>(0)
+const tripIndex = ref<number>(-1)
+const roadIndex = ref<number>(-1)
 
 watch(days, () => {
   if (scheduleTrips.value && map.value) {
-    const paths = scheduleTrips.value[days.value - 1];
-    const bounds = new kakao.maps.LatLngBounds();
+    const paths = scheduleTrips.value[days.value - 1]
+    const bounds = new kakao.maps.LatLngBounds()
     paths.forEach((path) => {
-      bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude));
-    });
-    map.value.setBounds(bounds, 200, 200, 200, 200);
+      bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude))
+    })
+    map.value.setBounds(bounds, 200, 200, 200, 200)
   }
-});
+})
 
 watch(updateLock.value, (lock) => {
   if (lock.isLock && schedule.value) {
-    sendUpdate(schedule.value.scheduleId, schedule.value.day);
-    unLock();
+    sendUpdate(schedule.value.scheduleId, schedule.value.day)
+    unLock()
   }
-});
+})
 
 watchEffect(() => {
   if (schedulePath.value && schedule.value) {
     if (roads.value.length === 0) {
       const positions = scheduleTrips.value.map((trips) =>
-        trips.map((trip) => ({ latitude: trip.tour.latitude, longitude: trip.tour.longitude } as LatLng))
-      );
-      initRoads(schedule.value.scheduleId, positions);
+        trips.map(
+          (trip) => ({ latitude: trip.tour.latitude, longitude: trip.tour.longitude }) as LatLng
+        )
+      )
+      initRoads(schedule.value.scheduleId, positions)
     }
   }
-});
+})
 
 watchEffect(() => {
   if (schedule.value) {
@@ -195,78 +194,80 @@ watchEffect(() => {
       schedule.value.private &&
       !schedule.value.invitedUsers.map((user) => user.username).includes(profile.value!!.username)
     ) {
-      router.push({ name: "home" }).then(() => {
+      router.push({ name: 'home' }).then(() => {
         toast.toast({
-          title: "비공개 일정입니다.",
-          description: "해당 일정은 비공개로 설정되어 있습니다.",
+          title: '비공개 일정입니다.',
+          description: '해당 일정은 비공개로 설정되어 있습니다.',
           duration: 2000,
-          variant: "destructive",
-        });
-      });
-      return;
+          variant: 'destructive'
+        })
+      })
+      return
     }
 
     if (schedule.value.multi) {
-      connect(schedule.value.scheduleId, schedule.value.day);
+      connect(schedule.value.scheduleId, schedule.value.day)
     } else {
-      setTripDay(schedule.value.day);
+      setTripDay(schedule.value.day)
     }
   }
-});
+})
 
 const onRoadClick = (index: number) => {
   if (tripIndex.value !== -1) {
-    tripIndex.value = -1;
+    tripIndex.value = -1
   }
   if (index === roadIndex.value) {
-    roadIndex.value = -1;
+    roadIndex.value = -1
     if (scheduleTrips.value && map.value) {
-      const paths = scheduleTrips.value[days.value - 1];
-      const bounds = new kakao.maps.LatLngBounds();
+      const paths = scheduleTrips.value[days.value - 1]
+      const bounds = new kakao.maps.LatLngBounds()
       paths.forEach((path) => {
-        bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude));
-      });
-      map.value.setBounds(bounds, 200, 200, 200, 200);
+        bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude))
+      })
+      map.value.setBounds(bounds, 200, 200, 200, 200)
     }
-    return;
+    return
   }
-  roadIndex.value = index;
+  roadIndex.value = index
   if (scheduleTrips.value && map.value) {
-    const paths = scheduleTrips.value[days.value - 1].filter((_, index) => index === roadIndex.value || index === roadIndex.value + 1);
-    const bounds = new kakao.maps.LatLngBounds();
+    const paths = scheduleTrips.value[days.value - 1].filter(
+      (_, index) => index === roadIndex.value || index === roadIndex.value + 1
+    )
+    const bounds = new kakao.maps.LatLngBounds()
     paths.forEach((path) => {
-      bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude));
-    });
-    map.value.setBounds(bounds, 200, 200, 200, 200);
+      bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude))
+    })
+    map.value.setBounds(bounds, 200, 200, 200, 200)
   }
 }
 
 const onTripClick = (index: number) => {
   if (roadIndex.value !== -1) {
-    roadIndex.value = -1;
+    roadIndex.value = -1
   }
   if (index === tripIndex.value) {
-    tripIndex.value = -1;
+    tripIndex.value = -1
     if (scheduleTrips.value && map.value) {
-      const paths = scheduleTrips.value[days.value - 1];
-      const bounds = new kakao.maps.LatLngBounds();
+      const paths = scheduleTrips.value[days.value - 1]
+      const bounds = new kakao.maps.LatLngBounds()
       paths.forEach((path) => {
-        bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude));
-      });
-      map.value.setBounds(bounds, 200, 200, 200, 200);
+        bounds.extend(new kakao.maps.LatLng(path.tour.latitude, path.tour.longitude))
+      })
+      map.value.setBounds(bounds, 200, 200, 200, 200)
     }
-    return;
+    return
   }
-  tripIndex.value = index;
+  tripIndex.value = index
   if (map.value) {
     map.value.panTo(
       new kakao.maps.LatLng(
         scheduleTrips.value[days.value - 1][index].tour.latitude,
         scheduleTrips.value[days.value - 1][index].tour.longitude
       )
-    );
+    )
   }
-};
+}
 </script>
 
 <template>
@@ -274,10 +275,7 @@ const onTripClick = (index: number) => {
     <CircularLoading />
   </div>
   <div v-else class="flex flex-row max-h-screen h-screen overflow-hidden">
-    <div
-      v-if="!schedule.finished"
-      class="w-[450px] max-w-[450px] h-full flex flex-col px-3 py-5"
-    >
+    <div v-if="!schedule.finished" class="w-[450px] max-w-[450px] h-full flex flex-col px-3 py-5">
       <div class="flex relative flex-row justify-center space-x-2 items-end pb-3">
         <ChevronLeft
           class="absolute left-0 top-0 cursor-pointer"
@@ -307,7 +305,7 @@ const onTripClick = (index: number) => {
               :key="i"
               :class="{
                 'bg-blue-500': i <= step,
-                'bg-gray-300': i > step,
+                'bg-gray-300': i > step
               }"
             />
           </div>
@@ -407,8 +405,8 @@ const onTripClick = (index: number) => {
               class="text-sm font-semibold text-gray-700"
               @click="
                 () => {
-                  days = day;
-                  tripIndex = -1;
+                  days = day
+                  tripIndex = -1
                 }
               "
               >{{ day }}일차</span
@@ -423,13 +421,9 @@ const onTripClick = (index: number) => {
         <div v-if="schedulePath && schedulePath[days - 1]">
           <div class="flex flex-row items-center space-x-2 mb-5">
             <span class="text-lg font-semibold">{{ days }}일차</span>
-            <span class="text-gray-400 text-sm"
-              >({{ toDate(new Date(schedule.startDate)) }})</span
-            >
+            <span class="text-gray-400 text-sm">({{ toDate(new Date(schedule.startDate)) }})</span>
           </div>
-          <div
-            class="flex z-50 flex-col w-full max-h-[65vh] overflow-scroll scrollbar-hide"
-          >
+          <div class="flex z-50 flex-col w-full max-h-[65vh] overflow-scroll scrollbar-hide">
             <div
               v-for="(trip, index) in schedulePath[days - 1]"
               :key="index"
@@ -440,7 +434,7 @@ const onTripClick = (index: number) => {
                 class="flex flex-row items-start justify-between hover:border hover:border-gray-200 p-2 hover:rounded-md cursor-pointer"
                 @click="onTripClick(trip.trip.order)"
                 :class="{
-                  'border border-gray-200 rounded-md': tripIndex === trip.trip.order,
+                  'border border-gray-200 rounded-md': tripIndex === trip.trip.order
                 }"
               >
                 <div class="flex flex-col space-y-1">
@@ -449,30 +443,23 @@ const onTripClick = (index: number) => {
                     :class="TEXT_COLORS[(days - 1) % TEXT_COLORS.length]"
                     >{{
                       trip.trip.order === scheduleTrips[days - 1].length - 1
-                        ? days + "일차 숙소"
-                        : trip.trip.order + 1 + "번 여행지"
+                        ? days + '일차 숙소'
+                        : trip.trip.order + 1 + '번 여행지'
                     }}</span
                   >
                   <span class="text-xs">{{ trip.trip.tour.name }}</span>
-                  <span
-                    class="text-gray-400"
-                    style="font-size: 10px"
-                    >{{ trip.trip!!.tour.address }}</span
-                  >
+                  <span class="text-gray-400" style="font-size: 10px">{{
+                    trip.trip!!.tour.address
+                  }}</span>
                 </div>
                 <div
                   class="w-24 h-24 bg-cover bg-center rounded-md"
                   :style="{
-                    backgroundImage: `url(${imageOrDefault(
-                      trip.trip.tour.backgroundImage
-                    )})`,
+                    backgroundImage: `url(${imageOrDefault(trip.trip.tour.backgroundImage)})`
                   }"
                 />
               </div>
-              <div
-                v-else-if="trip.type === 'vehicle' && trip.vehicle"
-                class="flex flex-col"
-              >
+              <div v-else-if="trip.type === 'vehicle' && trip.vehicle" class="flex flex-col">
                 <div class="flex w-full text-gray-400 justify-center items-center h-10">
                   <ChevronDown />
                 </div>
@@ -480,21 +467,17 @@ const onTripClick = (index: number) => {
                   class="flex flex-row items-center space-x-2 px-2 cursor-pointer hover:border-gray-200 p-2 hover:rounded-md"
                   @click="onRoadClick(trip.vehicle.order)"
                   :class="{
-                    'border border-gray-200 rounded-md': roadIndex === trip.vehicle.order,
+                    'border border-gray-200 rounded-md': roadIndex === trip.vehicle.order
                   }"
                 >
                   <div class="flex flex-col space-y-1 items-center px-5">
-                    <div
-                      class="text-black w-full font-light flex space-x-2 justify-center"
-                    >
+                    <div class="text-black w-full font-light flex space-x-2 justify-center">
                       <div
                         v-if="trip.vehicle.type === 'car'"
                         class="flex flex-row items-end space-x-1"
                       >
                         <Car :size="24" />
-                        <span class="font-medium text-xs text-gray-400"
-                          >자동차로 이동</span
-                        >
+                        <span class="font-medium text-xs text-gray-400">자동차로 이동</span>
                       </div>
                       <div
                         v-else-if="trip.vehicle.type === 'bus'"
@@ -508,9 +491,7 @@ const onTripClick = (index: number) => {
                         class="flex flex-row items-end space-x-1"
                       >
                         <TramFront :size="24" />
-                        <span class="font-medium text-xs text-gray-400"
-                          >지하철로 이동</span
-                        >
+                        <span class="font-medium text-xs text-gray-400">지하철로 이동</span>
                       </div>
                       <div
                         v-else-if="trip.vehicle.type === 'walk'"
@@ -525,9 +506,7 @@ const onTripClick = (index: number) => {
                         class="flex flex-row items-end space-x-1"
                       >
                         <Bike :size="24" />
-                        <span class="font-medium text-xs text-gray-400"
-                          >자전거로 이동</span
-                        >
+                        <span class="font-medium text-xs text-gray-400">자전거로 이동</span>
                       </div>
                     </div>
                     <div class="flex flex-col text-gray-500">
@@ -535,8 +514,7 @@ const onTripClick = (index: number) => {
                         >소요시간: {{ convertTime(trip.vehicle.vehicle.spentTime) }}</span
                       >
                       <span class="text-xs"
-                        >이동거리:
-                        {{ convertDistance(trip.vehicle.vehicle.distance) }}</span
+                        >이동거리: {{ convertDistance(trip.vehicle.vehicle.distance) }}</span
                       >
                       <span v-show="trip.vehicle.vehicle.fare > 0" class="text-xs"
                         >비용: {{ trip.vehicle.vehicle.fare }}원</span
@@ -544,20 +522,15 @@ const onTripClick = (index: number) => {
                       <span class="text-xs" v-show="trip.vehicle.vehicle.walkTime > 0"
                         >도보 시간: {{ convertTime(trip.vehicle.vehicle.walkTime) }}</span
                       >
-                      <span
-                        class="text-xs"
-                        v-show="trip.vehicle.vehicle.transferCount > 0"
+                      <span class="text-xs" v-show="trip.vehicle.vehicle.transferCount > 0"
                         >환승 횟수: {{ trip.vehicle.vehicle.transferCount }}회</span
                       >
                       <span class="text-xs" v-show="trip.vehicle.vehicle.walkDistance > 0"
-                        >도보 거리:
-                        {{ convertDistance(trip.vehicle.vehicle.walkDistance) }}</span
+                        >도보 거리: {{ convertDistance(trip.vehicle.vehicle.walkDistance) }}</span
                       >
                     </div>
                   </div>
-                  <div
-                    class="flex mt-3 flex-col text-xs space-y-2 flex-1 items-center px-5"
-                  >
+                  <div class="flex mt-3 flex-col text-xs space-y-2 flex-1 items-center px-5">
                     <div
                       v-for="(step, index) in trip.vehicle.vehicle.steps"
                       :key="step.stepId"
@@ -565,7 +538,7 @@ const onTripClick = (index: number) => {
                     >
                       <div class="w-full flex justify-start">
                         {{ index + 1 }}.
-                        {{ step.routeName === "WALK" ? "도보 이동" : step.routeName }}
+                        {{ step.routeName === 'WALK' ? '도보 이동' : step.routeName }}
                       </div>
                       <div class="flex flex-row space-x-2 items-center">
                         <span>{{ step.startName }}</span>

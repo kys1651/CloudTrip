@@ -3,7 +3,6 @@ import Pagination from '@/components/common/Pagination.vue'
 import { onMounted, ref, computed, onUpdated } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
-import type { INotice } from '@/types/board.type'
 import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import {
@@ -22,8 +21,8 @@ const { isLogin } = storeToRefs(authentication)
 const route = useRoute()
 const router = useRouter()
 
-const {data: notices} = useQuery({
-  queryKey: ["notices"],
+const { data: notices } = useQuery({
+  queryKey: ['notices'],
   queryFn: () => noticeListRequest()
 })
 
@@ -74,7 +73,9 @@ const formatDate = (dateString: string) => {
         <AccordionTrigger
           ><div class="flex justify-between items-center w-full">
             <span>📢 {{ notice.title }}</span>
-            <span class="mx-5 text-gray-500 text-sm">{{ formatDate(notice.createdAt.toDateString()) }}</span>
+            <span class="mx-5 text-gray-500 text-sm">{{
+              formatDate(notice.createdAt.toString())
+            }}</span>
           </div></AccordionTrigger
         >
         <AccordionContent>
