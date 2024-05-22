@@ -2,11 +2,9 @@
 import AdminNoticeBody from '@/components/notice/AdminNoticeBody.vue'
 import { ref } from 'vue'
 
-const emit = defineEmits({
+defineEmits({
   pagingNum: Number
 })
-
-const pagingNum = ref()
 </script>
 
 <template>

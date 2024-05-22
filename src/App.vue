@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatBot from '@/components/chat/Chatbot.vue'
+import ChatBot from '@/components/chat/ChatBot.vue'
 import CommonFooter from '@/components/common/CommonFooter.vue'
 import CommonHeader from '@/components/common/CommonHeader.vue'
 import Toaster from '@/components/ui/toast/Toaster.vue'

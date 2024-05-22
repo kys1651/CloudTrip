@@ -15,25 +15,25 @@ import { ref, computed } from 'vue'
 
 const emit = defineEmits(['pageNumber'])
 
-const props = defineProps({
-  totalPage: String,
-  totalPost: String,
-  itemsPerPage: String
-})
+const props = defineProps<{
+  totalPage: number
+  totalPost: number
+  itemsPerPage: number
+}>()
 </script>
 
 <template>
   <Pagination
     v-slot="{ page }"
-    :total=Number(props.totalPost)
-    :items-per-page=Number(props.itemsPerPage)
+    :total="Number(props.totalPost)"
+    :items-per-page="Number(props.itemsPerPage)"
     :sibling-count="1"
     show-edges
     :default-page="1"
     class="place-items-center"
   >
     <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-      <PaginationFirst @click="$emit('pageNumber', 1)"/>
+      <PaginationFirst @click="$emit('pageNumber', 1)" />
       <PaginationPrev @click="$emit('pageNumber', page - 1)" />
 
       <template v-for="(item, index) in items">
@@ -50,7 +50,7 @@ const props = defineProps({
       </template>
 
       <PaginationNext @click="$emit('pageNumber', page + 1)" />
-      <PaginationLast @click="$emit('pageNumber', totalPage)"/>
+      <PaginationLast @click="$emit('pageNumber', totalPage)" />
     </PaginationList>
   </Pagination>
 </template>

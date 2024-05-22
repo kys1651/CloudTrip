@@ -96,7 +96,10 @@ const onDelete = async () => {
         <span class="text-xs text-gray-500 dark:text-gray-400">
           {{ new Date(comment.createdAt).toLocaleDateString() }}
         </span>
-        <div v-if="profile && comment.user.userId === profile.id" class="ml-auto">
+        <div
+          v-if="profile && (comment.user.userId === profile.id || profile.roleType === 'ADMIN')"
+          class="ml-auto"
+        >
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Button class="w-8 h-8 rounded-full" size="icon" variant="ghost">
