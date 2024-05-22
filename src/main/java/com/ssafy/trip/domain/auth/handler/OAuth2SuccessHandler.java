@@ -35,14 +35,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String redirectUrl;
         if (principal.isEnabled()) {
             JwtToken token = jwtTokenService.generateTokenByOAuth2(principal);
-            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/oauth/redirect")
+            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/redirect/oauth2")
                     .queryParam("access_token", token.getAccessToken())
                     .queryParam("refresh_token", token.getRefreshToken())
                     .toUriString();
             Cookie cookie = createCookie(token.getRefreshToken());
             response.addCookie(cookie);
         } else {
-            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/oauth/redirect")
+            redirectUrl = UriComponentsBuilder.fromUriString(frontEnd + "/redirect/oauth2")
                     .queryParam("isNew", principal.isNew())
                     .queryParam("error", "이메일 인증을 완료해주세요.")
                     .toUriString();
