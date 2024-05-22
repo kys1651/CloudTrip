@@ -12,6 +12,26 @@ export interface ScheduleForm {
   city: number;
 }
 
+export interface IScheduleSearch {
+  scheduleId: number
+  name: string
+  user: {
+    userId: number
+    nickname: string
+    profileImage: string
+  }
+  count: number
+  cityCode: number
+  cityName: string
+  thumbnailImage?: string
+  startDate: string
+  endDate: string
+  private: boolean
+  multi: boolean
+  finished: boolean
+  day: number
+}
+
 export interface ISchedule {
   scheduleId: number
   name: string

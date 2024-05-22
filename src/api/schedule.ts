@@ -1,6 +1,6 @@
 import client, { type BaseResponse } from '@/api/client';
 import { toDate } from '@/lib/formatter';
-import type { IChat, InviteForm, ISchedule, ITripAndVehicle, PathResponse, ScheduleForm, ScheduleTripCreate } from '@/types/schedule.type';
+import type { IChat, InviteForm, ISchedule, IScheduleSearch, ITripAndVehicle, PathResponse, ScheduleForm, ScheduleTripCreate } from '@/types/schedule.type';
 
 export const scheduleCreateRequest = async (
   form: ScheduleForm,
@@ -119,4 +119,14 @@ export const scheduleInviteConfirmRequest = async (request: InviteConfirmRequest
     code: request.code
   })
   if (!isSuccess) throw new Error(message)
+}
+
+export const scheduleSearchRequest = async (params: any): Promise<IScheduleSearch[]> => {
+  const {
+    data: { isSuccess, message, data }
+  } = await client.get<BaseResponse<IScheduleSearch[]>>(`/schedule`, {
+    params: { ... params }
+  })
+  if (!isSuccess) throw new Error(message)
+  return data
 }

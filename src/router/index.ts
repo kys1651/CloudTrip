@@ -133,6 +133,11 @@ const router = createRouter({
       component: () => import('@/views/schedule/ScheduleDetailView.vue')
     },
     {
+      path: '/schedule/explore',
+      name: 'schedule-explore',
+      component: () => import('@/views/schedule/ScheduleExploreView.vue')
+    },
+    {
       path: '/setting',
       name: 'setting',
       component: () => import('@/views/SettingView.vue'),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatBot from "@/components/chat/Chatbot.vue";
+import ChatBot from "@/components/chat/ChatBot.vue";
 import CommonFooter from "@/components/common/CommonFooter.vue";
 import CommonHeader from "@/components/common/CommonHeader.vue";
 import Toaster from "@/components/ui/toast/Toaster.vue";
@@ -10,9 +10,12 @@ import { refreshRequest } from "./api/auth";
 import { userDataRequest } from "./api/user";
 import { useAuthenticationStore } from "./stores/authentication";
 
-const { isLogin, profile } = storeToRefs(useAuthenticationStore());
+const { isLogin, expireTime, profile } = storeToRefs(useAuthenticationStore());
 const isRefreshRequest = sessionStorage.getItem("isRefreshRequest");
-if (!isLogin.value && !isRefreshRequest) {
+if (
+  (!isLogin.value && !isRefreshRequest) ||
+  (expireTime.value && new Date().getTime() > expireTime.value)
+) {
   refreshRequest()
     .then(() => {
       userDataRequest();
