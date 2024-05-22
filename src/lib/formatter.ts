@@ -29,6 +29,12 @@ export const toDate = (date: Date) => {
   return `${year}-${month}-${day}`
 }
 
+export const toMonthDay = (date: Date) => {
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${month}월 ${day}일`
+}
+
 export const toDateTime = (date: Date) => {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');

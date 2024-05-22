@@ -29,7 +29,12 @@ import DialogTrigger from "@/components/ui/dialog/DialogTrigger.vue";
         <div class="flex flex-col items-center justify-center">
           <h1 class="text-white text-2xl font-bold pb-2">계획 구경하기</h1>
           <p class="text-white text-md">다른 사람들의 여행 계획을 구경하고 참고하세요</p>
-          <Button class="mt-4" variant="outline">구경하기</Button>
+          <Button
+            class="mt-4"
+            variant="outline"
+            @click="$router.push({ name: 'schedule-explore' })"
+            >구경하기</Button
+          >
         </div>
       </div>
     </div>
