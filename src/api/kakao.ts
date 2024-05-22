@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const FRONTEND_URL = 'http://localhost:5173'
+export const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL
 const client = axios.create({
   baseURL: 'https://dapi.kakao.com',
   headers: {
