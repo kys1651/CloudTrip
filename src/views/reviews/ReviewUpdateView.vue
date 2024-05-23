@@ -101,18 +101,22 @@ const image = computed(() => {
 const MAX_IMAGES = 5 // 업로드 가능한 최대 이미지 개수 설정
 
 const currentRating = ref(Number(0))
-watch(review, (data) => {
-  if (data) {
-    setFieldValue('name', data.tourName)
-    setFieldValue('tourId', data.tourId)
-    setFieldValue('content', data.content)
-    setFieldValue('rating', data.rating)
-    currentRating.value = data.rating
+watch(
+  review,
+  (data) => {
+    if (data) {
+      setFieldValue('name', data.tourName)
+      setFieldValue('tourId', data.tourId)
+      setFieldValue('content', data.content)
+      setFieldValue('rating', data.rating)
+      currentRating.value = data.rating
 
-    imageSrcs.value = data.images.map((src) => ({ src, isNew: false }))
-    if (data.images.length > 0) imageIndex.value = 0
-  }
-})
+      imageSrcs.value = data.images.map((src) => ({ src, isNew: false }))
+      if (data.images.length > 0) imageIndex.value = 0
+    }
+  },
+  { deep: true }
+)
 
 // 폼 제출 함수
 const onSubmit = handleSubmit(async (values) => {
