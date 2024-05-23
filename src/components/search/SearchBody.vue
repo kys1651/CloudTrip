@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { searchResult } from '@/api/search'
 import ReviewCard from '@/components/review/ReviewCard.vue'
-import SearchCard from '@/components/search/SearchCard.vue'
 import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
+import SearchCard from '@/components/search/SearchCard.vue'
 import {
   Accordion,
   AccordionContent,
@@ -75,7 +75,7 @@ const goSearchSchedule = () => {
 </script>
 
 <template>
-  <div v-if="datas" className="w-full px-10">
+  <div v-if="datas" className="w-full px-10 cursor-pointer">
     <div className="flex justify-between mb-10">
       <div className="flex space-x-2 text-sm">
         <Badge
@@ -90,13 +90,19 @@ const goSearchSchedule = () => {
         <Badge class="badge cursor-pointer" @click="goSearchSchedule"
           >여행 계획 {{ scheduleLen }}</Badge
         >
-        <Badge class="badge cursor-pointer" @click="goSearchNotice">공지사항 {{ noticeLen }}</Badge>
-        <Badge class="badge cursor-pointer" @click="goSearchProfile">프로필 {{ userLen }}</Badge>
+        <Badge class="badge cursor-pointer" @click="goSearchNotice"
+          >공지사항 {{ noticeLen }}</Badge
+        >
+        <Badge class="badge cursor-pointer" @click="goSearchProfile"
+          >프로필 {{ userLen }}</Badge
+        >
       </div>
     </div>
     <hr />
     <div className="mt-4">
-      <h2 className="text-lg font-semibold flex items-center justify-between">여행 리뷰</h2>
+      <h2 className="text-lg font-semibold flex items-center justify-between">
+        여행 리뷰
+      </h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
           <ReviewCard
@@ -109,7 +115,11 @@ const goSearchSchedule = () => {
       <div class="flex justify-end mt-5"></div>
       <!-- "더보기" button -->
       <div class="flex justify-center">
-        <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
+        <button
+          v-if="datas.reviews.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchReview"
+        >
           여행 리뷰 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -117,7 +127,9 @@ const goSearchSchedule = () => {
           <p>검색 결과에 대한 여행 리뷰가 존재하지 않습니다.</p>
         </div>
       </div>
-      <h2 className="text-lg font-semibold flex items-center justify-between">여행 계획</h2>
+      <h2 className="text-lg font-semibold flex items-center justify-between">
+        여행 계획
+      </h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
           <ScheduleCard
@@ -130,7 +142,11 @@ const goSearchSchedule = () => {
       <div class="flex justify-end mt-5"></div>
       <!-- "더보기" button -->
       <div class="flex justify-center">
-        <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
+        <button
+          v-if="datas.reviews.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchReview"
+        >
           여행 계획 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -160,7 +176,11 @@ const goSearchSchedule = () => {
         </Accordion>
       </div>
       <div class="flex justify-center">
-        <button v-if="datas.notices.length > 0" class="mt-10 more-button" @click="goSearchNotice">
+        <button
+          v-if="datas.notices.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchNotice"
+        >
           공지사항 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -172,15 +192,19 @@ const goSearchSchedule = () => {
       <div className="grid justify-center mt-4">
         <div className="grid grid-cols-3 gap-10 justify-center">
           <SearchCard
-            @click="goUserProfile(user.userId)"
+            @click="goUserProfile(user.id)"
             :user-info="user"
             v-for="user in datas.users.slice(0, 6)"
-            :key="user.userId"
+            :key="user.id"
           />
         </div>
       </div>
       <div class="flex justify-center mb-10">
-        <button v-if="datas.users.length > 0" class="mt-10 more-button" @click="goSearchProfile">
+        <button
+          v-if="datas.users.length > 0"
+          class="mt-10 more-button"
+          @click="goSearchProfile"
+        >
           프로필 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">

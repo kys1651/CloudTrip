@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { findPasswordRequest } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
-import { FindPasswordStatus, type FindPasswordForm } from "@/types/auth.type";
 import { cn } from "@/lib/utils";
-import { LoaderCircle } from "lucide-vue-next";
+import { FindPasswordStatus, type FindPasswordForm } from "@/types/auth.type";
 import { useMutation } from "@tanstack/vue-query";
-import { emailConfirmRequest, findPasswordRequest } from "@/api/auth";
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
+import { LoaderCircle } from "lucide-vue-next";
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
 
 import {
   FormControl,
@@ -16,7 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@/components/ui/form'
+} from '@/components/ui/form';
 import router from "@/router";
 import { useAuthenticationStore } from "@/stores/authentication";
 import { storeToRefs } from "pinia";
@@ -110,9 +110,9 @@ const onSubmit = handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button class="w-full" :disabled="isLoading" @click="onSubmit">
+      <Button class="w-full flex justify-center" :disabled="isLoading" @click="onSubmit">
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        인증번호 발송
+        <span v-else>인증번호 발송</span>
       </Button>
     </form>
   </div>

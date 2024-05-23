@@ -26,7 +26,7 @@ export interface ISearch {
     createdAt: string
   }[]
   users: {
-    userId: number
+    id: number
     email: string
     profileImage?: string
     nickname: string

@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import { resetPasswordRequest } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { FormStatus, type ResetPasswordForm } from "@/types/auth.type";
-import { LoaderCircle } from "lucide-vue-next";
 import { useMutation } from "@tanstack/vue-query";
-import { resetPasswordRequest } from "@/api/auth";
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
+import { LoaderCircle } from "lucide-vue-next";
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
 
 import {
   FormControl,
@@ -15,11 +15,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@/components/ui/form'
+} from '@/components/ui/form';
 import router from "@/router";
 import { useAuthenticationStore } from "@/stores/authentication";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
 
 // 이미 로그인 되어있는 유저라면 바로 홈으로 이동
 const authentication = useAuthenticationStore();
@@ -112,9 +111,9 @@ const onSubmit = handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button class="w-full" :disabled="isLoading" @click="onSubmit">
+      <Button class="w-full flex justify-center" :disabled="isLoading" @click="onSubmit">
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        인증하기
+        <span v-else>인증하기</span>
       </Button>
     </form>
   </div>

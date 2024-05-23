@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import ScheduleDropdownMenu from "@/components/schedule/ScheduleDropdownMenu.vue";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { toMonthDay } from "@/lib/formatter";
+import { imageOrCityImage, imageOrDefault } from "@/lib/image-load";
+import { useAuthenticationStore } from "@/stores/authentication";
+import type { IScheduleSearch } from "@/types/schedule.type";
 import {
   Ban,
   CalendarIcon,
@@ -8,24 +15,17 @@ import {
   LockOpen,
   Luggage,
   UserRound,
-  UsersRound
-} from 'lucide-vue-next'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { imageOrCityImage, imageOrDefault } from '@/lib/image-load'
-import { toMonthDay } from '@/lib/formatter'
-import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
-import type { IScheduleSearch } from '@/types/schedule.type'
-import ScheduleDropdownMenu from '@/components/schedule/ScheduleDropdownMenu.vue'
+  UsersRound,
+} from "lucide-vue-next";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 defineProps<{
-  schedule: IScheduleSearch
-}>()
+  schedule: IScheduleSearch;
+}>();
 
-const { profile } = storeToRefs(useAuthenticationStore())
+const { profile, authUserId } = storeToRefs(useAuthenticationStore());
 </script>
 
 <template>
@@ -33,8 +33,10 @@ const { profile } = storeToRefs(useAuthenticationStore())
     :key="schedule.scheduleId"
     class="hover:scale-105 cursor-pointer transition-transform duration-500 ease-in-out shadow-md"
     :class="{
-      'cursor-pointer': schedule.usernames.includes(profile?.email || '') || !schedule.private,
-      'cursor-not-allowed': !schedule.usernames.includes(profile?.email || '') && schedule.private
+      'cursor-pointer':
+        schedule.usernames.includes(profile?.email || '') || !schedule.private,
+      'cursor-not-allowed':
+        !schedule.usernames.includes(profile?.email || '') && schedule.private,
     }"
   >
     <img
@@ -46,8 +48,8 @@ const { profile } = storeToRefs(useAuthenticationStore())
           if (schedule.usernames.includes(profile?.email || '') || !schedule.private) {
             router.push({
               name: 'schedule-detail',
-              params: { scheduleId: schedule.scheduleId }
-            })
+              params: { scheduleId: schedule.scheduleId },
+            });
           }
         }
       "
@@ -60,8 +62,8 @@ const { profile } = storeToRefs(useAuthenticationStore())
             if (schedule.usernames.includes(profile?.email || '') || !schedule.private) {
               router.push({
                 name: 'schedule-detail',
-                params: { scheduleId: schedule.scheduleId }
-              })
+                params: { scheduleId: schedule.scheduleId },
+              });
             }
           }
         "
@@ -138,12 +140,18 @@ const { profile } = storeToRefs(useAuthenticationStore())
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-1 text-sm mt-2">
           <Avatar class="w-6 h-6">
-            <AvatarImage alt="User Avatar" :src="imageOrDefault(schedule.user.profileImage)" />
+            <AvatarImage
+              alt="User Avatar"
+              :src="imageOrDefault(schedule.user.profileImage)"
+            />
             <AvatarFallback>{{ schedule.user.userId }}</AvatarFallback>
           </Avatar>
           <span class="text-gray-500">{{ schedule.user.nickname }}</span>
         </div>
-        <div class="flex items-center space-x-2">
+        <div
+          class="flex items-center space-x-2"
+          v-if="authUserId === schedule.user.userId"
+        >
           <ScheduleDropdownMenu :schedule-id="schedule.scheduleId" />
         </div>
       </div>

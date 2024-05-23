@@ -79,7 +79,7 @@ const pushRouter = () => {
   <Card class="rounded-md shadow border w-full max-w-[500px] border-gray-200">
     <CardHeader class="p-4 flex flex-row items-center justify-between">
       <a
-        class="flex items-center gap-2 text-sm font-semibold"
+        class="flex items-center gap-2 text-sm font-semibold cursor-pointer"
         @click="router.push(`/user/${review.user.userId}`)"
       >
         <CommonAvatar :src="review.user.profileImage" :username="review.user.nickname" />
@@ -89,7 +89,7 @@ const pushRouter = () => {
         :disable="isFollowLoading"
         @click="followMutate"
         v-if="profile && review.user.userId !== profile.id"
-        class="mr-auto ml-2"
+        class="flex justify-center mr-auto ml-2"
         :variant="isFollowing ? 'outline' : 'default'"
         size="xs"
       >
@@ -111,7 +111,7 @@ const pushRouter = () => {
           <CarouselItem
             v-for="(image, index) in review.images"
             :key="index"
-            class="flex justify-center items-center w-full h-full"
+            class="flex justify-center items-center w-full h-full cursor-pointer"
             @click="pushRouter"
           >
             <img
@@ -128,7 +128,13 @@ const pushRouter = () => {
     <CardFooter class="grid py-2 px-4">
       <!-- 아이콘 출력 -->
       <div class="flex items-center w-full">
-        <Button size="icon" variant="ghost" @click="mutate" :disable="isLoading">
+        <Button
+          class="flex justify-center"
+          size="icon"
+          variant="ghost"
+          @click="mutate"
+          :disable="isLoading"
+        >
           <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
           <div v-else>
             <Heart v-if="isLiked" :size="20" fill="red" stroke="red" />

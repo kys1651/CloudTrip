@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/toast'
-import { FormStatus, type SignInForm } from '@/types/auth.type'
-import { cn } from '@/lib/utils'
-import { LoaderCircle } from 'lucide-vue-next'
-import { useMutation } from '@tanstack/vue-query'
 import { signInRequest } from '@/api/auth'
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
-import NaverLogo from '@/components/icons/NaverLogo.vue'
-import KakaoLogo from '@/components/icons/KakaoLogo.vue'
-import GoogleLogo from '@/components/icons/GoogleLogo.vue'
-import GithubLogo from '@/components/icons/GithubLogo.vue'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useAuthenticationStore } from '@/stores/authentication'
-import { storeToRefs } from 'pinia'
-import { RouterLink, useRouter } from 'vue-router'
 import { GITHUB_LOGIN_URL, GOOGLE_LOGIN_URL, KAKAO_LOGIN_URL, NAVER_LOGIN_URL } from '@/api/client'
 import { userDataRequest } from '@/api/user'
+import GithubLogo from '@/components/icons/GithubLogo.vue'
+import GoogleLogo from '@/components/icons/GoogleLogo.vue'
+import KakaoLogo from '@/components/icons/KakaoLogo.vue'
+import NaverLogo from '@/components/icons/NaverLogo.vue'
+import { Button } from '@/components/ui/button'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
+import { cn } from '@/lib/utils'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { FormStatus, type SignInForm } from '@/types/auth.type'
+import { useMutation } from '@tanstack/vue-query'
+import { LoaderCircle } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+import { useRouter } from 'vue-router'
+import * as yup from 'yup'
 
 // 이미 로그인 되어있는 유저라면 바로 홈으로 이동
 const authentication = useAuthenticationStore()
@@ -120,9 +120,9 @@ const onSubmit = handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button class="w-full" :disabled="isLoading" @click="onSubmit">
+      <Button class="w-full flex justify-center" :disabled="isLoading" @click="onSubmit">
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        로그인
+        <span v-else>로그인</span>
       </Button>
       <div class="mt-4 text-center text-sm flex flex-row space-x-2 justify-center">
         <span>계정이 아직 없다면?</span>
@@ -136,7 +136,9 @@ const onSubmit = handleSubmit((values) => {
         <span class="w-full border-t" />
       </div>
       <div class="relative flex justify-center text-xs uppercase">
-        <span class="bg-background px-2 text-muted-foreground"> 소셜 로그인으로 로그인하기 </span>
+        <span class="bg-background px-2 text-muted-foreground">
+          소셜 로그인으로 로그인하기
+        </span>
       </div>
     </div>
     <div class="grid grid-cols-2 gap-2">
@@ -145,32 +147,40 @@ const onSubmit = handleSubmit((values) => {
         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 space-x-2"
       >
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        <NaverLogo class="w-4 h-4" />
-        <span>Naver</span>
+        <div v-else class="flex flex-row items-center space-x-2">
+          <NaverLogo class="w-4 h-4" />
+          <span>Naver</span>
+        </div>
       </a>
       <a
         :href="`${KAKAO_LOGIN_URL}`"
         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 space-x-2"
       >
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        <KakaoLogo class="w-4 h-4" />
-        <span>KAKAO</span>
+        <div v-else class="flex flex-row items-center space-x-2">
+          <KakaoLogo class="w-4 h-4" />
+          <span>KAKAO</span>
+        </div>
       </a>
       <a
         :href="`${GOOGLE_LOGIN_URL}`"
         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 space-x-2"
       >
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        <GoogleLogo class="w-4 h-4" />
-        <span>GOOGLE</span>
+        <div v-else class="flex flex-row items-center space-x-2">
+          <GoogleLogo class="w-4 h-4" />
+          <span>GOOGLE</span>
+        </div>
       </a>
       <a
         :href="`${GITHUB_LOGIN_URL}`"
         class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 space-x-2"
       >
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        <GithubLogo class="w-4 h-4" />
-        <span>GitHub</span>
+        <div v-else class="flex flex-row items-center space-x-2">
+          <GithubLogo class="w-4 h-4" />
+          <span>GitHub</span>
+        </div>
       </a>
     </div>
   </div>

@@ -87,6 +87,7 @@ const searchByKeyword = () => {
         type="text"
         placeholder="검색어를 입력하세요."
         v-model="searchKeyword"
+        @keyup.enter="searchByKeyword"
       />
       <Search class="mx-2 cursor-pointer" @click="searchByKeyword" />
     </div>

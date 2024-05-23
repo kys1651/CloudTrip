@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import { signUpRequest } from '@/api/auth'
 import { Button } from '@/components/ui/button'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast'
-import { FormStatus, type SignUpForm } from '@/types/auth.type'
 import { cn } from '@/lib/utils'
-import { LoaderCircle } from 'lucide-vue-next'
-import { useMutation } from '@tanstack/vue-query'
-import { signUpRequest } from '@/api/auth'
-import { useForm } from 'vee-validate'
-import * as yup from 'yup'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import router from '@/router'
 import { useAuthenticationStore } from '@/stores/authentication'
+import { FormStatus, type SignUpForm } from '@/types/auth.type'
+import { useMutation } from '@tanstack/vue-query'
+import { LoaderCircle } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
 
 // 이미 로그인 되어있는 유저라면 바로 홈으로 이동
 const authentication = useAuthenticationStore()
@@ -115,7 +115,12 @@ const onSubmit = handleSubmit((values) => {
         <FormItem>
           <FormLabel for="passwordConfirm">비밀번호 확인</FormLabel>
           <FormControl>
-            <Input id="passwordConfirm" type="password" v-bind="componentField" required />
+            <Input
+              id="passwordConfirm"
+              type="password"
+              v-bind="componentField"
+              required
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -155,9 +160,13 @@ const onSubmit = handleSubmit((values) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button class="mt-4 w-full" :disabled="isLoading" @click="onSubmit">
+      <Button
+        class="mt-4 w-full flex justify-center"
+        :disabled="isLoading"
+        @click="onSubmit"
+      >
         <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-        회원가입
+        <span v-else>회원가입</span>
       </Button>
     </form>
   </div>
