@@ -50,7 +50,7 @@ instance.interceptors.response.use(
 
     // 인증 에러가 아닌 경우 바로 에러 처리
     if (status !== 401) {
-      if (status === 500) {
+      if (status.toString().startsWith('5')) {
         const toast = useToast();
         toast.toast({
           title: '서버 에러',
