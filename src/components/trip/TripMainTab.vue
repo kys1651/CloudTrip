@@ -107,7 +107,7 @@ const changeCategory = (category: string) => {
         </div>
         <div v-else class="flex flex-grow h-[500px] items-center justify-center">
           <div v-if="isTripLoading" class="flex flex-col space-y-10">
-            <div v-for="i in 15" :key="i" class="flex items-center space-x-4 bg-white">
+            <div v-for="i in 5" :key="i" class="flex items-center space-x-4 bg-white">
               <Skeleton class="w-16 h-16 rounded-md" />
               <div class="flex-1 space-y-2">
                 <Skeleton class="h-4 w-3/4" />
