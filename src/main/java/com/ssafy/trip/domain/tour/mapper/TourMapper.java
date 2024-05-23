@@ -20,6 +20,8 @@ public interface TourMapper {
 
     List<SimpleTourWithLike> findWithContentByKeyword(int city, String keyword);
 
+    List<SimpleTourWithLike> findWithContentByKeywordAll(int city, String keyword);
+
     List<City> findCities();
 
     List<Town> findTowns(int cityCode);

@@ -19,6 +19,9 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public List<SimpleTourWithLike> findTourByKeyword(int city, String keyword) {
+        if (city == 0) {
+            return tourMapper.findWithContentByKeywordAll(city, keyword);
+        }
         return tourMapper.findWithContentByKeyword(city, keyword);
     }
 
