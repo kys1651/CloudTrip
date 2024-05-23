@@ -2,15 +2,8 @@
 import { searchResult } from '@/api/search'
 import SearchHeader from '@/components/search/SearchHeader.vue'
 import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { type ISearch } from '@/types/search.type'
-import { OctagonAlert } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -41,16 +34,6 @@ onMounted(() => {
       console.log('전체 조회 실패', error)
     })
 })
-
-const isATagExists = (content: string) => {
-  const htmlElement = document.createElement('div')
-  htmlElement.innerHTML = content
-  return htmlElement.querySelector('a') !== null
-}
-
-const goUserProfile = (userId: number) => {
-  router.push({ name: 'userDetail', params: { userId: userId } })
-}
 
 // tag
 const goSearch = () => {

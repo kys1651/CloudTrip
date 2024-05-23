@@ -35,12 +35,6 @@ onMounted(() => {
     })
 })
 
-const isATagExists = (content: string) => {
-  const htmlElement = document.createElement('div')
-  htmlElement.innerHTML = content
-  return htmlElement.querySelector('a') !== null
-}
-
 const goUserProfile = (userId: number) => {
   router.push({ name: 'userDetail', params: { userId: userId } })
 }
