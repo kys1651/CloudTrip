@@ -2,6 +2,8 @@ package com.ssafy.trip.domain.review.controller;
 
 import com.ssafy.trip.core.annotation.CurrentUser;
 import com.ssafy.trip.core.entity.CustomPage;
+import com.ssafy.trip.core.exception.CustomException;
+import com.ssafy.trip.core.exception.ErrorCode;
 import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.review.dto.ReviewData;
 import com.ssafy.trip.domain.review.dto.ReviewData.Create;
@@ -9,7 +11,6 @@ import com.ssafy.trip.domain.review.dto.ReviewData.SimpleReview;
 import com.ssafy.trip.domain.review.dto.ReviewData.Update;
 import com.ssafy.trip.domain.review.service.ReviewService;
 import com.ssafy.trip.domain.user.entity.User;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +87,9 @@ public class ReviewController {
             @CurrentUser User user,
             @RequestParam("images") List<MultipartFile> images
     ) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.saveReview(create, user.getUserId(), images);
         return SuccessResponse.empty();
     }
@@ -98,13 +102,21 @@ public class ReviewController {
             @RequestParam(value = "removeImages", required = false) List<String> removeImages,
             @CurrentUser User user
     ) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.updateReview(user.getUserId(), reviewId, update, images, removeImages);
         return SuccessResponse.empty();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public SuccessResponse<Void> delete(@PathVariable("id") Long id) {
+    public SuccessResponse<Void> delete(
+            @CurrentUser User user,
+            @PathVariable("id") Long id) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.deleteReview(id);
         return SuccessResponse.empty();
     }
@@ -118,12 +130,18 @@ public class ReviewController {
 
     @PostMapping("/{id}/like")
     public SuccessResponse<Void> like(@PathVariable("id") Long reviewId, @CurrentUser User user) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.saveLike(reviewId, user.getUserId());
         return SuccessResponse.empty();
     }
 
     @DeleteMapping("/{id}/like")
     public SuccessResponse<Void> unLike(@PathVariable("id") Long reviewId, @CurrentUser User user) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.deleteLike(reviewId, user.getUserId());
         return SuccessResponse.empty();
     }
@@ -154,19 +172,30 @@ public class ReviewController {
             @RequestBody ReviewData.CommentCreate create,
             @CurrentUser User user
     ) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.saveComment(reviewId, create, user.getUserId());
         return SuccessResponse.empty();
     }
 
     @DeleteMapping("/{id}/comment")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public SuccessResponse<Void> deleteComment(@PathVariable("id") Long commentId) {
+    public SuccessResponse<Void> deleteComment(@CurrentUser User user, @PathVariable("id") Long commentId) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.deleteComment(commentId);
         return SuccessResponse.empty();
     }
 
     @PatchMapping("/{id}/comment")
-    public SuccessResponse<Void> updateComment(@PathVariable("id") Long commentId, @RequestBody ReviewData.UpdateComment update) {
+    public SuccessResponse<Void> updateComment(
+            @CurrentUser User user,
+            @PathVariable("id") Long commentId, @RequestBody ReviewData.UpdateComment update) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         reviewService.updateComment(commentId, update);
         return SuccessResponse.empty();
     }

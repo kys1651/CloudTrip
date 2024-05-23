@@ -24,7 +24,7 @@ import java.util.List;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    private final String[] permitAll = {
+    private final String[] authenticatedURL = {
             "/api/v1/auth/**",
             "/actuator/**",
             "/h2-console/**",
@@ -50,8 +50,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(authenticationDeniedHandler)
                 )
                 .authorizeHttpRequests(
-                        registry -> registry.requestMatchers(permitAll).permitAll()
-                                .anyRequest().permitAll()
+                        registry -> registry.anyRequest().permitAll()
                 )
                 .oauth2Login(configurer -> configurer
                         .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization"))

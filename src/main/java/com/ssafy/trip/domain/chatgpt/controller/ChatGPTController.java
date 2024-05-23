@@ -1,8 +1,9 @@
 package com.ssafy.trip.domain.chatgpt.controller;
 
 import com.ssafy.trip.core.annotation.CurrentUser;
+import com.ssafy.trip.core.exception.CustomException;
+import com.ssafy.trip.core.exception.ErrorCode;
 import com.ssafy.trip.core.response.SuccessResponse;
-import com.ssafy.trip.domain.chatgpt.dto.ChatGPTData;
 import com.ssafy.trip.domain.chatgpt.dto.ChatGPTData.Message;
 import com.ssafy.trip.domain.chatgpt.dto.ChatGPTData.Recommend;
 import com.ssafy.trip.domain.chatgpt.service.ChatGPTService;
@@ -24,17 +25,22 @@ public class ChatGPTController {
 
     @PostMapping("/review")
     public SuccessResponse<String> getRecommend(@RequestBody Recommend recommend) {
-//        return SuccessResponse.of("임시 응답 + " + recommend.getLocation() + "위치 :  " + recommend.getContent());
         return SuccessResponse.of(chatGPTService.getRecommend(recommend));
     }
 
     @GetMapping("/chat")
     public SuccessResponse<List<Message>> getList(@CurrentUser User user) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         return SuccessResponse.of(chatGPTService.getList(user.getUserId()));
     }
 
     @PostMapping("/chat")
     public SuccessResponse<String> sendMessage(@RequestBody Message message, @CurrentUser User user) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         chatGPTService.sendMessage(message, user.getUserId());
         return SuccessResponse.of(message.getAiResponse());
     }
@@ -42,6 +48,9 @@ public class ChatGPTController {
     @DeleteMapping("/chat")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public SuccessResponse<Void> deleteChat(@CurrentUser User user) {
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
         chatGPTService.deleteChat(user.getUserId());
         return SuccessResponse.empty();
     }
