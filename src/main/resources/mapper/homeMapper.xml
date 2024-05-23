@@ -2,18 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.trip.domain.home.mapper.HomeMapper">
 
-    <select id="getTotalNumbers" >
-        SELECT (SELECT count(*) FROM review) AS review_count,
-               (SELECT count(*) FROM notice) AS notice_count,
-               (SELECT count(*) FROM users) AS users_count,
-               (SELECT count(*) FROM tour) AS tour_count,
+    <select id="getTotalNumbers">
+        SELECT (SELECT count(*) FROM review)   AS review_count,
+               (SELECT count(*) FROM notice)   AS notice_count,
+               (SELECT count(*) FROM users)    AS users_count,
+               (SELECT count(*) FROM tour)     AS tour_count,
                (SELECT count(*) FROM schedule) AS schedule_count;
     </select>
 
     <!--    Top 여행지 조회  -->
     <!--  review를 남길 때 별점 기준으로 책정  -->
     <!--  review table의 rating 칼럼 기준  -->
-    <select id="getTopTours" >
+    <select id="getTopTours">
         SELECT tour_id, avg(rating) AS avg_rating
         FROM review
         GROUP BY tour_id
@@ -24,7 +24,7 @@
     <!-- Top 리뷰 조회  -->
     <!-- 리뷰에 달린 좋아요를 기준으로 책정 -->
     <!-- review table 참조 -->
-    <select id="getTopReviews" >
+    <select id="getTopReviews">
         SELECT review_id
         FROM review
         ORDER BY like_count DESC
@@ -33,11 +33,16 @@
 
     <!-- tour_id로 여행지 detail, city, town 정보 가져오기  -->
     <select id="getTopTourInfos">
-        SELECT T.tour_id, T.name, TD.description, C.name AS city_name, TN.name AS town_name, T.background_image
+        SELECT T.tour_id,
+               T.name,
+               IFNULL(TD.description, '여행지 설명이 존재하지 않습니다.') AS description,
+               C.name                                       AS city_name,
+               TN.name                                      AS town_name,
+               T.background_image
         FROM tour T
-        JOIN tour_detail TD ON T.tour_id = TD.tour_id
-        JOIN city C ON T.city_code = C.city_code
-        JOIN town TN ON T.town_code = TN.town_code AND T.city_code = TN.city_code
+                 LEFT JOIN tour_detail TD ON T.tour_id = TD.tour_id
+                 JOIN city C ON T.city_code = C.city_code
+                 JOIN town TN ON T.town_code = TN.town_code AND T.city_code = TN.city_code
         WHERE T.tour_id = #{tourId};
     </select>
 
@@ -45,9 +50,9 @@
     <select id="getTopReviewInfos">
         SELECT R.review_id, R.content, R.created_at, T.name, RI.image, count(RL.user_id) AS like_count
         FROM review R
-        JOIN tour T ON R.tour_id = T.tour_id
-        LEFT JOIN review_images RI ON R.review_id = RI.review_id
-        LEFT JOIN review_like RL ON R.review_id = RL.review_id
+                 JOIN tour T ON R.tour_id = T.tour_id
+                 LEFT JOIN review_images RI ON R.review_id = RI.review_id
+                 LEFT JOIN review_like RL ON R.review_id = RL.review_id
         WHERE R.review_id = #{reviewId}
         GROUP BY R.review_id, R.content, R.created_at, T.name, RI.image
         LIMIT 1;

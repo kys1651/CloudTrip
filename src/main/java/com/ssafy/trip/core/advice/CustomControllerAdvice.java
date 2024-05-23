@@ -22,7 +22,7 @@ public class CustomControllerAdvice {
     @ResponseBody
     public ErrorResponse handleException(Exception exception) {
         log.error("Exception: {}", exception.getMessage());
-        return ErrorResponse.of(exception);
+        return ErrorResponse.of(new CustomException(ErrorCode.SERVER_ERROR, "서버 에러가 발생했습니다."));
     }
 
     @ExceptionHandler(SQLException.class)
