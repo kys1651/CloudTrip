@@ -1,22 +1,24 @@
 package com.ssafy.trip.domain.search.controller;
 
+import com.ssafy.trip.core.annotation.CurrentUser;
 import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.notice.entity.Notice;
 import com.ssafy.trip.domain.review.entity.ReviewWithUser;
-import com.ssafy.trip.domain.schedule.dto.ScheduleData;
 import com.ssafy.trip.domain.schedule.dto.ScheduleData.ScheduleSearch;
 import com.ssafy.trip.domain.search.service.SearchService;
-import com.ssafy.trip.domain.user.dto.UserData;
 import com.ssafy.trip.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ssafy.trip.domain.user.dto.UserData.*;
+import static com.ssafy.trip.domain.user.dto.UserData.Profile;
 
 @Slf4j
 @RestController
@@ -27,9 +29,13 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("")
-    public SuccessResponse<Map<String, List>> search(@RequestParam String searchKeyword) {
+    public SuccessResponse<Map<String, List>> search(
+            @CurrentUser User user,
+            @RequestParam String searchKeyword
+    ) {
+        Long userId = user == null ? 0 : user.getUserId();
         // Review
-        List<ReviewWithUser> reviews = searchService.searchReviewsByKeyword(searchKeyword);
+        List<ReviewWithUser> reviews = searchService.searchReviewsByKeyword(searchKeyword, userId);
         // Notice
         List<Notice> notices = searchService.searchNoticesByKeyword(searchKeyword);
         // User
