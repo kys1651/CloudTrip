@@ -33,6 +33,7 @@ import Switch from "../ui/switch/Switch.vue";
 import { useToast } from "../ui/toast";
 
 const cities: { id: number; name: string; image: string }[] = [
+  { id: 0, name: "전국", image: "junkok.png" },
   { id: 1, name: "서울", image: "seoul.jpg" },
   { id: 2, name: "인천", image: "incheon.jpg" },
   { id: 3, name: "대전", image: "daejeon.jpg" },
@@ -78,7 +79,7 @@ const { handleSubmit, setFieldValue, values } = useForm<ScheduleForm>({
     name: "",
     multi: false,
     private: false,
-    city: 1,
+    city: 0,
   },
 });
 
@@ -277,7 +278,7 @@ const disabledDate = ({ year, month, day }: { year: number; month: number; day: 
         >
           <span>계획 지역 설정</span>
           <span
-            v-if="values.city"
+            v-if="values"
             class="text-sm font-bold text-blue-600 dark:text-blue-400"
             >{{ cities.find((city) => city.id === values.city)?.name }}</span
           >

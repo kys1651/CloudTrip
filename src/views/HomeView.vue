@@ -55,7 +55,8 @@ const goReviewDetail = (reviewId: number) => {
                 모두의 여행지 추천 서비스
               </div> -->
               <h2 class="mb-5 text-3xl font-bold tracking-tighter sm:text-5xl">
-                실시간 공동 여행계획 수립 서비스 : Cloud Trip
+                실시간 공동 여행계획 수립 서비스 <br />
+                Cloud Trip
               </h2>
               <p
                 class="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400"
