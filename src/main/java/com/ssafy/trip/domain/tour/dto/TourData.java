@@ -14,6 +14,8 @@ public class TourData {
         private String description;
         private double latitude;
         private double longitude;
+        private int pickCount;
+        private int rating;
 
         public static Search of(TourWithContent tour) {
             Search search = new Search();

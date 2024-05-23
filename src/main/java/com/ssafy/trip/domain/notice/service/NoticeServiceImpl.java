@@ -46,7 +46,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void save(Notice notice, List<MultipartFile> images) {
         HashMap<String, String> imgUrlMap = new HashMap<>();
         // S3로 이미지 업로드
-        if (images != null && images.size() > 0) {
+        if (images != null && !images.isEmpty()) {
             AtomicInteger atomicInteger = new AtomicInteger(0);
             images.stream().map((image) -> {
                 CompletableFuture<String> future = s3UploadService.upload(image);
@@ -68,7 +68,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void update(Notice notice, List<MultipartFile> images,  Long noticeId) {
+    public void update(Notice notice, List<MultipartFile> images, Long noticeId) {
         HashMap<String, String> imgUrlMap = new HashMap<>();
         // S3로 이미지 업로드
         if (images != null && images.size() > 0) {

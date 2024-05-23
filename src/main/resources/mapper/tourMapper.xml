@@ -26,22 +26,33 @@
           AND content_type = 'STAY';
     </select>
 
-    <select id="findWithContentByKeyword" resultType="com.ssafy.trip.domain.tour.entity.TourWithContent">
-        SELECT *
-        FROM tour_with_content
-        <where>
-            <if test="city != 0">
-                AND city_code = #{city}
-            </if>
-            <if test="keyword != null">
-                AND name LIKE CONCAT('%', #{keyword}, '%');
-            </if>
-        </where>
+
+    <select id="findWithContentByKeyword" resultType="com.ssafy.trip.domain.tour.entity.SimpleTourWithLike">
+        SELECT T.tour_id,
+               T.content_type_id,
+               T.name,
+               T.address,
+               TD.longitude,
+               TD.latitude,
+               T.background_image,
+               COUNT(ST.schedule_id)    AS schedule_count,
+               COUNT(R.review_id)       AS review_count,
+               IFNULL(AVG(R.rating), 0) AS rating
+        FROM tour T
+                 LEFT JOIN tour_detail TD ON T.tour_id = TD.tour_id
+                 LEFT JOIN schedule_trip ST ON T.tour_id = ST.tour_id
+                 LEFT JOIN review R ON T.tour_id = R.tour_id
+        WHERE city_code = #{city}
+          AND name LIKE CONCAT('%', #{keyword}, '%')
+          AND content_type_id != 2
+        GROUP BY T.tour_id
+        ORDER BY schedule_count DESC, review_count DESC, rating DESC;
     </select>
 
     <select id="findCategories">
         SELECT *
-        FROM tour_content;
+        FROM tour_content
+        WHERE content_id != 2;
     </select>
 
     <select id="findCities">

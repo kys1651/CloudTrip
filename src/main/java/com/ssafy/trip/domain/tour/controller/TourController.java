@@ -4,8 +4,8 @@ import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.tour.dto.TourData;
 import com.ssafy.trip.domain.tour.entity.Category;
 import com.ssafy.trip.domain.tour.entity.City;
+import com.ssafy.trip.domain.tour.entity.SimpleTourWithLike;
 import com.ssafy.trip.domain.tour.entity.Town;
-import com.ssafy.trip.domain.tour.entity.City;
 import com.ssafy.trip.domain.tour.service.TourService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class TourController {
     private final TourService tourService;
 
     @GetMapping("/search")
-    public SuccessResponse<List<TourData.Search>> searchKeyword(
+    public SuccessResponse<List<SimpleTourWithLike>> searchKeyword(
             @RequestParam(value = "city", defaultValue = "0") int city,
             @RequestParam(value = "query", required = false) String query
     ) {
@@ -31,7 +31,7 @@ public class TourController {
             return SuccessResponse.of(List.of());
         }
 
-        List<TourData.Search> tours = tourService.findTourByKeyword(city, query);
+        List<SimpleTourWithLike> tours = tourService.findTourByKeyword(city, query);
         return SuccessResponse.of(tours);
     }
 
@@ -59,7 +59,7 @@ public class TourController {
 
     @GetMapping("/town/{cityCode}")
     public SuccessResponse<List<Town>> towns(@PathVariable("cityCode") int cityCode) {
-        log.debug("{}",cityCode);
+        log.debug("{}", cityCode);
         return SuccessResponse.of(tourService.getTowns(cityCode));
     }
 }

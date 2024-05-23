@@ -6,6 +6,7 @@ import lombok.Data;
 public class SimpleTour {
     private Long tourId;
     private String name;
+    private int contentTypeId;
     private String backgroundImage;
     private double latitude;
     private double longitude;

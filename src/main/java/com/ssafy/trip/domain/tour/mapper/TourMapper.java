@@ -1,10 +1,6 @@
 package com.ssafy.trip.domain.tour.mapper;
 
 import com.ssafy.trip.domain.tour.entity.*;
-import com.ssafy.trip.domain.tour.entity.Category;
-import com.ssafy.trip.domain.tour.entity.City;
-import com.ssafy.trip.domain.tour.entity.Tour;
-import com.ssafy.trip.domain.tour.entity.TourWithContent;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -22,7 +18,7 @@ public interface TourMapper {
 
     List<TourWithContent> findStayByCityId(int cityId);
 
-    List<TourWithContent> findWithContentByKeyword(int city, String keyword);
+    List<SimpleTourWithLike> findWithContentByKeyword(int city, String keyword);
 
     List<City> findCities();
 

@@ -4,7 +4,6 @@ import com.ssafy.trip.core.exception.CustomException;
 import com.ssafy.trip.core.exception.ErrorCode;
 import com.ssafy.trip.domain.tour.dto.TourData;
 import com.ssafy.trip.domain.tour.entity.*;
-import com.ssafy.trip.domain.tour.entity.City;
 import com.ssafy.trip.domain.tour.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,8 @@ public class TourServiceImpl implements TourService {
     private final TourMapper tourMapper;
 
     @Override
-    public List<TourData.Search> findTourByKeyword(int city, String keyword) {
-        return tourMapper.findWithContentByKeyword(city, keyword).stream().map(TourData.Search::of).toList();
+    public List<SimpleTourWithLike> findTourByKeyword(int city, String keyword) {
+        return tourMapper.findWithContentByKeyword(city, keyword);
     }
 
     @Override
