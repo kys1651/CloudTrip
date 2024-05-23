@@ -23,7 +23,7 @@ const authentication = useAuthenticationStore();
 const router = useRouter();
 const toast = useToast();
 
-const { mutate } = useMutation({
+const { mutate, isPending: isLoading } = useMutation({
   mutationKey: ["sign-out"],
   mutationFn: signOutRequest,
   onSuccess: () => {
@@ -132,26 +132,39 @@ const searchByKeyword = () => {
             ></DropdownMenuLabel
           >
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
+          <DropdownMenuGroup class="w-full">
+            <DropdownMenuItem class="w-full cursor-pointer">
               <User class="mr-2 h-4 w-4" />
-              <span>
-                <RouterLink :to="{ name: 'userDetail', params: { userId: profile.id } }"
-                  >MyProfile</RouterLink
-                >
+              <span
+                class="w-full"
+                @click="
+                  $router.push({ name: 'userDetail', params: { userId: profile.id } })
+                "
+              >
+                MyProfile
               </span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem class="w-full cursor-pointer">
               <Settings class="mr-2 h-4 w-4" />
-              <span>
-                <RouterLink :to="{ name: 'setting' }">Settings</RouterLink>
+              <span class="w-full" @click="$router.push({ name: 'setting' })">
+                Settings
               </span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <LogOut class="mr-2 h-4 w-4" />
-            <span @click="mutate()">Log out</span>
+            <span
+              class="cursor-pointer w-full"
+              @click="
+                () => {
+                  if (!isLoading) {
+                    mutate();
+                  }
+                }
+              "
+              >Log out</span
+            >
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

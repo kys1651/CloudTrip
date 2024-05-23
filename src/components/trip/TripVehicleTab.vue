@@ -12,6 +12,7 @@ import {
   Bus,
   Car,
   Footprints,
+  LoaderCircle,
   RotateCcw,
   TramFront,
 } from "lucide-vue-next";
@@ -49,7 +50,7 @@ const scheduleId = route.params.scheduleId;
 const toast = useToast();
 const queryClient = useQueryClient();
 
-const { mutate } = useMutation({
+const { mutate, isPending } = useMutation({
   mutationKey: ["trip", "direction"],
   mutationFn: (schedules: ScheduleTripCreate) =>
     scheduleTripCreateRequest(Number(scheduleId), schedules),
@@ -288,7 +289,10 @@ onMounted(() => {
       <div
         class="w-[350px] bg-white h-16 fixed bottom-0 flex justify-center items-center"
       >
-        <Button variant="default" class="w-full" @click="onSubmit">저장하기</Button>
+        <Button :disabled="isPending" variant="default" class="w-full" @click="onSubmit">
+          <LoaderCircle v-if="isPending" class="mr-2 h-4 w-4 animate-spin" />
+          <span v-else>저장하기</span>
+        </Button>
       </div>
     </div>
   </div>
