@@ -39,3 +39,35 @@ VALUES ('김용수', 'yongsu@kakao.com', 'yongsu', '용용선생김용수', 'htt
    ('한서희', 'seohee@ssafy.com', 'seohee123', '서희한한', 'https://api.multiavatar.com/user-seohee.svg', 'LOCAL', 'USER', 1),
    ('권민수', 'minsu@kakao.com', 'minsu123', '민수권권', 'https://api.multiavatar.com/user-minsu.svg', 'KAKAO', 'USER', 1),
    ('오준서', 'junseo@google.com', 'junseo123', '준서오오', 'https://api.multiavatar.com/user-junseo.svg', 'GOOGLE', 'USER', 1);
+
+
+
+SELECT S.schedule_id,
+       S.name,
+       S.user_id,
+       S.thumbnail_image,
+       S.start_date,
+       S.end_date,
+       S.public_key,
+       S.day,
+       S.city_code,
+       S.is_multi,
+       S.is_private,
+       S.is_finished,
+       U.nickname,
+       SP.username,
+       U.profile_image,
+       (SELECT COUNT(*)
+        FROM schedule_trip ST
+        WHERE ST.schedule_id = S.schedule_id) AS count,
+       SPU.user_id AS invited_user_id,
+       SPU.username AS invited_username,
+       SPU.nickname AS invited_nickname,
+       SPU.profile_image AS invited_profile_image,
+       C.name AS city_name
+FROM schedule S
+         JOIN users U ON S.user_id = U.user_id
+         JOIN ssafytrip.city C on C.city_code = S.city_code
+         LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+         LEFT JOIN users SPU ON SP.username = SPU.username
+WHERE SPU.user_id = 14;
