@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { scheduleSearchRequest } from "@/api/schedule";
-import { citiesRequest } from "@/api/trip";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Button from "@/components/ui/button/Button.vue";
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent } from "@/components/ui/card";
-import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
-import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
-import Input from "@/components/ui/input/Input.vue";
-import Label from "@/components/ui/label/Label.vue";
+import { scheduleSearchRequest } from '@/api/schedule'
+import { citiesRequest } from '@/api/trip'
+import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Button from '@/components/ui/button/Button.vue'
+import { Calendar } from '@/components/ui/calendar'
+import { Card, CardContent } from '@/components/ui/card'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
+import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
+import Input from '@/components/ui/input/Input.vue'
+import Label from '@/components/ui/label/Label.vue'
 import {
   Pagination,
   PaginationEllipsis,
@@ -17,21 +18,23 @@ import {
   PaginationList,
   PaginationListItem,
   PaginationNext,
-  PaginationPrev,
-} from '@/components/ui/pagination';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/ui/tags-input';
-import { useToast } from "@/components/ui/toast";
-import { toMonthDay } from "@/lib/formatter";
-import { imageOrCityImage, imageOrDefault } from "@/lib/image-load";
-import { cn } from '@/lib/utils';
-import { useAuthenticationStore } from "@/stores/authentication";
+  PaginationPrev
+} from '@/components/ui/pagination'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  DateFormatter,
-  getLocalTimeZone,
-  type DateValue
-} from '@internationalized/date';
-import { useQuery } from "@tanstack/vue-query";
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText
+} from '@/components/ui/tags-input'
+import { useToast } from '@/components/ui/toast'
+import { toMonthDay } from '@/lib/formatter'
+import { imageOrCityImage, imageOrDefault } from '@/lib/image-load'
+import { cn } from '@/lib/utils'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import { useQuery } from '@tanstack/vue-query'
 import {
   Ban,
   CalendarIcon,
@@ -41,52 +44,53 @@ import {
   LockOpen,
   Luggage,
   UserRound,
-  UsersRound,
-} from "lucide-vue-next";
-import { storeToRefs } from "pinia";
-import { ComboboxAnchor, ComboboxInput, ComboboxPortal, ComboboxRoot } from 'radix-vue';
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from "vue-router";
+  UsersRound
+} from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { ComboboxAnchor, ComboboxInput, ComboboxPortal, ComboboxRoot } from 'radix-vue'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const currentPage = ref<number>(1);
-const maximumPage = computed(() => Math.ceil(schedules.value.length / 12));
-const {profile} = storeToRefs(useAuthenticationStore());
+const currentPage = ref<number>(1)
+const maximumPage = computed(() => Math.ceil(schedules.value.length / 12))
+const { profile } = storeToRefs(useAuthenticationStore())
 
 const timestamp = ref<number>(0)
 const modelValue = ref<string[]>([])
 const isOpen = ref(false)
 const searchTerm = ref('')
-const {data: cities} = useQuery({
-  queryKey: ["schedules", "cities"],
+const { data: cities } = useQuery({
+  queryKey: ['schedules', 'cities'],
   queryFn: () => citiesRequest()
 })
 
 const searchCities = computed(() => {
-  if (cities.value){
-    return cities.value.map((city) => ({value: city.cityCode, label: city.name}))
+  if (cities.value) {
+    return cities.value.map((city) => ({ value: city.cityCode, label: city.name }))
   }
   return []
 })
 
 const route = useRoute()
 
-const filteredCities = computed(() => searchCities.value.filter(city => !modelValue.value.includes(city.label)))
+const filteredCities = computed(() =>
+  searchCities.value.filter((city) => !modelValue.value.includes(city.label))
+)
 
 const { data: schedules, refetch } = useQuery({
-  queryKey: ["schedules"],
+  queryKey: ['schedules'],
   queryFn: () => scheduleSearchRequest(route.query),
-  initialData: [],
-});
-
-const pagingSchedules = computed(() => {
-  const start = (currentPage.value - 1) * 12;
-  const end = start + 12;
-  return schedules.value.slice(start, end);
+  initialData: []
 })
 
+const pagingSchedules = computed(() => {
+  const start = (currentPage.value - 1) * 12
+  const end = start + 12
+  return schedules.value.slice(start, end)
+})
 
 const df = new DateFormatter('ko-kr', {
-  dateStyle: 'long',
+  dateStyle: 'long'
 })
 
 const startDate = ref<DateValue>()
@@ -104,42 +108,42 @@ const reset = () => {
   modelValue.value = []
   isSingle.value = false
   isMulti.value = false
-  minValue.value = 0;
-  maxValue.value = 100;
-  router.push({ name: "schedule-explore" }).then(() => {
-    currentPage.value = 1;
-    refetch();
-  });
+  minValue.value = 0
+  maxValue.value = 100
+  router.push({ name: 'schedule-explore' }).then(() => {
+    currentPage.value = 1
+    refetch()
+  })
 }
 
 const router = useRouter()
 const toast = useToast()
 
 const onSubmit = () => {
-  if ((startDate.value && endDate.value) && (startDate.value > endDate.value)) {
+  if (startDate.value && endDate.value && startDate.value > endDate.value) {
     toast.toast({
-      title: "검색 실패",
-      description: "시작일이 종료일보다 늦습니다.",
-      variant: "destructive",
-    });
-    return;
+      title: '검색 실패',
+      description: '시작일이 종료일보다 늦습니다.',
+      variant: 'destructive'
+    })
+    return
   }
   if (minValue.value > maxValue.value) {
     toast.toast({
-      title: "검색 실패",
-      description: "최소 여행지 수가 최대 여행지 수보다 큽니다.",
-      variant: "destructive",
-    });
-    return;
+      title: '검색 실패',
+      description: '최소 여행지 수가 최대 여행지 수보다 큽니다.',
+      variant: 'destructive'
+    })
+    return
   }
 
   let mode = undefined
   if (isSingle.value && isMulti.value) {
-    mode = "both"
+    mode = 'both'
   } else if (isSingle.value) {
-    mode = "single"
+    mode = 'single'
   } else if (isMulti.value) {
-    mode = "multi"
+    mode = 'multi'
   }
 
   const params = {
@@ -148,12 +152,12 @@ const onSubmit = () => {
     names: modelValue.value.length > 0 ? modelValue.value.toString() : undefined,
     mode: mode,
     minCount: minValue.value.toString(),
-    maxCount: maxValue.value.toString(),
+    maxCount: maxValue.value.toString()
   }
-  router.push({ name: "schedule-explore", query: params }).then(() => {
-    currentPage.value = 1;
-    refetch();
-  });
+  router.push({ name: 'schedule-explore', query: params }).then(() => {
+    currentPage.value = 1
+    refetch()
+  })
 }
 </script>
 
@@ -168,17 +172,14 @@ const onSubmit = () => {
             <Button
               variant="outline"
               :class="
-                cn(
-                  'justify-start text-left font-normal',
-                  !startDate && 'text-muted-foreground'
-                )
+                cn('justify-start text-left font-normal', !startDate && 'text-muted-foreground')
               "
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
               {{
                 startDate
                   ? df.format(startDate.toDate(getLocalTimeZone()))
-                  : "시작일을 선택해주세요."
+                  : '시작일을 선택해주세요.'
               }}
             </Button>
           </PopoverTrigger>
@@ -194,17 +195,12 @@ const onSubmit = () => {
             <Button
               variant="outline"
               :class="
-                cn(
-                  'justify-start text-left font-normal',
-                  !endDate && 'text-muted-foreground'
-                )
+                cn('justify-start text-left font-normal', !endDate && 'text-muted-foreground')
               "
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
               {{
-                endDate
-                  ? df.format(endDate.toDate(getLocalTimeZone()))
-                  : "종료일을 선택해주세요."
+                endDate ? df.format(endDate.toDate(getLocalTimeZone())) : '종료일을 선택해주세요.'
               }}
             </Button>
           </PopoverTrigger>
@@ -256,11 +252,11 @@ const onSubmit = () => {
                           typeof ev.detail.value === 'string' &&
                           ev.timeStamp > timestamp + 1000
                         ) {
-                          modelValue.push(ev.detail.value);
-                          timestamp = ev.timeStamp;
+                          modelValue.push(ev.detail.value)
+                          timestamp = ev.timeStamp
                         }
-                        searchTerm = '';
-                        isOpen = false;
+                        searchTerm = ''
+                        isOpen = false
                       }
                     "
                   >
@@ -296,7 +292,7 @@ const onSubmit = () => {
           @update:modelValue="
             () => {
               if (minValue < 0) {
-                minValue = 0;
+                minValue = 0
               }
             }
           "
@@ -312,7 +308,7 @@ const onSubmit = () => {
           @update:modelValue="
             () => {
               if (maxValue < 0) {
-                maxValue = 100;
+                maxValue = 100
               }
             }
           "
@@ -327,129 +323,15 @@ const onSubmit = () => {
       v-if="!schedules || schedules.length === 0"
       class="w-full justify-center min-w-[60vw] max-w-[60vw] min-h-[50vh] items-center text-gray-400"
     >
-      <span class="w-full h-full flex justify-center items-center"
-        >조회된 게시글이 없습니다.</span
-      >
+      <span class="w-full h-full flex justify-center items-center">조회된 게시글이 없습니다.</span>
     </div>
     <div v-else class="min-w-[60vw] min-h-[50vh] flex flex-col items-center">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Card
+        <ScheduleCard
           v-for="schedule in pagingSchedules"
           :key="schedule.scheduleId"
-          class="hover:scale-105 cursor-pointer transition-transform duration-500 ease-in-out shadow-md"
-          :class="{
-            'cursor-pointer':
-              schedule.usernames.includes(profile?.email || '') || !schedule.private,
-            'cursor-not-allowed':
-              !schedule.usernames.includes(profile?.email || '') && schedule.private,
-          }"
-          @click="
-            () => {
-              if (
-                schedule.usernames.includes(profile?.email || '') ||
-                !schedule.private
-              ) {
-                router.push({
-                  name: 'schedule-detail',
-                  params: { scheduleId: schedule.scheduleId },
-                });
-              }
-            }
-          "
-        >
-          <img
-            :src="imageOrCityImage(schedule.thumbnailImage, schedule.cityCode)"
-            alt="제주도 여행"
-            class="w-full h-48 object-cover rounded-t-lg"
-          />
-          <CardContent class="p-3 space-y-1">
-            <div class="flex flex-row justify-between">
-              <h3
-                class="text-md font-bold text-ellipsis overflow-hidden whitespace-nowrap"
-              >
-                {{ schedule.name }}
-              </h3>
-            </div>
-            <div class="flex flex-row w-full justify-end items-center space-x-1 text-xs">
-              <CalendarIcon class="w-3 h-3 text-gray-500" />
-              <span class="text-gray-500"
-                >{{ toMonthDay(new Date(schedule.startDate)) }} ~
-                {{ toMonthDay(new Date(schedule.endDate)) }}</span
-              >
-            </div>
-
-            <div class="flex flex-row justify-between">
-              <div
-                v-if="schedule.multi"
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-              >
-                <UsersRound :size="14" />
-                <span class="flex justify-end">멀티</span>
-              </div>
-              <div
-                v-else
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-              >
-                <UserRound :size="14" />
-                <span class="flex justify-end">싱글</span>
-              </div>
-              <div
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-                v-if="schedule.private"
-              >
-                <Lock :size="14" />
-                <span class="flex justify-end">비공개</span>
-              </div>
-              <div
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-                v-else
-              >
-                <LockOpen :size="14" />
-                <span class="flex justify-en">공개</span>
-              </div>
-              <div
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-                v-if="schedule.finished"
-              >
-                <CircleCheck :size="14" />
-                <span class="flex justify-en">완료</span>
-              </div>
-              <div
-                class="flex flex-row text-sm items-center justify-center space-x-1 text-gray-500"
-                v-else
-              >
-                <Ban :size="14" />
-                <span class="flex justify-end">미완료</span>
-              </div>
-            </div>
-            <div class="flex flex-row justify-between"></div>
-            <div
-              class="flex flex-row space-x-1 items-center text-gray-500 justify-between"
-            >
-              <div class="flex flex-row items-center space-x-1">
-                <Globe :size="14" />
-                <span class="text-sm">{{ schedule.cityName }}</span>
-              </div>
-              <div class="flex flex-row items-center space-x-1">
-                <Luggage :size="14" />
-                <span class="text-sm">{{ schedule.count }}곳</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-1 text-sm mt-2">
-                <Avatar class="w-6 h-6">
-                  <AvatarImage
-                    alt="User Avatar"
-                    :src="imageOrDefault(schedule.user.profileImage)"
-                  />
-                  <AvatarFallback>{{ schedule.user.userId }}</AvatarFallback>
-                </Avatar>
-                <span class="text-gray-500">{{ schedule.user.nickname }}</span>
-              </div>
-              <div class="flex items-center space-x-2"></div>
-            </div>
-          </CardContent>
-        </Card>
+          :schedule="schedule"
+        />
       </div>
       <Pagination
         class="flex justify-center py-10"
@@ -466,7 +348,7 @@ const onSubmit = () => {
             @click="
               () => {
                 if (currentPage > 1) {
-                  currentPage -= 1;
+                  currentPage -= 1
                 }
               }
             "
@@ -494,7 +376,7 @@ const onSubmit = () => {
             @click="
               () => {
                 if (currentPage < maximumPage) {
-                  currentPage += 1;
+                  currentPage += 1
                 }
               }
             "

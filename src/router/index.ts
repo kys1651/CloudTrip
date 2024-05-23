@@ -144,6 +144,11 @@ const router = createRouter({
           path: 'liked-reviews',
           name: 'userLikedReviews',
           component: () => import('@/components/user/UserLikedReviews.vue')
+        },
+        {
+          path: 'schedule',
+          name: 'userSchedule',
+          component: () => import('@/components/user/UserSchedule.vue')
         }
       ]
     },
