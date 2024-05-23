@@ -22,6 +22,11 @@ const router = createRouter({
       component: () => import('@/views/search/tag/SearchReview.vue')
     },
     {
+      path: '/searchSchedule',
+      name: 'search-schedule',
+      component: () => import('@/views/search/tag/SearchSchedule.vue')
+    },
+    {
       path: '/searchNotice',
       name: 'search-notice',
       component: () => import('@/views/search/tag/SearchNotice.vue')

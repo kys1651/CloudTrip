@@ -62,6 +62,11 @@ const goSearchReview = () => {
   router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
 }
 
+const goSearchSchedule = () => {
+  if (!(scheduleLen.value > 0)) return
+  router.push({ name: 'search-schedule', query: { keyword: route.query.keyword } })
+}
+
 const goSearchNotice = () => {
   if (!(noticeLen.value > 0)) return
   router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
@@ -70,11 +75,6 @@ const goSearchNotice = () => {
 const goSearchProfile = () => {
   if (!(userLen.value > 0)) return
   router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
-}
-
-const goSearchSchedule = () => {
-  if (!(scheduleLen.value > 0)) return
-  router.push({ name: 'search-schedule', query: { keyword: route.query.keyword } })
 }
 </script>
 
@@ -114,32 +114,11 @@ const goSearchSchedule = () => {
       <!-- "더보기" button -->
       <div class="flex justify-center">
         <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
-          여행 리뷰 전체보기 >
-        </button>
-        <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert :size="100" class="mb-10" />
-          <p>검색 결과에 대한 여행 리뷰가 존재하지 않습니다.</p>
-        </div>
-      </div>
-      <h2 className="text-lg font-semibold flex items-center justify-between">여행 계획</h2>
-      <div className="grid gap-6 mt-4">
-        <div className="grid grid-cols-3 gap-4">
-          <ReviewCard
-            v-for="review in datas.reviews.slice(0, 6)"
-            :key="review.reviewId"
-            :review="review"
-          />
-        </div>
-      </div>
-      <div class="flex justify-end mt-5"></div>
-      <!-- "더보기" button -->
-      <div class="flex justify-center">
-        <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
           여행 계획 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
           <OctagonAlert :size="100" class="mb-10" />
-          <p>검색 결과에 대한 여행 계획이 존재하지 않습니다.</p>
+          <p>검색 결과에 대한 여행 리뷰가 존재하지 않습니다.</p>
         </div>
       </div>
       <h2 className="text-lg font-semibold mt-10 mb-10">공지사항</h2>
@@ -162,35 +141,6 @@ const goSearchSchedule = () => {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </div>
-      <div class="flex justify-center">
-        <button v-if="datas.notices.length > 0" class="mt-10 more-button" @click="goSearchNotice">
-          공지사항 전체보기 >
-        </button>
-        <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert :size="100" class="mb-10" />
-          <p>검색 결과에 대한 공지사항이 존재하지 않습니다.</p>
-        </div>
-      </div>
-      <h2 className="text-lg font-semibold mt-10 mb-10">프로필</h2>
-      <div className="grid justify-center mt-4">
-        <div className="grid grid-cols-3 gap-10 justify-center">
-          <SearchCard
-            @click="goUserProfile(user.userId)"
-            :user-info="user"
-            v-for="user in datas.users.slice(0, 6)"
-            :key="user.userId"
-          />
-        </div>
-      </div>
-      <div class="flex justify-center mb-10">
-        <button v-if="datas.users.length > 0" class="mt-10 more-button" @click="goSearchProfile">
-          프로필 전체보기 >
-        </button>
-        <div v-else class="flex flex-col items-center justify-center">
-          <OctagonAlert :size="100" class="mb-10" />
-          <p>검색 결과에 대한 프로필 정보가 존재하지 않습니다.</p>
-        </div>
       </div>
     </div>
   </div>

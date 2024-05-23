@@ -2,7 +2,6 @@
 import { Badge } from '@/components/ui/badge'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
-import { useAuthenticationStore } from '@/stores/authentication'
 import {
   Accordion,
   AccordionContent,
@@ -16,14 +15,14 @@ import { type ISearch } from '@/types/search.type'
 const route = useRoute()
 const router = useRouter()
 
-const authentication = useAuthenticationStore()
-
 const datas = ref<ISearch>()
 const reviewLen = ref()
 const noticeLen = ref()
 const userLen = ref()
+const scheduleLen = ref()
 onMounted(() => {
   const keyword = route.query.keyword
+  console.log(keyword)
   if (!keyword) return
   console.log(keyword)
 
@@ -31,9 +30,10 @@ onMounted(() => {
     .then((data) => {
       console.log(data)
       datas.value = data
-      reviewLen.value = datas.value.reviews.length
-      noticeLen.value = datas.value.notices.length
-      userLen.value = datas.value.users.length
+      reviewLen.value = datas.value?.reviews.length
+      noticeLen.value = datas.value?.notices.length
+      userLen.value = datas.value?.users.length
+      scheduleLen.value = datas.value?.schedules.length
     })
     .catch((error) => {
       console.log('전체 조회 실패', error)
@@ -46,24 +46,33 @@ const isATagExists = (content: string) => {
   return htmlElement.querySelector('a') !== null
 }
 
+const goUserProfile = (userId: number) => {
+  router.push({ name: 'userDetail', params: { userId: userId } })
+}
+
 // tag
 const goSearch = () => {
   router.push({ name: 'search', query: { keyword: route.query.keyword } })
 }
 
 const goSearchReview = () => {
-  if (!reviewLen.value > 0) return
+  if (!(reviewLen.value > 0)) return
   router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
 }
 
 const goSearchNotice = () => {
-  if (!noticeLen.value > 0) return
+  if (!(noticeLen.value > 0)) return
   router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
 }
 
 const goSearchProfile = () => {
-  if (!userLen.value > 0) return
+  if (!(userLen.value > 0)) return
   router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
+}
+
+const goSearchSchedule = () => {
+  if (!(scheduleLen.value > 0)) return
+  router.push({ name: 'search-schedule', query: { keyword: route.query.keyword } })
 }
 </script>
 
@@ -77,6 +86,9 @@ const goSearchProfile = () => {
             >전체 {{ reviewLen + noticeLen + userLen }}</Badge
           >
           <Badge class="badge" @click="goSearchReview">여행 리뷰 {{ reviewLen }}</Badge>
+          <Badge class="badge cursor-pointer" @click="goSearchSchedule"
+            >여행 계획 {{ scheduleLen }}</Badge
+          >
           <Badge class="badge bg-white text-black border-black" @click="goSearchNotice"
             >공지사항 {{ noticeLen }}</Badge
           >
