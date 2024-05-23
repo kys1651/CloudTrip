@@ -68,7 +68,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleData.ScheduleSearch> searchById(Long userId) {
+    public List<ScheduleData.ScheduleSearch> searchByMyId(Long userId) {
+        return scheduleMapper.findByMyUserId(userId).stream().map(ScheduleData.ScheduleSearch::from).toList();
+    }
+
+    @Override
+    public List<ScheduleData.ScheduleSearch> searchByUserId(Long userId) {
         return scheduleMapper.findByUserId(userId).stream().map(ScheduleData.ScheduleSearch::from).toList();
     }
 

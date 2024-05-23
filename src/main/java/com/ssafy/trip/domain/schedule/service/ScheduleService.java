@@ -15,7 +15,9 @@ public interface ScheduleService {
 
     List<ScheduleData.ScheduleSearch> searchAllSchedule(ScheduleData.SearchCondition condition);
 
-    List<ScheduleData.ScheduleSearch> searchById(Long userId);
+    List<ScheduleData.ScheduleSearch> searchByMyId(Long userId);
+
+    List<ScheduleData.ScheduleSearch> searchByUserId(Long userId);
 
     void updateSchedulePublic(Long scheduleId);
 
@@ -28,6 +30,4 @@ public interface ScheduleService {
     ScheduleResponse searchSchedule(Long scheduleId);
 
     ScheduleData.PathResponse searchSchedulePath(Long scheduleId);
-
-
 }

@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -207,9 +208,13 @@ public class UserController {
 
     @GetMapping("/{userId}/schedule")
     public SuccessResponse<List<ScheduleData.ScheduleSearch>> getAllSchedule(
-            @PathVariable("userId") Long userId
+            @PathVariable("userId") Long userId,
+            @CurrentUser User currentUser
     ) {
-        log.debug("{}",userId);
-        return SuccessResponse.of(scheduleService.searchById(userId));
+        if (Objects.isNull(currentUser) || userId != currentUser.getUserId()) {
+            return SuccessResponse.of(scheduleService.searchByUserId(userId));
+        }else{
+            return SuccessResponse.of(scheduleService.searchByMyId(userId));
+        }
     }
 }
