@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import SearchBody from "@/components/search/SearchBody.vue";
-import SearchHeader from "@/components/search/SearchHeader.vue";
-
-import { watch } from "vue";
-import { useRoute } from "vue-router";
-
-const route = useRoute();
-watch(route, () => {
-  console.log(route.query.keyword);
-});
+import SearchBody from '@/components/search/SearchBody.vue'
+import SearchHeader from '@/components/search/SearchHeader.vue'
 </script>
 
 <template>
