@@ -1,0 +1,2 @@
+insert into ssafytrip.chat_bot (chat_id, user_id, user_request, ai_response)
+values  (6, 12, '안녕', '<p>안녕하세요! 저는 여행 사이트 CLOUD TRIP의 클라우드봇입니다. 저는 여행지, 관광지 등에 대한 정보를 제공해드리고 있습니다. 여행과 관련된 질문이나 추천을 원하시면 언제든지 말씀해주세요!</p>');
