@@ -1,41 +1,41 @@
 <script setup lang="ts">
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import { PlaneTakeoff } from "lucide-vue-next";
-import type { RouterLink } from "vue-router";
+  CarouselPrevious
+} from '@/components/ui/carousel'
+import Autoplay from 'embla-carousel-autoplay'
+import { PlaneTakeoff } from 'lucide-vue-next'
+import type { RouterLink } from 'vue-router'
 
 const cities: { id: number; name: string; image: string }[] = [
-  { id: 1, name: "서울", image: "seoul.jpg" },
-  { id: 2, name: "인천", image: "incheon.jpg" },
-  { id: 3, name: "대전", image: "daejeon.jpg" },
-  { id: 4, name: "대구", image: "daegu.jpg" },
-  { id: 5, name: "광주", image: "gwangju.jpg" },
-  { id: 6, name: "부산", image: "busan.jpg" },
-  { id: 7, name: "울산", image: "ulsan.jpg" },
-  { id: 8, name: "세종특별자치시", image: "sejong.jpg" },
-  { id: 31, name: "경기도", image: "gyeonggido.jpg" },
-  { id: 32, name: "강원도", image: "gangwondo.jpg" },
-  { id: 33, name: "충청북도", image: "chungcheongbukdo.jpg" },
-  { id: 34, name: "충청남도", image: "chungcheongnamdo.jpg" },
-  { id: 35, name: "경상북도", image: "gyeongsangbukdo.jpg" },
-  { id: 36, name: "경상남도", image: "gyeongsangnamdo.jpg" },
-  { id: 37, name: "전라북도", image: "jeollabukdo.jpg" },
-  { id: 38, name: "전라남도", image: "jeollanamdo.jpg" },
-  { id: 39, name: "제주도", image: "jejuisland.jpg" },
-];
+  { id: 1, name: '서울', image: 'seoul.jpg' },
+  { id: 2, name: '인천', image: 'incheon.jpg' },
+  { id: 3, name: '대전', image: 'daejeon.jpg' },
+  { id: 4, name: '대구', image: 'daegu.jpg' },
+  { id: 5, name: '광주', image: 'gwangju.jpg' },
+  { id: 6, name: '부산', image: 'busan.jpg' },
+  { id: 7, name: '울산', image: 'ulsan.jpg' },
+  { id: 8, name: '세종특별자치시', image: 'sejong.jpg' },
+  { id: 31, name: '경기도', image: 'gyeonggido.jpg' },
+  { id: 32, name: '강원도', image: 'gangwondo.jpg' },
+  { id: 33, name: '충청북도', image: 'chungcheongbukdo.jpg' },
+  { id: 34, name: '충청남도', image: 'chungcheongnamdo.jpg' },
+  { id: 35, name: '경상북도', image: 'gyeongsangbukdo.jpg' },
+  { id: 36, name: '경상남도', image: 'gyeongsangnamdo.jpg' },
+  { id: 37, name: '전라북도', image: 'jeollabukdo.jpg' },
+  { id: 38, name: '전라남도', image: 'jeollanamdo.jpg' },
+  { id: 39, name: '제주도', image: 'jejuisland.jpg' }
+]
 
 const plugin = Autoplay({
   delay: 2000,
   stopOnMouseEnter: true,
-  stopOnInteraction: false,
-});
+  stopOnInteraction: false
+})
 </script>
 
 <template>
@@ -62,7 +62,7 @@ const plugin = Autoplay({
                 <CardContent
                   class="flex aspect-square items-center justify-center p-6 bg-contain bg-center bg-no-repeat rounded-lg"
                   :style="{
-                    backgroundImage: `url('/cities/${city.image}')`,
+                    backgroundImage: `url('/cities/${city.image}')`
                   }"
                 >
                 </CardContent>
