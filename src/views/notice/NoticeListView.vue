@@ -8,14 +8,9 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import { useAuthenticationStore } from '@/stores/authentication'
 import { useQuery } from '@tanstack/vue-query'
-import { storeToRefs } from 'pinia'
 import { computed, onUpdated, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-const authentication = useAuthenticationStore()
-const { isLogin } = storeToRefs(authentication)
 
 const route = useRoute()
 const router = useRouter()
@@ -55,7 +50,6 @@ const isATagExists = (content: string) => {
 
 // Define the formatDate function within the script setup block
 const formatDate = (dateString: string) => {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
   return new Date(dateString).toLocaleDateString(undefined)
 }
 </script>

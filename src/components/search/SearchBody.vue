@@ -27,7 +27,7 @@ const userLen = ref()
 onMounted(() => {
   const keyword = route.query.keyword
   console.log(keyword)
-  if (!keyword) return;
+  if (!keyword) return
   console.log(keyword)
 
   searchResult(keyword?.toString())
@@ -59,14 +59,17 @@ const goSearch = () => {
 }
 
 const goSearchReview = () => {
+  if (!reviewLen.value > 0) return
   router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
 }
 
 const goSearchNotice = () => {
+  if (!noticeLen.value > 0) return
   router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
 }
 
 const goSearchProfile = () => {
+  if (!userLen.value > 0) return
   router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
 }
 </script>
@@ -75,11 +78,8 @@ const goSearchProfile = () => {
   <div v-if="datas" className="w-full px-10">
     <div className="flex justify-between mb-10">
       <div className="flex space-x-2 text-sm">
-        <Badge
-          class="badge bg-white text-black border-black"
-          @click="goSearch"
-          variant="default"
-          >전체</Badge
+        <Badge class="badge bg-white text-black border-black" @click="goSearch" variant="default"
+          >전체 {{ reviewLen + noticeLen + userLen }}</Badge
         >
         <Badge class="badge" @click="goSearchReview">여행 리뷰 {{ reviewLen }}</Badge>
         <Badge class="badge" @click="goSearchNotice">공지사항 {{ noticeLen }}</Badge>
@@ -88,9 +88,7 @@ const goSearchProfile = () => {
     </div>
     <hr />
     <div className="mt-4">
-      <h2 className="text-lg font-semibold flex items-center justify-between">
-        여행 리뷰
-      </h2>
+      <h2 className="text-lg font-semibold flex items-center justify-between">여행 리뷰</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
           <ReviewCard
@@ -103,11 +101,7 @@ const goSearchProfile = () => {
       <div class="flex justify-end mt-5"></div>
       <!-- "더보기" button -->
       <div class="flex justify-center">
-        <button
-          v-if="datas.reviews.length > 0"
-          class="mt-10 more-button"
-          @click="goSearchReview"
-        >
+        <button v-if="datas.reviews.length > 0" class="mt-10 more-button" @click="goSearchReview">
           여행 리뷰 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -137,11 +131,7 @@ const goSearchProfile = () => {
         </Accordion>
       </div>
       <div class="flex justify-center">
-        <button
-          v-if="datas.notices.length > 0"
-          class="mt-10 more-button"
-          @click="goSearchNotice"
-        >
+        <button v-if="datas.notices.length > 0" class="mt-10 more-button" @click="goSearchNotice">
           공지사항 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">
@@ -161,11 +151,7 @@ const goSearchProfile = () => {
         </div>
       </div>
       <div class="flex justify-center mb-10">
-        <button
-          v-if="datas.users.length > 0"
-          class="mt-10 more-button"
-          @click="goSearchProfile"
-        >
+        <button v-if="datas.users.length > 0" class="mt-10 more-button" @click="goSearchProfile">
           프로필 전체보기 >
         </button>
         <div v-else class="flex flex-col items-center justify-center">

@@ -51,14 +51,17 @@ const goSearch = () => {
 }
 
 const goSearchReview = () => {
+  if (!reviewLen.value > 0) return
   router.push({ name: 'search-review', query: { keyword: route.query.keyword } })
 }
 
 const goSearchNotice = () => {
+  if (!noticeLen.value > 0) return
   router.push({ name: 'search-notice', query: { keyword: route.query.keyword } })
 }
 
 const goSearchProfile = () => {
+  if (!userLen.value > 0) return
   router.push({ name: 'search-profile', query: { keyword: route.query.keyword } })
 }
 </script>
@@ -69,7 +72,9 @@ const goSearchProfile = () => {
     <div className="w-full px-10">
       <div className="flex justify-between mb-10">
         <div className="flex space-x-2 text-sm">
-          <Badge class="badge" @click="goSearch" variant="default">전체</Badge>
+          <Badge class="badge" @click="goSearch" variant="default"
+            >전체 {{ reviewLen + noticeLen + userLen }}</Badge
+          >
           <Badge class="badge" @click="goSearchReview">여행 리뷰 {{ reviewLen }}</Badge>
           <Badge class="badge" @click="goSearchNotice">공지사항 {{ noticeLen }}</Badge>
           <Badge class="badge bg-white text-black border-black" @click="goSearchProfile"
