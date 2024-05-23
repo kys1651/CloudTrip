@@ -30,11 +30,8 @@ const homeData = ref<IHome>()
 homeList()
   .then((data) => {
     homeData.value = data
-    console.log(data)
   })
-  .catch((error) => {
-    console.log('데이터 불러오기 실패', error)
-  })
+  .catch((error) => {})
 
 const goTourDetail = (tour: number) => {}
 

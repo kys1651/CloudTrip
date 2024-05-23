@@ -22,22 +22,17 @@ const userLen = ref()
 const scheduleLen = ref()
 onMounted(() => {
   const keyword = route.query.keyword
-  console.log(keyword)
   if (!keyword) return
-  console.log(keyword)
 
   searchResult(keyword?.toString())
     .then((data) => {
-      console.log(data)
       datas.value = data
       reviewLen.value = datas.value?.reviews.length
       noticeLen.value = datas.value?.notices.length
       userLen.value = datas.value?.users.length
       scheduleLen.value = datas.value?.schedules.length
     })
-    .catch((error) => {
-      console.log('전체 조회 실패', error)
-    })
+    .catch((error) => {})
 })
 
 const isATagExists = (content: string) => {

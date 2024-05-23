@@ -68,9 +68,7 @@ onMounted(() => {
       notice.value = data
       quill.root.innerHTML = notice.value.content
     })
-    .catch((error) => {
-      console.log('공지사항 조회 오류 발생', error)
-    })
+    .catch((error) => {})
 
   quill.on('text-change', () => {
     notice.value.content = quill.root.innerHTML
@@ -136,14 +134,9 @@ const updateNotice = () => {
         duration: 2000,
         variant: 'success'
       })
-      console.log('글 수정 성공')
       router.push({ name: 'notice-view' })
     })
-    .catch((error) => {
-      console.log('글 수정 실패', error)
-      console.log(notice.value.title)
-      console.log(notice.value.content)
-    })
+    .catch((error) => {})
 }
 
 const deleteNotice = () => {
@@ -156,14 +149,11 @@ const deleteNotice = () => {
           duration: 2000,
           variant: 'success'
         })
-        console.log('글 삭제 성공')
         router.push({ name: 'adminNotice' })
       }
       return
     })
-    .catch((error) => {
-      console.log('글 삭제 실패', error)
-    })
+    .catch((error) => {})
 }
 </script>
 

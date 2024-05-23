@@ -98,18 +98,15 @@ const createNotice = () => {
     notice.value.content = notice.value.content.replace(src, `${key}-${index + 1}`)
   })
 
-  console.log(notice.value)
   noticeCreate({
     images: images.value,
     title: notice.value.title,
     content: notice.value.content
   })
     .then((response) => {
-      console.log('등록 성공', response)
       router.push({ name: 'adminNotice' })
     })
     .catch((error) => {
-      console.log('등록 실패', error)
     })
 }
 </script>

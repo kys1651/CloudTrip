@@ -38,7 +38,6 @@ const displayedPosts = computed(() => {
 })
 
 const totalPages = computed(() => {
-  console.log(notices.value?.length + ' ' + postsPerPage.value)
   return Math.ceil((notices.value?.length || 0) / postsPerPage.value)
 })
 

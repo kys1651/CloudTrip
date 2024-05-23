@@ -145,7 +145,6 @@ onMounted(async () => {
         setFieldValue('townCode', fetchedTowns.length > 0 ? fetchedTowns[0].townCode : 0)
       }
     } catch (error) {
-      console.error('Error loading towns:', error)
       towns.value = [] // 오류 발생 시 towns 초기화
     }
   }
@@ -217,14 +216,12 @@ onMounted(async () => {
                   variant="outline"
                   role="combobox"
                   :aria-expanded="open"
-                  :class="
-                    cn('w-[200px] justify-between', !value && 'text-muted-foreground')
-                  "
+                  :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
                 >
                   {{
                     value && cities
                       ? cities.find((city) => city.cityCode === value)?.name
-                      : "-- 지역 선택 --"
+                      : '-- 지역 선택 --'
                   }}
                   <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -242,18 +239,15 @@ onMounted(async () => {
                       :value="city.name"
                       @select="
                         () => {
-                          selectedCity = city.cityCode;
-                          setFieldValue('cityCode', city.cityCode);
-                          open = false;
+                          selectedCity = city.cityCode
+                          setFieldValue('cityCode', city.cityCode)
+                          open = false
                         }
                       "
                     >
                       <Check
                         :class="
-                          cn(
-                            'mr-2 h-4 w-4',
-                            value === city.cityCode ? 'opacity-100' : 'opacity-0'
-                          )
+                          cn('mr-2 h-4 w-4', value === city.cityCode ? 'opacity-100' : 'opacity-0')
                         "
                       />
                       {{ city.name }}
@@ -276,14 +270,12 @@ onMounted(async () => {
                   variant="outline"
                   role="combobox"
                   :aria-expanded="detailOpen"
-                  :class="
-                    cn('w-[200px] justify-between', !value && 'text-muted-foreground')
-                  "
+                  :class="cn('w-[200px] justify-between', !value && 'text-muted-foreground')"
                 >
                   {{
                     value && towns
                       ? towns.find((town) => town.townCode === value)?.name
-                      : "-- 상세 지역 선택 --"
+                      : '-- 상세 지역 선택 --'
                   }}
                   <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -301,17 +293,14 @@ onMounted(async () => {
                       :value="town.name"
                       @select="
                         () => {
-                          setFieldValue('townCode', town.townCode);
-                          detailOpen = false;
+                          setFieldValue('townCode', town.townCode)
+                          detailOpen = false
                         }
                       "
                     >
                       <Check
                         :class="
-                          cn(
-                            'mr-2 h-4 w-4',
-                            value === town.townCode ? 'opacity-100' : 'opacity-0'
-                          )
+                          cn('mr-2 h-4 w-4', value === town.townCode ? 'opacity-100' : 'opacity-0')
                         "
                       />
                       {{ town.name }}

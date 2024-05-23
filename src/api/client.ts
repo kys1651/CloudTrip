@@ -70,9 +70,8 @@ instance.interceptors.response.use(
       authentication.setAccessToken(newAccessToken)
       return axios(originalRequest)
     } catch (error) {
-      console.error(error)
       authentication.clearAuthentication()
-      
+
       throw new Error('인증 과정에서 에러가 발생하였습니다.')
     }
   }

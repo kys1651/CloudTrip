@@ -41,7 +41,6 @@ export const searchAddress = async (params: KakaoSearchParams) => {
   })
 
   if (status !== 200) {
-    console.error(data)
     throw new Error('Failed to fetch data')
   }
 

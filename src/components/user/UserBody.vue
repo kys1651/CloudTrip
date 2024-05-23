@@ -27,7 +27,6 @@ const users = ref<IUser[]>()
 
 getAllUser()
   .then((data) => {
-    console.log(data)
     // ADMIN은 표시하지 X
     users.value = data.filter((user) => user.roleType === 'USER')
 
@@ -35,37 +34,28 @@ getAllUser()
       router.push({ name: 'adminUser', query: { page: 1 } })
     }
   })
-  .catch((error) => {
-    console.log('회원 조회 오류', error)
-  })
+  .catch((error) => {})
 
 const changeStatus = (user: IUser) => {
   // view에 활성 상태 변경
   user.isLocked = !user.isLocked
   // 서버로 상태 변경 업데이트
   updateIsLocked(user.userId.toString())
-    .then((data) => {
-      console.log(data)
-    })
-    .catch((error) => {
-      console.log('활성 상태 변경 실패', error)
-    })
+    .then((data) => {})
+    .catch((error) => {})
 }
 
 const dropUser = (user: IUser) => {
   if (confirm('정말 탈퇴하시겠습니까?') && confirm('확인을 누르시면 탈퇴가 완료됩니다.')) {
     dropUserByAdmin(user.userId.toString())
       .then((data) => {
-        console.log(data)
         toast({
           title: '회원 탈퇴',
           description: '회원이 탈퇴되었습니다.',
           variant: 'success'
         })
       })
-      .catch((error) => {
-        console.log('회원 탈퇴 실패', error)
-      })
+      .catch((error) => {})
   }
 
   router.go(0)
@@ -75,12 +65,9 @@ const searchKeyword = ref('')
 const searchUser = () => {
   getUserByKeyword(searchKeyword.value)
     .then((data) => {
-      console.log(data)
       users.value = data
     })
-    .catch((error) => {
-      console.log('특정 회원 조회 실패', error)
-    })
+    .catch((error) => {})
 }
 
 // Paging
@@ -108,7 +95,6 @@ const totalPages = computed(() => {
   if (!users.value) {
     return
   }
-  console.log(users.value.length + ' ' + postsPerPage.value)
   return Math.ceil(users.value.length / postsPerPage.value)
 })
 </script>
@@ -148,7 +134,7 @@ const totalPages = computed(() => {
         <TableCell>{{ user.nickname }}</TableCell>
         <TableCell>
           <Badge :variant="user.isLocked ? 'secondary' : 'default'">{{
-            user.isLocked ? "비활성화" : "활성화"
+            user.isLocked ? '비활성화' : '활성화'
           }}</Badge>
         </TableCell>
         <TableCell>{{ user.roleType }}</TableCell>
@@ -161,7 +147,7 @@ const totalPages = computed(() => {
             class="mx-2"
             :class="user.isLocked ? 'deactivate-button' : 'activate-button'"
           >
-            {{ user.isLocked ? "비활성화" : "활성화" }}
+            {{ user.isLocked ? '비활성화' : '활성화' }}
           </Button>
           <Button @click="dropUser(user)" class="delete-button">회원탈퇴</Button>
         </TableCell>

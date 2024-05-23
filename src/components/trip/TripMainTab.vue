@@ -12,7 +12,7 @@ import { Search } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
-  cityId: number,
+  cityId: number
   multi: boolean
 }>()
 
@@ -33,9 +33,7 @@ const { mutate, isPending: isTripLoading } = useMutation({
   onSuccess: (data) => {
     trips.value = data
   },
-  onError: (error) => {
-    console.log(error)
-  }
+  onError: (error) => {}
 })
 
 const { data: categories, isLoading: isCategoryLoading } = useQuery({

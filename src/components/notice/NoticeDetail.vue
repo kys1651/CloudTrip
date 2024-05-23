@@ -25,12 +25,9 @@ const notice = ref({
 onMounted(() => {
   getNoticeDetail(noticeId.toString())
     .then((data) => {
-      console.log(data)
       notice.value = data
     })
-    .catch((error) => {
-      console.log('공지사항 조회 오류 발생', error)
-    })
+    .catch((error) => {})
 })
 
 const goHome = () => {
