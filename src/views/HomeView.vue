@@ -34,7 +34,7 @@ homeList()
     console.log("데이터 불러오기 실패", error);
   });
 
-const goTourDetail = (tour: Object) => {};
+const goTourDetail = (tour: number) => {};
 
 const goReviewDetail = (reviewId: number) => {
   router.push({ name: "review-detail", params: { id: reviewId } });
@@ -181,7 +181,7 @@ const goReviewDetail = (reviewId: number) => {
                   :description="topTour.description"
                   :rating="topTour.rating"
                   :location="topTour.cityName + ' ' + topTour.townName"
-                  @click="goTourDetail(topTour)"
+                  @click="goTourDetail(topTour.tourId)"
                   class="hover:scale-105 p-3"
                 >
                 </TripCard>
@@ -208,15 +208,15 @@ const goReviewDetail = (reviewId: number) => {
               가장 많은 좋아요를 받은 리뷰를 모아봤어요!
             </p>
           </div>
-          <!-- <Carousel
+          <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
-              loop: true
+              loop: true,
             }"
             :plugins="[
               Autoplay({
-                delay: 2000
-              })
+                delay: 2000,
+              }),
             ]"
           >
             <CarouselContent>
@@ -231,14 +231,14 @@ const goReviewDetail = (reviewId: number) => {
                   :description="topReview.content"
                   :createdAt="new Date(topReview.createdAt)"
                   :views="topReview.likeCount"
-                  @click="goReviewDetail(topReview)"
+                  @click="goReviewDetail(topReview.reviewId)"
                   class="hover:scale-110"
                 ></PostingCard>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious class="-left-6" />
             <CarouselNext class="-right-6" />
-          </Carousel> -->
+          </Carousel>
         </div>
       </div>
     </section>

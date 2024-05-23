@@ -1,4 +1,4 @@
-export const imageOrDefault = (src: string | undefined) => {
+export const imageOrDefault = (src: string | undefined | null) => {
   return src || "http://via.placeholder.com/400x400";
 }
 
