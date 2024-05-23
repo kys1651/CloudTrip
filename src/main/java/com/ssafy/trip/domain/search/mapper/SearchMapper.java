@@ -3,6 +3,9 @@ package com.ssafy.trip.domain.search.mapper;
 import com.ssafy.trip.domain.notice.entity.Notice;
 import com.ssafy.trip.domain.review.entity.Review;
 import com.ssafy.trip.domain.review.entity.ReviewWithUser;
+import com.ssafy.trip.domain.schedule.dto.ScheduleData;
+import com.ssafy.trip.domain.schedule.entity.Schedule;
+import com.ssafy.trip.domain.schedule.entity.ScheduleWithSearch;
 import com.ssafy.trip.domain.search.dto.SearchData;
 import com.ssafy.trip.domain.user.entity.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,4 +22,7 @@ public interface SearchMapper {
 
     // User 검색
     List<User> searchUsersByKeyword(String searchKeyword);
+
+    // Schedule 검색
+    List<ScheduleWithSearch> searchSchedulesByKeyword(String searchKeyword);
 }

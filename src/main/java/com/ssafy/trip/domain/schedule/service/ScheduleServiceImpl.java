@@ -45,11 +45,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         Schedule created = schedule.toEntity();
         scheduleMapper.save(created);
-
-        if (schedule.isPrivate()) {
-            scheduleMapper.addPrivilege(created.getScheduleId(), user.getUsername());
-        }
-
+        scheduleMapper.addPrivilege(created.getScheduleId(), user.getUsername());
         return created.getScheduleId();
     }
 
@@ -69,6 +65,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<ScheduleData.ScheduleSearch> searchAllSchedule(ScheduleData.SearchCondition condition) {
         System.out.println(condition);
         return scheduleMapper.findAll(condition).stream().map(ScheduleData.ScheduleSearch::from).toList();
+    }
+
+    @Override
+    public List<ScheduleData.ScheduleSearch> searchByMyId(Long userId) {
+        return scheduleMapper.findByMyUserId(userId).stream().map(ScheduleData.ScheduleSearch::from).toList();
+    }
+
+    @Override
+    public List<ScheduleData.ScheduleSearch> searchByUserId(Long userId) {
+        return scheduleMapper.findByUserId(userId).stream().map(ScheduleData.ScheduleSearch::from).toList();
     }
 
     @Override

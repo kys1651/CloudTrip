@@ -4,6 +4,7 @@ import com.ssafy.trip.domain.schedule.dto.ScheduleData;
 import com.ssafy.trip.domain.schedule.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Mapper
@@ -15,6 +16,10 @@ public interface ScheduleMapper {
     ScheduleWithUser findById(Long scheduleId);
 
     List<ScheduleWithSearch> findAll(ScheduleData.SearchCondition condition);
+
+    List<ScheduleWithSearch> findByMyUserId(Long userId);
+
+    List<ScheduleWithSearch> findByUserId(Long userId);
 
     List<VehicleDetail> findVehicleDetail(Long scheduleId);
 

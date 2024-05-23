@@ -20,6 +20,25 @@
             <result column="image" property="imgUrl"/>
         </collection>
     </resultMap>
+    <resultMap id="scheduleSearch" type="com.ssafy.trip.domain.schedule.entity.ScheduleWithSearch">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="thumbnail_image" property="thumbnailImage"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="day" property="day"/>
+        <result column="count" property="count"/>
+        <result column="is_multi" property="isMulti"/>
+        <result column="is_finished" property="isFinished"/>
+        <result column="city_name" property="cityName"/>
+        <result column="is_private" property="isPrivate"/>
+        <result column="city_code" property="cityCode"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="usernames" ofType="String" javaType="ArrayList">
+            <result column="username"/>
+        </collection>
+    </resultMap>
 
     <!-- 여행 후기 조회   -->
     <select id="searchReviewsByKeyword" resultMap="reviewWithUser">
@@ -61,5 +80,40 @@
         FROM users U
         WHERE U.nickname like concat('%', #{searchkeyword}, '%')
         OR U.username like concat('%', #{searchkeyword}, '%');
+    </select>
+
+    <!-- 여행 계획 조회 -->
+    <select id="searchSchedulesByKeyword" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.public_key,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               S.is_finished,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               (SELECT COUNT(*)
+                FROM schedule_trip ST
+                WHERE ST.schedule_id = S.schedule_id) AS count,
+                SPU.user_id AS invited_user_id,
+                SPU.username AS invited_username,
+                SPU.nickname AS invited_nickname,
+                SPU.profile_image AS invited_profile_image,
+                C.name AS city_name
+        FROM schedule S
+        JOIN users U ON S.user_id = U.user_id
+        JOIN ssafytrip.city C on C.city_code = S.city_code
+        LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+        LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE (S.name like concat('%', #{keyword}, '%')
+        OR C.name like concat('%', #{keyword}, '%')) AND S.is_private = FALSE
+        ORDER BY S.schedule_id DESC;
     </select>
 </mapper>

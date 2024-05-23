@@ -260,6 +260,70 @@
         </where>
     </select>
 
+    <select id="findByMyUserId" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+        S.name,
+        S.user_id,
+        S.thumbnail_image,
+        S.start_date,
+        S.end_date,
+        S.public_key,
+        S.day,
+        S.city_code,
+        S.is_multi,
+        S.is_private,
+        S.is_finished,
+        U.nickname,
+        SP.username,
+        U.profile_image,
+        (SELECT COUNT(*)
+        FROM schedule_trip ST
+        WHERE ST.schedule_id = S.schedule_id) AS count,
+        SPU.user_id AS invited_user_id,
+        SPU.username AS invited_username,
+        SPU.nickname AS invited_nickname,
+        SPU.profile_image AS invited_profile_image,
+        C.name AS city_name
+        FROM schedule S
+        JOIN users U ON S.user_id = U.user_id
+        JOIN ssafytrip.city C on C.city_code = S.city_code
+        JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+        LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE SPU.user_id = #{userId}
+    </select>
+
+    <select id="findByUserId" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.public_key,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               S.is_finished,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               (SELECT COUNT(*)
+                FROM schedule_trip ST
+                WHERE ST.schedule_id = S.schedule_id) AS count,
+               SPU.user_id AS invited_user_id,
+               SPU.username AS invited_username,
+               SPU.nickname AS invited_nickname,
+               SPU.profile_image AS invited_profile_image,
+               C.name AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+                 LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE SPU.user_id = #{userId} AND S.is_private = false;
+    </select>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="scheduleId">
         INSERT INTO schedule (name, user_id, thumbnail_image, start_date, end_date, is_multi, is_private,
                               city_code, day)
