@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     // Common (1000번대 에러 발생)
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 9999, "서버 에러입니다. 관리자에게 문의해주세요."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 1000, "올바르지 않은 입력 값 입니다. 다시 한번 확인해주세요."),
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 1001, "이메일 전송에 실패했습니다. 다시 시도해주세요."),
     ALREADY_EMAIL_SEND(HttpStatus.INTERNAL_SERVER_ERROR, 1002, "이미 이메일이 전송되었습니다. 잠시 후 다시 시도해주세요."),
