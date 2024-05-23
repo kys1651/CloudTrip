@@ -84,8 +84,6 @@ export const useTripPlanStore = defineStore('trip-plan', () => {
   })
 
   const tripVehicleList = computed<IVehicle[][]>(() => {
-      return dayTrips.map((_, index) => tripVehicleDictionary.value[dictionaryKey(day, index)])
-    }))
     return trips.value.map((dayTrips, day) => {
       return dayTrips.map((_, index) => tripVehicleDictionary.value[dictionaryKey(day, index)])
     })
