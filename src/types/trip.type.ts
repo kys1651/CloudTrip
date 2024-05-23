@@ -34,13 +34,16 @@ export interface SearchQuery {
 
 export interface SearchTrip {
   tourId: number;
-  contentType: string;
+  contentTypeId: number;
   name: string;
   address: string;
   backgroundImage?: string;
   description: string;
   latitude: number;
   longitude: number;
+  scheduleCount: number;
+  reviewCount: number;
+  rating: number;
 }
 
 export interface ICity {

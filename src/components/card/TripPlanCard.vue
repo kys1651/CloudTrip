@@ -8,7 +8,7 @@ import { useTripPlanStore } from "@/stores/trip-plan";
 import { useScheduleSocket } from "@/stores/web-stomp";
 import type { SearchTrip } from "@/types/trip.type";
 import { useImage } from "@vueuse/core";
-import { Heart, Locate, Star } from "lucide-vue-next";
+import { ClipboardList, Locate, SquareCheckBig, Star } from "lucide-vue-next";
 
 const props = defineProps<{
   trip: SearchTrip;
@@ -62,12 +62,16 @@ const pickTrip = () => {
         </div>
         <div className="flex items-center mt-1 space-x-4">
           <div class="flex flex-row items-center space-x-1">
-            <Heart :size="16" />
-            <span className="text-sm text-gray-600 mr-2">12530</span>
+            <SquareCheckBig :size="16" />
+            <span className="text-sm text-gray-600 mr-2">{{ trip.scheduleCount }}</span>
           </div>
           <div class="flex flex-row items-center space-x-1">
             <Star :size="16" />
-            <span className="text-sm text-gray-600">4</span>
+            <span className="text-sm text-gray-600">{{ trip.rating }}</span>
+          </div>
+          <div class="flex flex-row items-center space-x-1">
+            <ClipboardList :size="16" />
+            <span className="text-sm text-gray-600">{{ trip.reviewCount }}</span>
           </div>
         </div>
       </div>

@@ -24,7 +24,7 @@ const searchKeyword = ref('')
 
 const categoryTrips = computed(() => {
   if (categoryGroup.value.length === 0) return trips.value
-  return trips.value.filter((trip) => categoryGroup.value.includes(trip.contentType))
+  return trips.value.filter((trip) => categoryGroup.value.includes(trip.contentTypeId.toString()))
 })
 
 const { mutate, isPending: isTripLoading } = useMutation({
@@ -90,7 +90,7 @@ const changeCategory = (category: string) => {
             variant="outline"
             v-for="category in categories"
             :key="category.contentId"
-            :value="category.name"
+            :value="category.contentId.toString()"
             ><span class="text-nowrap w-14 h-5">{{ category.korName }}</span>
           </ToggleGroupItem>
         </ToggleGroup>
