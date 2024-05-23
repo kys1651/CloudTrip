@@ -1,4 +1,4 @@
-insert into ssafytrip.schedule_vehicle (schedule_vehicle_id, schedule_id, vehicle_id, type, from_tour_id, to_tour_id, day, order)
+insert into ssafytrip.schedule_vehicle (schedule_vehicle_id, schedule_id, vehicle_id, type, from_tour_id, to_tour_id, day, `order`)
 values  (1, 1, 12, 'walk', 126485, 2576344, 0, 0),
         (2, 1, 1, 'bus', 126503, 2576344, 1, 0),
         (3, 1, 8, 'bus', 126505, 2576344, 2, 0),

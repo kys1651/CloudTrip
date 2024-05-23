@@ -1,4 +1,4 @@
-insert into ssafytrip.schedule_trip (schedule_trip_id, schedule_id, tour_id, day, order, room)
+insert into ssafytrip.schedule_trip (schedule_trip_id, schedule_id, tour_id, day, `order`, room)
 values  (1, 1, 126485, 1, 0, 0),
         (2, 1, 2576344, 1, 1, 1),
         (3, 1, 126503, 2, 0, 0),
