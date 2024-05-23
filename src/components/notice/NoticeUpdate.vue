@@ -16,8 +16,7 @@ import { useRoute, useRouter } from 'vue-router'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import { getNoticeDetail, noticeDelete, noticeUpdate } from '@/api/notice'
-import { useToast } from "@/components/ui/toast";
-
+import { useToast } from '@/components/ui/toast'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,6 +28,9 @@ const notice = ref({
   title: '',
   content: ''
 })
+
+const images = ref<File[]>([])
+const imageSrcs = ref<string[]>([])
 
 let quill: Quill
 onMounted(() => {
@@ -45,18 +47,18 @@ onMounted(() => {
       // ]
       toolbar: {
         container: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        [{ color: [] }, { background: [] }],
-        ['image', 'link']
-      ],
-      handlers: {
-        image: () => {
-          getLocalImage()
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ color: [] }, { background: [] }],
+          ['image', 'link']
+        ],
+        handlers: {
+          image: () => {
+            getLocalImage()
+          }
         }
-      }
       }
     }
   })
@@ -87,16 +89,23 @@ const getLocalImage = () => {
   fileInput.click()
 
   fileInput.onchange = () => {
-    const file = fileInput.files![0]
-    const reader = new FileReader()
+    const files = fileInput.files
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        images.value = [...images.value, file]
+        const reader = new FileReader()
 
-    reader.onload = (e) => {
-      const base64ImageSrc = e.target!.result
-      const range = quill.getSelection()
-      quill.insertEmbed(range!.index, 'image', base64ImageSrc)
+        reader.onload = (e) => {
+          const base64ImageSrc = e.target!.result as string
+          imageSrcs.value = [...imageSrcs.value, base64ImageSrc]
+          const range = quill.getSelection()
+          quill.insertEmbed(range!.index, 'image', base64ImageSrc)
+        }
+
+        reader.readAsDataURL(file)
+      }
     }
-
-    reader.readAsDataURL(file)
   }
 }
 
@@ -106,14 +115,27 @@ const goDetail = () => {
 
 const updateNotice = () => {
   notice.value.content = quill.root.innerHTML
-  noticeUpdate(noticeId.toString(), notice.value)
+
+  const key = 'image-replace-key'
+  imageSrcs.value.forEach((src, index) => {
+    notice.value.content = notice.value.content.replace(src, `${key}-${index + 1}`)
+  })
+
+  noticeUpdate(
+    {
+      images: images.value,
+      title: notice.value.title,
+      content: notice.value.content
+    },
+    noticeId.toString()
+  )
     .then(() => {
       toast.toast({
-        title: "공지사항 수정 성공",
-        description: "공지사항 수정에 성공하였습니다.",
+        title: '공지사항 수정 성공',
+        description: '공지사항 수정에 성공하였습니다.',
         duration: 2000,
-        variant: "success",
-      });
+        variant: 'success'
+      })
       console.log('글 수정 성공')
       router.push({ name: 'notice-view' })
     })
@@ -129,11 +151,11 @@ const deleteNotice = () => {
     .then(() => {
       if (confirm('정말 삭제하시겠습니까?')) {
         toast.toast({
-        title: "공지사항 삭제 성공",
-        description: "공지사항 삭제에 성공하였습니다.",
-        duration: 2000,
-        variant: "success",
-      });
+          title: '공지사항 삭제 성공',
+          description: '공지사항 삭제에 성공하였습니다.',
+          duration: 2000,
+          variant: 'success'
+        })
         console.log('글 삭제 성공')
         router.push({ name: 'adminNotice' })
       }
@@ -160,12 +182,12 @@ const deleteNotice = () => {
               <Input
                 class="h-[70px] p-2"
                 id="name"
-                placeholder="Name of your project"
+                placeholder="제목을 입력해주세요."
                 v-model="notice.title"
               />
             </div>
             <Label for="name">내용</Label>
-            <div id="editor-container" class="h-[400px] mb-5">
+            <div id="editor-container" class="h-[400px] mb-5 mt-2">
               <div id="editor"></div>
             </div>
           </div>

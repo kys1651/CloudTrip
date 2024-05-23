@@ -102,7 +102,7 @@ const reset = () => {
   startDate.value = undefined
   endDate.value = undefined
   modelValue.value = []
-  isPrivate.value = false
+  isSingle.value = false
   isMulti.value = false
   minValue.value = 0;
   maxValue.value = 100;
