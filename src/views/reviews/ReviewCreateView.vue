@@ -32,6 +32,8 @@ import { useRouter } from 'vue-router'
 import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
 import CreateRating from '@/components/review/CreateRating.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 
 const imageIndex = ref<number>(-1)
 const images = ref<File[]>([])

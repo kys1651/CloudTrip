@@ -39,7 +39,7 @@ import {
 
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { KakaoMap, KakaoMapCustomOverlay, KakaoMapPolyline } from 'vue3-kakao-maps'
 
 const step = ref<TripStep>(TripStep.PLAN)
@@ -268,6 +268,14 @@ const onTripClick = (index: number) => {
     )
   }
 }
+
+onBeforeRouteLeave((to, from) => {
+  if (confirm('지금 나가시면 모든 데이터가 사라집니다.')) {
+    return true
+  } else {
+    return false
+  }
+})
 </script>
 
 <template>

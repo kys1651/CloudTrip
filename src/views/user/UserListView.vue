@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import UserBody from '@/components/user/UserBody.vue'
-import UserFooter from '@/components/user/UserFooter.vue'
 </script>
 
 <template>
