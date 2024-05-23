@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.review.mapper.ReviewMapper">
+    <resultMap id="simpleUser" type="com.ssafy.trip.domain.user.entity.SimpleUser">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="profile_image" property="profileImage"/>
+    </resultMap>
+
+    <resultMap id="reviewWithUser" type="com.ssafy.trip.domain.review.entity.ReviewWithUser">
+        <id column="review_id" property="reviewId"/>
+        <result column="is_liked" property="isLiked"/>
+        <result column="is_following" property="isFollowing"/>
+        <result column="content" property="content"/>
+        <result column="tour_name" property="tourName"/>
+        <result column="tour_id" property="tourId"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="rating" property="rating"/>
+        <result column="address" property="address"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="images" ofType="String" javaType="ArrayList">
+            <result column="image" property="imgUrl"/>
+        </collection>
+    </resultMap>
+
+    <select id="findPagingIds">
+        SELECT review_id
+        FROM review
+        ORDER BY review_id DESC
+        LIMIT #{pageSize} OFFSET #{offset};
+    </select>
+
+    <select id="findReviews" resultMap="reviewWithUser">
+        SELECT R.review_id,
+        R.content,
+        T.name as tour_name,
+        R.tour_id,
+        R.created_at,
+        R.updated_at,
+        I.image,
+        R.like_count,
+        R.rating,
+        U.user_id,
+        U.nickname,
+        U.profile_image,
+        T.address,
+        IFNULL(RL.user_id = #{userId}, 0) AS is_liked,
+        IFNULL(F.follower_id = #{userId}, 0) AS is_following
+        FROM review R
+        LEFT JOIN review_images I ON R.review_id = I.review_id
+        LEFT JOIN review_like RL ON R.review_id = RL.review_id AND RL.user_id = #{userId}
+        LEFT JOIN tour T ON R.tour_id = T.tour_id
+        JOIN users U ON R.user_id = U.user_id
+        LEFT JOIN follow F ON F.followee_id = U.user_id AND F.follower_id = #{userId}
+        WHERE R.review_id IN
+        <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">
+            #{reviewId}
+        </foreach>
+        ORDER BY R.created_at DESC
+    </select>
+
+    <select id="getAllReview" resultMap="reviewWithUser">
+        SELECT r.review_id,
+               r.content,
+               u.nickname as authorName,
+               u.email,
+               r.tour_id,
+               r.created_at,
+               r.updated_at,
+               i.image
+        FROM review r
+         LEFT JOIN review_images i ON r.review_id = i.review_id
+         JOIN users u ON r.user_id = u.user_id
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="searchReview" resultMap="reviewWithUser">
+        SELECT r.review_id,
+               r.content,
+               u.nickname as authorName,
+               u.email,
+               r.tour_id,
+               r.created_at,
+               r.updated_at,
+               i.image
+        FROM review r
+                 LEFT JOIN review_images i ON r.review_id = i.review_id
+                 JOIN users u ON r.user_id = u.user_id
+        WHERE content LIKE CONCAT('%',#{keyword},'%')
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="findLikedAllById" resultMap="reviewWithUser">
+        SELECT r.review_id,
+               r.content,
+               u.nickname as authorName,
+               u.email,
+               r.tour_id,
+               r.created_at,
+               r.updated_at,
+               r.like_count,
+               i.image
+        FROM review r
+             LEFT JOIN review_images i ON r.review_id = i.review_id
+             JOIN review_like rl ON rl.review_id = r.review_id
+             JOIN users u ON r.user_id = u.user_id
+        WHERE u.user_id = #{userId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="countReviews" resultType="int">
+        SELECT COUNT(*)
+        FROM review
+    </select>
+
+    <select id="findById" resultMap="reviewWithUser">
+        SELECT R.review_id,
+               R.content,
+               T.name as tour_name,
+               R.tour_id,
+               R.created_at,
+               R.updated_at,
+               R.rating,
+               I.image,
+               R.like_count,
+               U.user_id,
+               U.nickname,
+               U.profile_image,
+               T.address,
+               IFNULL(RL.user_id = #{userId}, 0) AS is_liked,
+               IFNULL(F.follower_id = #{userId}, 0) AS is_following
+        FROM review R
+                 LEFT JOIN review_images I ON R.review_id = I.review_id
+                 LEFT JOIN review_like RL ON R.review_id = RL.review_id AND RL.user_id = #{userId}
+                 LEFT JOIN tour T ON R.tour_id = T.tour_id
+                 JOIN users U ON R.user_id = U.user_id
+                 LEFT JOIN follow F ON F.followee_id = U.user_id AND F.follower_id = #{userId}
+        WHERE R.review_id = #{reviewId}
+    </select>
+
+    <insert id="saveReview" useGeneratedKeys="true" keyProperty="create.reviewId">
+        INSERT INTO review(content, user_id, tour_id, rating)
+        VALUES (#{create.content}, #{authorId}, #{create.tourId}, #{create.rating})
+    </insert>
+
+    <update id="updateReview">
+        UPDATE review
+        SET content = #{update.content},
+            tour_id=#{update.tourId},
+            rating=#{update.rating}
+        WHERE review_id = #{reviewId};
+    </update>
+
+    <delete id="deleteReview">
+        DELETE
+        FROM review
+        WHERE review_id = #{reviewId};
+    </delete>
+
+    <delete id="deleteImg">
+        DELETE FROM review_images
+        WHERE review_id = #{reviewId} AND image = #{imgUrl}
+    </delete>
+
+
+    <!-- LIKE -->
+    <select id="existsLikeByReviewIdAndUserId" resultType="boolean">
+        SELECT review_id, user_id
+        FROM review_like
+        WHERE user_id = #{userId}
+          AND review_id = #{reviewId}
+    </select>
+
+    <insert id="saveLike">
+        INSERT INTO review_like(review_id, user_id)
+        VALUES (#{reviewId}, #{userId});
+    </insert>
+
+    <update id="updateLikeCount">
+        UPDATE review
+        SET like_count = like_count + #{count}
+        WHERE review_id = #{reviewId};
+    </update>
+
+    <delete id="deleteLike">
+        DELETE
+        FROM review_like
+        WHERE review_id = #{reviewId}
+          AND user_id = #{userId};
+    </delete>
+
+    <insert id="saveImg">
+        INSERT INTO review_images (review_id, image)
+        VALUES (#{reviewId}, #{imgUrl});
+    </insert>
+
+    <select id="getImg">
+        SELECT image
+        FROM review JOIN review_images ri on review.review_id = ri.review_id
+        WHERE ri.review_id = #{reviewId}
+    </select>
+</mapper>

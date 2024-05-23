@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.direction.mapper.DirectionMapper">
+    <resultMap id="step" type="com.ssafy.trip.domain.direction.entity.Step">
+        <id column="step_id" property="stepId"/>
+        <result column="mode" property="mode"/>
+        <result column="start_name" property="startName"/>
+        <result column="end_name" property="endName"/>
+        <result column="section_time" property="sectionTime"/>
+        <result column="distance" property="distance"/>
+        <result column="route_name" property="routeName"/>
+    </resultMap>
+    <resultMap id="vehicles" type="com.ssafy.trip.domain.direction.entity.Vehicle">
+        <id column="vehicle_id" property="vehicleId"/>
+        <result column="fare" property="fare"/>
+        <result column="spent_time" property="spentTime"/>
+        <result column="walk_time" property="walkTime"/>
+        <result column="transfer_count" property="transferCount"/>
+        <result column="distance" property="distance"/>
+        <result column="walk_distance" property="walkDistance"/>
+        <result column="path" property="path"/>
+        <collection property="steps" ofType="com.ssafy.trip.domain.direction.entity.Step" resultMap="step"/>
+    </resultMap>
+    <insert id="saveDirection" useGeneratedKeys="true" keyProperty="directionId">
+        INSERT INTO direction (start_tour_id, end_tour_id)
+        VALUES (#{startTourId}, #{endTourId});
+    </insert>
+    <insert id="saveVehicle" useGeneratedKeys="true" keyProperty="vehicleId">
+        INSERT INTO vehicle (vehicle.direction_id, fare, spent_time, walk_time, transfer_count, distance, walk_distance,
+                             path)
+        VALUES (#{directionId}, #{fare}, #{spentTime}, #{walkTime}, #{transferCount}, #{distance}, #{walkDistance},
+                #{path});
+    </insert>
+
+    <insert id="saveStep">
+        INSERT INTO step (vehicle_id, mode, start_name, end_name, section_time, distance, route_name)
+        VALUES (#{vehicleId}, #{mode}, #{startName}, #{endName}, #{sectionTime}, #{distance}, #{routeName});
+    </insert>
+
+    <select id="findById">
+        SELECT direction_id
+        FROM direction
+        WHERE start_tour_id = #{startTourId}
+          AND end_tour_id = #{endTourId};
+    </select>
+
+    <select id="findVehicles" resultMap="vehicles">
+        SELECT V.vehicle_id,
+               V.fare,
+               V.spent_time,
+               V.walk_time,
+               V.transfer_count,
+               V.distance,
+               V.walk_distance,
+               V.path,
+               S.step_id,
+               S.mode,
+               S.start_name,
+               S.end_name,
+               S.section_time,
+               S.distance,
+               S.route_name
+        FROM vehicle V
+                 LEFT JOIN step S ON V.vehicle_id = S.vehicle_id
+        WHERE V.direction_id = #{directionId};
+    </select>
+</mapper>

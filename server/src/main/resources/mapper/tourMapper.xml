@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.tour.mapper.TourMapper">
+    <!--  SELECT  -->
+    <select id="findAll">
+        SELECT *
+        FROM tour_with_address;
+    </select>
+
+    <select id="findCityById">
+        SELECT *
+        FROM city
+        WHERE city_code = #{cityId};
+    </select>
+
+    <select id="findById">
+        SELECT *
+        FROM tour_with_address
+        WHERE tour_id = #{tourId};
+    </select>
+
+    <select id="findStayByCityId">
+        SELECT *
+        FROM tour_with_content
+        WHERE city_code = #{cityId}
+          AND content_type = 'STAY';
+    </select>
+
+
+    <select id="findWithContentByKeyword" resultType="com.ssafy.trip.domain.tour.entity.SimpleTourWithLike">
+        SELECT T.tour_id,
+               T.content_type_id,
+               T.name,
+               T.address,
+               TD.longitude,
+               TD.latitude,
+               T.background_image,
+               COUNT(ST.schedule_id)    AS schedule_count,
+               COUNT(R.review_id)       AS review_count,
+               IFNULL(AVG(R.rating), 0) AS rating
+        FROM tour T
+                 LEFT JOIN tour_detail TD ON T.tour_id = TD.tour_id
+                 LEFT JOIN schedule_trip ST ON T.tour_id = ST.tour_id
+                 LEFT JOIN review R ON T.tour_id = R.tour_id
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+          AND content_type_id != 2
+          AND city_code = #{city}
+        GROUP BY T.tour_id
+        ORDER BY schedule_count DESC, review_count DESC, rating DESC;
+    </select>
+
+    <select id="findWithContentByKeywordAll" resultType="com.ssafy.trip.domain.tour.entity.SimpleTourWithLike">
+        SELECT T.tour_id,
+               T.content_type_id,
+               T.name,
+               T.address,
+               TD.longitude,
+               TD.latitude,
+               T.background_image,
+               COUNT(ST.schedule_id)    AS schedule_count,
+               COUNT(R.review_id)       AS review_count,
+               IFNULL(AVG(R.rating), 0) AS rating
+        FROM tour T
+                 LEFT JOIN tour_detail TD ON T.tour_id = TD.tour_id
+                 LEFT JOIN schedule_trip ST ON T.tour_id = ST.tour_id
+                 LEFT JOIN review R ON T.tour_id = R.tour_id
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+        GROUP BY T.tour_id
+        ORDER BY schedule_count DESC, review_count DESC, rating DESC;
+    </select>
+
+    <select id="findCategories">
+        SELECT *
+        FROM tour_content
+        WHERE content_id != 2;
+    </select>
+
+    <select id="findCities">
+        SELECT *
+        FROM city;
+    </select>
+
+    <select id="findTowns">
+        SELECT town_code, name
+        FROM town
+        WHERE city_code = #{cityCode};
+    </select>
+
+    <select id="findTourById">
+        SELECT *
+        FROM tour
+        WHERE tour_id = #{tourId};
+    </select>
+
+
+</mapper>

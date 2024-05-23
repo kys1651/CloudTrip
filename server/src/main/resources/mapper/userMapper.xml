@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.user.mapper.UserMapper">
+    <select id="findAll">
+        SELECT *
+        FROM users;
+    </select>
+
+    <select id="findByKeyword">
+        SELECT *
+        FROM users
+        WHERE users.username like concat('%', #{keyword}, '%')
+           OR users.email like concat('%', #{keyword}, '%')
+           OR users.nickname like concat('%', #{keyword}, '%');
+    </select>
+
+    <select id="findByUsername">
+        SELECT *
+        FROM users
+        WHERE username = #{username};
+    </select>
+
+    <select id="findByEmail">
+        SELECT *
+        FROM users
+        WHERE email = #{email};
+    </select>
+
+    <select id="existsByUsername" resultType="boolean">
+        SELECT COUNT(*)
+        FROM users
+        WHERE username = #{username};
+    </select>
+
+    <select id="commentsByUserId">
+        SELECT c.comment_id, c.review_id, c.created_at, c.content, r.content as ReviewContent
+        FROM review_comment c
+                 JOIN users u ON c.user_id = u.user_id
+                 JOIN review r ON c.review_id = r.review_id
+        WHERE c.user_id = #{userId}
+    </select>
+
+    <insert id="save">
+        INSERT INTO users (username, email, password, nickname, profile_image, provider_type, role_type)
+        VALUES (#{username}, #{email}, #{password}, #{nickname}, #{profileImage}, #{providerType}, #{roleType});
+    </insert>
+
+    <update id="update">
+        UPDATE users
+        <set>
+            username = #{username},
+            email = #{email},
+            password = #{password},
+            nickname = #{nickname},
+            profile_image = #{profileImage},
+            provider_type = #{providerType},
+            role_type = #{roleType},
+            is_email_verified = #{isEmailVerified},
+            <!-- cityCode와 townCode가 제공되었는지 확인 -->
+            <if test="cityCode != 0">
+                city_code = #{cityCode},
+            </if>
+            <if test="townCode != 0">
+                town_code = #{townCode}
+            </if>
+        </set>
+        WHERE user_id = #{userId};
+    </update>
+
+    <update id="updateIsLocked">
+        UPDATE users
+        SET is_locked = !is_locked
+        WHERE user_id = #{userId};
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM users
+        WHERE user_id = #{userId}
+    </delete>
+
+
+    <resultMap id="simpleReview" type="com.ssafy.trip.domain.user.dto.UserData$SimpleReview">
+        <id column="review_id" property="reviewId"/>
+        <result column="content" property="content"/>
+        <result column="user_id" property="userId"/>
+        <result column="created_at" property="createdAt"/>
+        <collection property="images" ofType="String" javaType="ArrayList">
+            <result column="image" property="imgUrl"/>
+        </collection>
+    </resultMap>
+
+    <select id="getReviewsById" resultMap="simpleReview">
+        SELECT r.review_id,
+               r.content,
+               r.created_at,
+               i.image,
+               u.user_id
+        FROM review r
+                 LEFT JOIN review_images i ON r.review_id = i.review_id
+                 JOIN users u ON r.user_id = u.user_id
+        WHERE u.user_id = #{userId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="getLikedReviewsById" resultMap="simpleReview">
+        SELECT r.review_id,
+               r.content,
+               r.created_at,
+               i.image,
+               u.user_id
+        FROM review r
+            JOIN review_like rl ON r.review_id = rl.review_id
+            LEFT JOIN review_images i ON r.review_id = i.review_id
+            JOIN users u ON r.user_id = u.user_id
+        WHERE rl.user_id = #{userId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <select id="findById" >
+        SELECT
+            user_id,
+            email,
+            nickname,
+            profile_image,
+            IFNULL(c.name,'정보없음') as city,
+            IFNULL(t.name,'정보없음') as town,
+            CASE
+                WHEN f.follower_id IS NOT NULL THEN 1
+                ELSE 0
+            END AS is_following
+        FROM users u
+                 LEFT JOIN town t ON u.town_code = t.town_code AND u.city_code = t.city_code
+                 LEFT JOIN city c ON t.city_code = c.city_code
+                 LEFT JOIN follow f ON f.followee_id = #{userId} AND f.follower_id = #{currentId}
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 팔로잉,팔로워 -->
+    <select id="isFollow" resultType="boolean">
+        SELECT count(*)
+        FROM follow
+        WHERE followee_id=#{followeeId} AND follower_id=#{followerId}
+    </select>
+
+    <insert id="follow">
+        INSERT INTO follow(followee_id, follower_id)
+        VALUES(#{followeeId},#{followerId})
+    </insert>
+
+    <delete id="unFollow">
+        DELETE FROM follow
+        WHERE followee_id=#{followeeId} AND follower_id=#{followerId}
+    </delete>
+
+    <select id="getFollowing">
+        SELECT
+            u.user_id,
+            u.nickname,
+            u.profile_image,
+            CASE
+                WHEN cf.follower_id IS NOT NULL THEN 1
+                ELSE 0
+                END AS is_following
+        FROM follow f
+            JOIN users u ON f.followee_id = u.user_id
+            LEFT JOIN follow cf ON cf.followee_id = u.user_id AND cf.follower_id = #{currentId}
+        WHERE f.follower_id=#{userId}
+    </select>
+
+    <select id="getFollowers">
+        SELECT
+            u.user_id,
+            u.nickname,
+            u.profile_image,
+            CASE
+                WHEN cf.follower_id IS NOT NULL THEN 1
+                ELSE 0
+                END AS is_following
+        FROM follow f
+                 JOIN users u ON f.follower_id = u.user_id
+                 LEFT JOIN follow cf ON cf.followee_id = u.user_id AND cf.follower_id = #{currentId}
+        WHERE f.followee_id = #{userId}
+    </select>
+
+    <select id="getFollowerCount">
+        SELECT COUNT(*)
+        FROM follow
+        WHERE followee_id=#{userId}
+    </select>
+
+    <select id="getFollowingCount">
+        SELECT COUNT(*)
+        FROM follow
+        WHERE follower_id=#{userId};
+    </select>
+
+    <select id="getProfileImage">
+        SELECT profile_image
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <delete id="deleteProfileImage">
+        DELETE FROM users
+        WHERE user_id = #{userId} AND profile_image=#{profileImage}
+
+    </delete>
+</mapper>

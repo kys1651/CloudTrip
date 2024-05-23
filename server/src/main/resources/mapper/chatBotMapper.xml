@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.chatgpt.mapper.ChatBotMapper">
+    <!-- 채팅 등록   -->
+    <insert id="save">
+        INSERT INTO chat_bot (user_id, user_request, ai_response)
+        VALUES (#{userId}, #{message.userRequest}, #{message.aiResponse});
+    </insert>
+
+    <!-- 채팅 기록 가져오기 -->
+    <select id="getList">
+        SELECT user_request, ai_response
+        FROM chat_bot
+        WHERE user_id = #{userId}
+    </select>
+
+    <delete id="deleteChat">
+        DELETE FROM chat_bot
+        WHERE user_id = #{userId};
+    </delete>
+</mapper>

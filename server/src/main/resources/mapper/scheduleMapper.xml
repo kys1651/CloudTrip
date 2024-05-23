@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.schedule.mapper.ScheduleMapper">
+    <resultMap id="simpleUser" type="com.ssafy.trip.domain.user.entity.SimpleUser">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="profile_image" property="profileImage"/>
+    </resultMap>
+
+    <resultMap id="simpleTour" type="com.ssafy.trip.domain.tour.entity.SimpleTour">
+        <id column="tour_id" property="tourId"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="background_image" property="backgroundImage"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+    </resultMap>
+
+    <resultMap id="tripWithTour" type="com.ssafy.trip.domain.schedule.entity.TripWithTour">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="tour_id" property="tourId"/>
+        <result column="day" property="day"/>
+        <result column="order" property="order"/>
+        <association property="tour" resultMap="simpleTour"/>
+    </resultMap>
+
+    <resultMap id="scheduleSearch" type="com.ssafy.trip.domain.schedule.entity.ScheduleWithSearch">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="thumbnail_image" property="thumbnailImage"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="day" property="day"/>
+        <result column="count" property="count"/>
+        <result column="is_multi" property="isMulti"/>
+        <result column="is_finished" property="isFinished"/>
+        <result column="city_name" property="cityName"/>
+        <result column="is_private" property="isPrivate"/>
+        <result column="city_code" property="cityCode"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="usernames" ofType="String" javaType="ArrayList">
+            <result column="username"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="scheduleWithUser" type="com.ssafy.trip.domain.schedule.entity.ScheduleWithUser">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="thumbnail_image" property="thumbnailImage"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="day" property="day"/>
+        <result column="public_key" property="publicKey"/>
+        <result column="is_multi" property="isMulti"/>
+        <result column="is_finished" property="isFinished"/>
+        <result column="city_name" property="cityName"/>
+        <result column="is_private" property="isPrivate"/>
+        <result column="city_code" property="cityCode"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="invitedUsers" ofType="com.ssafy.trip.domain.user.entity.SimpleUserWithUsername"
+                    javaType="ArrayList">
+            <id column="invited_user_id" property="userId"/>
+            <result column="invited_username" property="username"/>
+            <result column="invited_nickname" property="nickname"/>
+            <result column="invited_profile_image" property="profileImage"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="vehicle" type="com.ssafy.trip.domain.direction.entity.Vehicle">
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="direction_id" property="directionId"/>
+        <result column="path" property="path"/>
+        <result column="fare" property="fare"/>
+        <result column="vehicle_distance" property="distance"/>
+        <result column="spent_time" property="spentTime"/>
+        <result column="walk_distance" property="walkDistance"/>
+        <result column="walk_time" property="walkTime"/>
+        <collection property="steps" ofType="com.ssafy.trip.domain.schedule.entity.Step" resultMap="step"/>
+    </resultMap>
+
+    <resultMap id="step" type="com.ssafy.trip.domain.direction.entity.Step">
+        <result column="step_distance" property="distance"/>
+        <result column="route_name" property="routeName"/>
+        <result column="mode" property="mode"/>
+        <result column="section_time" property="sectionTime"/>
+        <result column="end_name" property="endName"/>
+        <result column="start_name" property="startName"/>
+    </resultMap>
+
+    <resultMap id="vehicleDetail" type="com.ssafy.trip.domain.schedule.entity.VehicleDetail">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="type" property="type"/>
+        <result column="from_tour_id" property="fromTourId"/>
+        <result column="to_tour_id" property="toTourId"/>
+        <result column="day" property="day"/>
+        <result column="order" property="order"/>
+        <association property="vehicle" resultMap="vehicle"/>
+    </resultMap>
+
+    <insert id="saveBulkScheduleTrip">
+        INSERT INTO schedule_trip (schedule_id, tour_id, day, `order`, room)
+        VALUES
+        <foreach collection="scheduleTrips" item="scheduleTrip" separator=",">
+            (#{scheduleTrip.scheduleId}, #{scheduleTrip.tourId}, #{scheduleTrip.day}, #{scheduleTrip.order},
+            #{scheduleTrip.room})
+        </foreach>
+    </insert>
+
+    <insert id="saveBulkScheduleVehicle">
+        INSERT INTO schedule_vehicle (schedule_id, vehicle_id, type, from_tour_id, to_tour_id, day, `order`)
+        VALUES
+        <foreach collection="scheduleVehicles" item="scheduleVehicle" separator=",">
+            (#{scheduleVehicle.scheduleId}, #{scheduleVehicle.vehicleId}, #{scheduleVehicle.type},
+            #{scheduleVehicle.fromTourId}, #{scheduleVehicle.toTourId}, #{scheduleVehicle.day},
+            #{scheduleVehicle.order})
+        </foreach>
+    </insert>
+
+    <select id="findTripWithTour" resultMap="tripWithTour">
+        SELECT ST.schedule_trip_id,
+               ST.schedule_id,
+               ST.tour_id,
+               ST.day,
+               ST.order,
+               T.name,
+               T.address,
+               T.background_image,
+               TD.longitude,
+               TD.latitude
+        FROM schedule_trip ST
+                 LEFT JOIN tour T ON ST.tour_id = T.tour_id
+                 LEFT JOIN tour_detail TD ON T.tour_id = TD.tour_id
+        WHERE ST.schedule_id = #{scheduleId}
+        ORDER BY ST.day, ST.order
+    </select>
+
+    <update id="updatePublic">
+        UPDATE schedule
+        SET public_key = #{publicKey}
+        WHERE schedule_id = #{scheduleId}
+    </update>
+
+    <delete id="revokePublic">
+        UPDATE schedule
+        SET public_key = NULL
+        WHERE schedule_id = #{scheduleId}
+    </delete>
+
+    <select id="findVehicleDetail" resultMap="vehicleDetail">
+        SELECT SV.schedule_id,
+               SV.vehicle_id,
+               SV.type,
+               SV.from_tour_id,
+               SV.to_tour_id,
+               SV.day,
+               SV.order,
+               V.direction_id,
+               V.distance AS vehicle_distance,
+               V.path,
+               V.fare,
+               V.spent_time,
+               V.walk_distance,
+               V.walk_time,
+               S.distance AS step_distance,
+               S.route_name,
+               S.mode,
+               S.section_time,
+               S.end_name,
+               S.start_name
+        FROM schedule_vehicle SV
+                 LEFT JOIN vehicle V ON SV.vehicle_id = V.vehicle_id
+                 LEFT JOIN step S ON SV.vehicle_id = S.vehicle_id
+        WHERE SV.schedule_id = #{scheduleId}
+        ORDER BY SV.day, SV.order
+    </select>
+
+    <select id="findById" resultMap="scheduleWithUser">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.day,
+               S.end_date,
+               S.public_key,
+               S.city_code,
+               S.is_finished,
+               S.is_multi,
+               S.is_private,
+               SP.username,
+               U.nickname,
+               U.profile_image,
+               SPU.user_id       AS invited_user_id,
+               SPU.username      AS invited_username,
+               SPU.nickname      AS invited_nickname,
+               SPU.profile_image AS invited_profile_image,
+               C.name            AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+                 LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE S.schedule_id = #{scheduleId}
+    </select>
+
+    <select id="findAll" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+        S.name,
+        S.user_id,
+        S.thumbnail_image,
+        S.start_date,
+        S.end_date,
+        S.public_key,
+        S.day,
+        S.city_code,
+        S.is_multi,
+        S.is_private,
+        S.is_finished,
+        U.nickname,
+        SP.username,
+        U.profile_image,
+        (SELECT COUNT(*)
+        FROM schedule_trip ST
+        WHERE ST.schedule_id = S.schedule_id) AS count,
+        SPU.user_id AS invited_user_id,
+        SPU.username AS invited_username,
+        SPU.nickname AS invited_nickname,
+        SPU.profile_image AS invited_profile_image,
+        C.name AS city_name
+        FROM schedule S
+        JOIN users U ON S.user_id = U.user_id
+        JOIN ssafytrip.city C on C.city_code = S.city_code
+        LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+        LEFT JOIN users SPU ON SP.username = SPU.username
+        <where>
+            <if test="startDate != null">
+                AND start_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND end_date &lt;= #{endDate}
+            </if>
+            <if test="mode eq 'multi'">
+                AND is_multi = TRUE
+            </if>
+            <if test="mode eq 'single'">
+                AND is_multi = FALSE
+            </if>
+            <if test="names != null">
+                AND C.name IN
+                <foreach collection="names" item="name" separator="," open="(" close=")">
+                    #{name}
+                </foreach>
+            </if>
+            AND ((SELECT COUNT(*)
+            FROM schedule_trip ST
+            WHERE ST.schedule_id = S.schedule_id) BETWEEN #{minCount} AND #{maxCount})
+            AND (S.is_private = FALSE) AND ((S.is_multi = TRUE) OR (S.is_multi = FALSE AND S.is_finished = TRUE))
+        </where>
+    </select>
+
+    <select id="findByMyUserId" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.public_key,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               S.is_finished,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               (SELECT COUNT(*)
+                FROM schedule_trip ST
+                WHERE ST.schedule_id = S.schedule_id) AS count,
+               SPU.user_id                            AS invited_user_id,
+               SPU.username                           AS invited_username,
+               SPU.nickname                           AS invited_nickname,
+               SPU.profile_image                      AS invited_profile_image,
+               C.name                                 AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+                 LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE SPU.user_id = #{userId}
+    </select>
+
+    <select id="findByUserId" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.public_key,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               S.is_finished,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               (SELECT COUNT(*)
+                FROM schedule_trip ST
+                WHERE ST.schedule_id = S.schedule_id) AS count,
+               SPU.user_id                            AS invited_user_id,
+               SPU.username                           AS invited_username,
+               SPU.nickname                           AS invited_nickname,
+               SPU.profile_image                      AS invited_profile_image,
+               C.name                                 AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+                 LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE SPU.user_id = #{userId}
+          AND S.is_private = false;
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO schedule (name, user_id, thumbnail_image, start_date, end_date, is_multi, is_private,
+                              city_code, day)
+        VALUES (#{name}, #{userId}, #{thumbnailImage}, #{startDate}, #{endDate}, #{isMulti}, #{isPrivate},
+                #{cityCode}, #{day})
+    </insert>
+    <insert id="addPrivilege">
+        INSERT INTO schedule_privilege (schedule_id, username)
+        VALUES (#{scheduleId}, #{username})
+    </insert>
+
+    <update id="finishSchedule">
+        UPDATE schedule
+        SET is_finished = TRUE
+        WHERE schedule_id = #{scheduleId}
+    </update>
+</mapper>

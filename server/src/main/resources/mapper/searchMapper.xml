@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.domain.search.mapper.SearchMapper">
+    <resultMap id="simpleUser" type="com.ssafy.trip.domain.user.entity.SimpleUser">
+        <id column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="profile_image" property="profileImage"/>
+    </resultMap>
+    <resultMap id="reviewWithUser" type="com.ssafy.trip.domain.review.entity.ReviewWithUser">
+        <id column="review_id" property="reviewId"/>
+        <result column="is_liked" property="isLiked"/>
+        <result column="content" property="content"/>
+        <result column="tour_id" property="tourId"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="address" property="address"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="images" ofType="String" javaType="ArrayList">
+            <result column="image" property="imgUrl"/>
+        </collection>
+    </resultMap>
+    <resultMap id="scheduleSearch" type="com.ssafy.trip.domain.schedule.entity.ScheduleWithSearch">
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="thumbnail_image" property="thumbnailImage"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="day" property="day"/>
+        <result column="count" property="count"/>
+        <result column="is_multi" property="isMulti"/>
+        <result column="is_finished" property="isFinished"/>
+        <result column="city_name" property="cityName"/>
+        <result column="is_private" property="isPrivate"/>
+        <result column="city_code" property="cityCode"/>
+        <association property="user" resultMap="simpleUser"/>
+        <collection property="usernames" ofType="String" javaType="ArrayList">
+            <result column="username"/>
+        </collection>
+    </resultMap>
+
+    <!-- 여행 후기 조회   -->
+    <select id="searchReviewsByKeyword" resultMap="reviewWithUser">
+        SELECT R.review_id,
+               R.content,
+               R.tour_id,
+               R.created_at,
+               R.updated_at,
+               I.image,
+               R.like_count,
+               U.user_id,
+               U.nickname,
+               U.profile_image,
+               T.address,
+               IFNULL(RL.user_id = #{userId}, 0)    AS is_liked,
+               IFNULL(F.follower_id = #{userId}, 0) AS is_following
+        FROM review R
+                 JOIN users U ON R.user_id = U.user_id
+                 LEFT JOIN review_images I ON R.review_id = I.review_id
+                 LEFT JOIN review_like RL ON R.review_id = RL.review_id AND RL.user_id = #{userId}
+                 LEFT JOIN follow F ON F.followee_id = U.user_id AND F.follower_id = #{userId}
+                 LEFT JOIN tour T ON R.tour_id = T.tour_id
+        WHERE (
+                  R.content like concat('%', #{searchKeyword}, '%')
+                      OR T.name like concat('%', #{searchKeyword}, '%')
+                      OR T.address like concat('%', #{searchKeyword}, '%')
+                  );
+    </select>
+
+    <!-- 공지사항 조회   -->
+    <select id="searchNoticesByKeyword">
+        SELECT *
+        FROM notice N
+        WHERE N.content like concat('%', #{searchkeyword}, '%')
+           OR N.title like concat('%', #{searchkeyword}, '%');
+    </select>
+
+    <!-- 유저 조회   -->
+    <select id="searchUsersByKeyword">
+        SELECT *
+        FROM users U
+        WHERE U.nickname like concat('%', #{searchkeyword}, '%')
+           OR U.username like concat('%', #{searchkeyword}, '%');
+    </select>
+
+    <!-- 여행 계획 조회 -->
+    <select id="searchSchedulesByKeyword" resultMap="scheduleSearch">
+        SELECT S.schedule_id,
+               S.name,
+               S.user_id,
+               S.thumbnail_image,
+               S.start_date,
+               S.end_date,
+               S.public_key,
+               S.day,
+               S.city_code,
+               S.is_multi,
+               S.is_private,
+               S.is_finished,
+               U.nickname,
+               SP.username,
+               U.profile_image,
+               (SELECT COUNT(*)
+                FROM schedule_trip ST
+                WHERE ST.schedule_id = S.schedule_id) AS count,
+               SPU.user_id                            AS invited_user_id,
+               SPU.username                           AS invited_username,
+               SPU.nickname                           AS invited_nickname,
+               SPU.profile_image                      AS invited_profile_image,
+               C.name                                 AS city_name
+        FROM schedule S
+                 JOIN users U ON S.user_id = U.user_id
+                 JOIN ssafytrip.city C on C.city_code = S.city_code
+                 LEFT JOIN schedule_privilege SP ON S.schedule_id = SP.schedule_id
+                 LEFT JOIN users SPU ON SP.username = SPU.username
+        WHERE (S.name like concat('%', #{keyword}, '%')
+            OR C.name like concat('%', #{keyword}, '%'))
+          AND S.is_private = FALSE
+        ORDER BY S.schedule_id DESC;
+    </select>
+</mapper>

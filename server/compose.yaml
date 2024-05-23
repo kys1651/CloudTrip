@@ -1,0 +1,39 @@
+name: trip-docker-compose
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=ssafytrip
+      - MYSQL_ROOT_PASSWORD=ssafy
+      - MYSQL_USER=ssafy
+      - MYSQL_PASSWORD=ssafy
+
+  cache:
+    image: redis:5.0.7-alpine
+    ports:
+      - "6379:6379"
+    command: '--requirepass ssafy --maxmemory 128mb'
+    volumes:
+      - redis_data:/data
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8000:8080"
+    environment:
+      - "URLS=[{url: 'docs/openapi3.yaml', name: 'SSAFY Enjoy Trip API'}]"
+      - SWAGGER_JSON=/api-docs/swagger.json
+      - URLS_PRIMARY_NAME=SSAFY Enjoy Trip API
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs
+
+volumes:
+  mysql_data:
+  redis_data:
