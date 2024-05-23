@@ -3,7 +3,10 @@ package com.ssafy.trip.domain.search.controller;
 import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.notice.entity.Notice;
 import com.ssafy.trip.domain.review.entity.ReviewWithUser;
+import com.ssafy.trip.domain.schedule.dto.ScheduleData;
+import com.ssafy.trip.domain.schedule.dto.ScheduleData.ScheduleSearch;
 import com.ssafy.trip.domain.search.service.SearchService;
+import com.ssafy.trip.domain.user.dto.UserData;
 import com.ssafy.trip.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ssafy.trip.domain.user.dto.UserData.*;
 
 @Slf4j
 @RestController
@@ -28,12 +33,15 @@ public class SearchController {
         // Notice
         List<Notice> notices = searchService.searchNoticesByKeyword(searchKeyword);
         // User
-        List<User> users = searchService.searchUsersByKeyword(searchKeyword);
+        List<Profile> users = searchService.searchUsersByKeyword(searchKeyword);
+        // Schedule
+        List<ScheduleSearch> schedules = searchService.searchSchedulesByKeyword(searchKeyword);
 
         HashMap<String, List> hashMap = new HashMap<>();
         hashMap.put("reviews", reviews);
         hashMap.put("notices", notices);
         hashMap.put("users", users);
+        hashMap.put("schedules", schedules);
 
         return SuccessResponse.of(hashMap);
     }
