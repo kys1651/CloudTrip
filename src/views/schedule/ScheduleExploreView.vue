@@ -107,7 +107,8 @@ const onSubmit = () => {
     toast.toast({
       title: '검색 실패',
       description: '시작일이 종료일보다 늦습니다.',
-      variant: 'destructive'
+      variant: 'destructive',
+      duration: 2000
     })
     return
   }
@@ -115,7 +116,8 @@ const onSubmit = () => {
     toast.toast({
       title: '검색 실패',
       description: '최소 여행지 수가 최대 여행지 수보다 큽니다.',
-      variant: 'destructive'
+      variant: 'destructive',
+      duration: 2000
     })
     return
   }
@@ -155,14 +157,17 @@ const onSubmit = () => {
             <Button
               variant="outline"
               :class="
-                cn('justify-start text-left font-normal', !startDate && 'text-muted-foreground')
+                cn(
+                  'justify-start text-left font-normal',
+                  !startDate && 'text-muted-foreground'
+                )
               "
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
               {{
                 startDate
                   ? df.format(startDate.toDate(getLocalTimeZone()))
-                  : '시작일을 선택해주세요.'
+                  : "시작일을 선택해주세요."
               }}
             </Button>
           </PopoverTrigger>
@@ -178,12 +183,17 @@ const onSubmit = () => {
             <Button
               variant="outline"
               :class="
-                cn('justify-start text-left font-normal', !endDate && 'text-muted-foreground')
+                cn(
+                  'justify-start text-left font-normal',
+                  !endDate && 'text-muted-foreground'
+                )
               "
             >
               <CalendarIcon class="mr-2 h-4 w-4" />
               {{
-                endDate ? df.format(endDate.toDate(getLocalTimeZone())) : '종료일을 선택해주세요.'
+                endDate
+                  ? df.format(endDate.toDate(getLocalTimeZone()))
+                  : "종료일을 선택해주세요."
               }}
             </Button>
           </PopoverTrigger>
@@ -235,11 +245,11 @@ const onSubmit = () => {
                           typeof ev.detail.value === 'string' &&
                           ev.timeStamp > timestamp + 1000
                         ) {
-                          modelValue.push(ev.detail.value)
-                          timestamp = ev.timeStamp
+                          modelValue.push(ev.detail.value);
+                          timestamp = ev.timeStamp;
                         }
-                        searchTerm = ''
-                        isOpen = false
+                        searchTerm = '';
+                        isOpen = false;
                       }
                     "
                   >
@@ -275,7 +285,7 @@ const onSubmit = () => {
           @update:modelValue="
             () => {
               if (minValue < 0) {
-                minValue = 0
+                minValue = 0;
               }
             }
           "
@@ -291,7 +301,7 @@ const onSubmit = () => {
           @update:modelValue="
             () => {
               if (maxValue < 0) {
-                maxValue = 100
+                maxValue = 100;
               }
             }
           "
@@ -306,7 +316,9 @@ const onSubmit = () => {
       v-if="!schedules || schedules.length === 0"
       class="w-full justify-center min-w-[60vw] max-w-[60vw] min-h-[50vh] items-center text-gray-400"
     >
-      <span class="w-full h-full flex justify-center items-center">조회된 게시글이 없습니다.</span>
+      <span class="w-full h-full flex justify-center items-center"
+        >조회된 게시글이 없습니다.</span
+      >
     </div>
     <div v-else class="min-w-[60vw] min-h-[50vh] flex flex-col items-center">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -331,7 +343,7 @@ const onSubmit = () => {
             @click="
               () => {
                 if (currentPage > 1) {
-                  currentPage -= 1
+                  currentPage -= 1;
                 }
               }
             "
@@ -359,7 +371,7 @@ const onSubmit = () => {
             @click="
               () => {
                 if (currentPage < maximumPage) {
-                  currentPage += 1
+                  currentPage += 1;
                 }
               }
             "

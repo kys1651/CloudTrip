@@ -77,7 +77,8 @@ const onSubmit = () => {
     toast.toast({
       title: "숙소를 선택해주세요.",
       description: "숙소를 선택하지 않은 일자가 있습니다.",
-      variant: "destructive"
+      variant: "destructive",
+      duration: 2000
     })
     return;
   }

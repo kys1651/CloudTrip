@@ -89,6 +89,7 @@ const onSubmit = handleSubmit((values) => {
       title: "여행 일자를 선택해주세요.",
       description: "여행 일자를 선택해주세요.",
       variant: "destructive",
+      duration: 2000
     });
     return;
   }
@@ -106,6 +107,7 @@ const onSubmit = handleSubmit((values) => {
       title: "계획 생성 성공",
       description: "계획이 생성되었습니다.",
       variant: "success",
+      duration: 2000
     });
     router.push({ name: 'schedule-detail', params: {scheduleId: response} });
   }).catch(() => {
@@ -113,6 +115,7 @@ const onSubmit = handleSubmit((values) => {
       title: "계획 생성 실패",
       description: "계획 생성에 실패했습니다. 다시 시도해주세요.",
       variant: "destructive",
+      duration: 2000
     });
   });
 });

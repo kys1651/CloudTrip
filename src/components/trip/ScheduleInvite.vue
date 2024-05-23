@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { scheduleInviteRequest, schedulePublicRequest, scheduleRevokeRequest } from '@/api/schedule'
+import {
+  scheduleInviteRequest,
+  schedulePublicRequest,
+  scheduleRevokeRequest,
+} from "@/api/schedule";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,107 +12,111 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { imageOrDefault } from '@/lib/image-load'
-import type { InviteUser } from '@/types/schedule.type'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { computed, ref } from 'vue'
-import { useToast } from '../ui/toast'
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { imageOrDefault } from "@/lib/image-load";
+import type { InviteUser } from "@/types/schedule.type";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { computed, ref } from "vue";
+import { useToast } from "../ui/toast";
 
 const props = defineProps<{
-  scheduleId: number
-  publicKey: string
-  name: string
-  owner: string
-  invitedUsers: InviteUser[]
-}>()
+  scheduleId: number;
+  publicKey: string;
+  name: string;
+  owner: string;
+  invitedUsers: InviteUser[];
+}>();
 
-const usePublic = computed(() => props.publicKey !== null)
-const isOpen = ref<boolean>(false)
-const isInviteOpen = ref<boolean>(false)
+const usePublic = computed(() => props.publicKey !== null);
+const isOpen = ref<boolean>(false);
+const isInviteOpen = ref<boolean>(false);
 
 const message = computed(() => {
   if (!usePublic.value) {
     return {
-      title: '정말 여행 계획을 공유하시겠습니까?',
-      description: '확인 버튼을 누르면 해당 여행 계획을 공유할 수 있는 URL이 생성됩니다.'
-    }
+      title: "정말 여행 계획을 공유하시겠습니까?",
+      description: "확인 버튼을 누르면 해당 여행 계획을 공유할 수 있는 URL이 생성됩니다.",
+    };
   }
   return {
-    title: '정말 여행 계획을 비공개로 설정하시겠습니까?',
-    description: '확인 버튼을 누르면 해당 URL은 더 이상 사용할 수 없게 됩니다.'
-  }
-})
+    title: "정말 여행 계획을 비공개로 설정하시겠습니까?",
+    description: "확인 버튼을 누르면 해당 URL은 더 이상 사용할 수 없게 됩니다.",
+  };
+});
 
-const queryClient = useQueryClient()
+const queryClient = useQueryClient();
 
 const { mutate: publicMutate } = useMutation({
-  mutationKey: ['schedule', props.scheduleId, 'public'],
+  mutationKey: ["schedule", props.scheduleId, "public"],
   mutationFn: () => schedulePublicRequest(props.scheduleId),
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['schedule', props.scheduleId]
-    })
-  }
-})
+      queryKey: ["schedule"],
+    });
+  },
+});
 
 const { mutate: remokeMutate } = useMutation({
-  mutationKey: ['schedule', props.scheduleId, 'revoke'],
+  mutationKey: ["schedule", props.scheduleId, "revoke"],
   mutationFn: () => scheduleRevokeRequest(props.scheduleId),
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['schedule', props.scheduleId]
-    })
-  }
-})
+      queryKey: ["schedule"],
+    });
+  },
+});
 
 const updatePublic = () => {
   if (usePublic.value) {
-    remokeMutate()
+    remokeMutate();
   } else {
-    publicMutate()
+    publicMutate();
   }
-  isOpen.value = false
-}
+  isOpen.value = false;
+};
 
-const username = ref<string>('')
+console.log(props.invitedUsers);
 
-const toast = useToast()
+const username = ref<string>("");
+
+const toast = useToast();
 
 const invite = () => {
   scheduleInviteRequest(props.scheduleId, {
     username: username.value,
     name: props.name,
-    owner: props.owner
+    owner: props.owner,
   })
     .then(() => {
-      isInviteOpen.value = false
+      isInviteOpen.value = false;
 
       toast.toast({
-        title: '초대 성공',
+        title: "초대 성공",
         description: `${username.value}님을 여행 계획에 초대했습니다.`,
-        variant: 'success'
-      })
+        variant: "success",
+        duration: 2000,
+      });
     })
     .catch(() => {
-      isInviteOpen.value = false
+      isInviteOpen.value = false;
 
       toast.toast({
-        title: '초대 실패',
+        title: "초대 실패",
         description: `${username.value}님을 여행 계획에 초대하는데 실패했습니다.`,
-        variant: 'destructive'
-      })
-    })
-}
+        variant: "destructive",
+        duration: 2000,
+      });
+    });
+};
 
 const onSubmit = () => {
-  isInviteOpen.value = true
-}
+  isInviteOpen.value = true;
+};
 </script>
 <template>
   <AlertDialog :open="isOpen">

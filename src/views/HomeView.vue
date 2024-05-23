@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import { homeList } from '@/api/home'
-import MetricCard from '@/components/card/MetricCard.vue'
-import TripCard from '@/components/card/TripCard.vue'
+import { homeList } from "@/api/home";
+import MetricCard from "@/components/card/MetricCard.vue";
+import PostingCard from "@/components/card/PostingCard.vue";
+import TripCard from "@/components/card/TripCard.vue";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
-import { imageOrDefault } from '@/lib/image-load'
-import type { IHome } from '@/types/home.type'
-import Autoplay from 'embla-carousel-autoplay'
-import emblaCarouselVue from 'embla-carousel-vue'
-import { CalendarCheck, PlaneTakeoff, Star, UserRound } from 'lucide-vue-next'
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import PostingCard from '@/components/card/PostingCard.vue'
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { imageOrDefault } from "@/lib/image-load";
+import type { IHome } from "@/types/home.type";
+import Autoplay from "embla-carousel-autoplay";
+import emblaCarouselVue from "embla-carousel-vue";
+import { CalendarCheck, PlaneTakeoff, Star, UserRound } from "lucide-vue-next";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const noImg = '/src/assets/img/noImg2.png'
+const noImg = "/src/assets/img/noImg2.png";
 
-const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true }, [Autoplay()])
+const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true }, [Autoplay()]);
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const homeData = ref<IHome>()
+const homeData = ref<IHome>();
 
 homeList()
   .then((data) => {
-    homeData.value = data
+    homeData.value = data;
   })
-  .catch((error) => {})
+  .catch((error) => {});
 
-const goTourDetail = (tour: number) => {}
+const goTourDetail = (tour: number) => {};
 
 const goReviewDetail = (reviewId: number) => {
-  router.push({ name: 'review-detail', params: { id: reviewId } })
-}
+  router.push({ name: "review-detail", params: { id: reviewId } });
+};
 </script>
 
 <template>
@@ -68,7 +68,9 @@ const goReviewDetail = (reviewId: number) => {
                 class="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                 href="#"
               >
-                <RouterLink :to="{ name: 'schedule' }"> 여행지 추천 바로 가기 </RouterLink>
+                <RouterLink :to="{ name: 'schedule' }">
+                  여행지 추천 바로 가기
+                </RouterLink>
               </a>
               <a
                 class="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
@@ -96,7 +98,9 @@ const goReviewDetail = (reviewId: number) => {
       <div class="container px-4 md:px-6">
         <div class="grid gap-6">
           <div class="space-y-2 text-center">
-            <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Cloud Trip</h2>
+            <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Cloud Trip
+            </h2>
             <p
               class="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400 pb-4"
             >
@@ -156,13 +160,13 @@ const goReviewDetail = (reviewId: number) => {
           <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
-              loop: true
+              loop: true,
             }"
             :plugins="[
               Autoplay({
                 delay: 2000,
-                stopOnFocusIn: true
-              })
+                stopOnFocusIn: true,
+              }),
             ]"
           >
             <CarouselContent>
@@ -207,12 +211,12 @@ const goReviewDetail = (reviewId: number) => {
           <Carousel
             class="w-full max-w-full m-auto flex justify-center"
             :opts="{
-              loop: true
+              loop: true,
             }"
             :plugins="[
               Autoplay({
-                delay: 2500
-              })
+                delay: 2500,
+              }),
             ]"
           >
             <CarouselContent>

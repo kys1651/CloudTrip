@@ -40,5 +40,6 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     storage: sessionStorage,
     key: 'authentication',
     paths: ['accessToken', 'profile'],
+    
   }
  })

@@ -59,6 +59,7 @@ const { mutate, isPending } = useMutation({
       title: "여행 계획",
       description: "여행 경로 저장이 완료되었습니다.",
       variant: "success",
+      duration: 2000,
     });
     queryClient.invalidateQueries({
       queryKey: ["schedule", scheduleId],
@@ -81,8 +82,8 @@ const onSubmit = () => {
       .some((vehicle) => vehicle.type === "none" || vehicle.vehicleId === 0)
   ) {
     toast.toast({
-      title: "이동수단을 선택해주세요.",
-      description: "이동수단을 선택해주세요.",
+      title: "경로 설정 오류",
+      description: "이동 정보가 존재하는 경로를 선택해주세요.",
       duration: 2000,
       variant: "destructive",
     });

@@ -1,3 +1,4 @@
+import { useToast } from '@/components/ui/toast'
 import { useAuthenticationStore } from '@/stores/authentication'
 import type { JwtToken } from '@/types/auth.type'
 import axios from 'axios'
@@ -48,7 +49,18 @@ instance.interceptors.response.use(
     const authentication = useAuthenticationStore()
 
     // 인증 에러가 아닌 경우 바로 에러 처리
-    if (status !== 401) return Promise.reject(error)
+    if (status !== 401) {
+      if (status === 500) {
+        const toast = useToast();
+        toast.toast({
+          title: '서버 에러',
+          description: '서버에서 에러가 발생하였습니다.',
+          variant: "destructive",
+          duration: 2000
+        })
+      }
+      return Promise.reject(error)
+    }
 
     // Refresh Token 재발급 중 에러가 발생한 경우
     if (config.url === REFRESH_URI) {
