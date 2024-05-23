@@ -22,7 +22,7 @@ public interface NoticeService {
     void save(Notice notice, List<MultipartFile> images);
 
     // 공지사항 수정
-    void update(Notice notice, Long noticeId);
+    void update(Notice notice, List<MultipartFile> images, Long noticeId);
 
     // 공지사항 삭제
     void delete(Long noticeId);

@@ -54,8 +54,11 @@ public class NoticeController {
 
     // 공지사항 수정
     @PutMapping("/{noticeId}")
-    public SuccessResponse<Void> modify(@RequestBody Notice noticeDto, @PathVariable Long noticeId) {
-        noticeService.update(noticeDto, noticeId);
+    public SuccessResponse<Void> modify(Notice noticeDto, @RequestParam(value="images", required = false) List<MultipartFile> images, @PathVariable Long noticeId) {
+        System.out.println(noticeDto);
+        System.out.println(images);
+
+        noticeService.update(noticeDto, images, noticeId);
         return SuccessResponse.empty();
     }
 
