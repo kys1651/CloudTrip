@@ -2,6 +2,7 @@
 import { searchResult } from '@/api/search'
 import ReviewCard from '@/components/review/ReviewCard.vue'
 import SearchCard from '@/components/search/SearchCard.vue'
+import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
 import {
   Accordion,
   AccordionContent,
@@ -124,10 +125,10 @@ const goSearchSchedule = () => {
       <h2 className="text-lg font-semibold flex items-center justify-between">여행 계획</h2>
       <div className="grid gap-6 mt-4">
         <div className="grid grid-cols-3 gap-4">
-          <ReviewCard
-            v-for="review in datas.reviews.slice(0, 6)"
-            :key="review.reviewId"
-            :review="review"
+          <ScheduleCard
+            v-for="schedule in datas.schedules.slice(0, 6)"
+            :key="schedule.scheduleId"
+            :schedule="schedule"
           />
         </div>
       </div>
