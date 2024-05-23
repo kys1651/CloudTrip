@@ -210,7 +210,6 @@
         SELECT S.schedule_id,
         S.name,
         S.user_id,
-        S.password,
         S.thumbnail_image,
         S.start_date,
         S.end_date,
@@ -255,7 +254,6 @@
                     #{name}
                 </foreach>
             </if>
-            AND is_private = FALSE
             AND (SELECT COUNT(*)
             FROM schedule_trip ST
             WHERE ST.schedule_id = S.schedule_id) BETWEEN #{minCount} AND #{maxCount}
