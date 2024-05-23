@@ -46,10 +46,10 @@ export const scheduleListRequest = async (): Promise<ISchedule[]> => {
   return data
 }
 
-export const userScheduleListRequest = async (userId: number): Promise<ISchedule[]> => {
+export const userScheduleListRequest = async (userId: number): Promise<IScheduleSearch[]> => {
   const {
     data: { isSuccess, message, data }
-  } = await client.get<BaseResponse<ISchedule[]>>(`/user/${userId}/schedule`)
+  } = await client.get<BaseResponse<IScheduleSearch[]>>(`/user/${userId}/schedule`)
   if (!isSuccess) throw new Error(message)
   return data
 }

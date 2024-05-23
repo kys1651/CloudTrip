@@ -18,7 +18,7 @@ const { data: reviews } = useQuery({
 <template>
   <div ref="scrollRef" class="w-full mx-auto p-5">
     <div>
-      <h3 class="text-3xl font-bold mb-5">작성한 글 모아보기</h3>
+      <h3 class="text-3xl font-bold mb-5">나의 여행후기 모아보기</h3>
     </div>
     <Separator />
     <div

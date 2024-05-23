@@ -206,6 +206,11 @@ const router = createRouter({
           component: () => import('@/components/setting/LikedReview.vue')
         },
         {
+          path: 'mySchedule',
+          name: 'mySchedule',
+          component: () => import('@/components/setting/ScheduleSetting.vue')
+        },
+        {
           path: 'admin/user',
           name: 'adminUser',
           component: () => import('@/views/user/UserListView.vue'),
