@@ -68,7 +68,26 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void update(Notice notice, Long noticeId) {
+    public void update(Notice notice, List<MultipartFile> images,  Long noticeId) {
+        HashMap<String, String> imgUrlMap = new HashMap<>();
+        // S3로 이미지 업로드
+        if (images != null && images.size() > 0) {
+            AtomicInteger atomicInteger = new AtomicInteger(0);
+            images.stream().map((image) -> {
+                CompletableFuture<String> future = s3UploadService.upload(image);
+                return future.join();
+            }).forEach((imgUrl) -> {
+                imgUrlMap.put("image-replace-key-" + atomicInteger.incrementAndGet(), imgUrl);
+            });
+
+            // notice.content 에서 image-replace-key를 찾아내면 대체
+            String content = notice.getContent();
+            for (Map.Entry<String, String> entry : imgUrlMap.entrySet()) {
+                content = content.replace(entry.getKey(), entry.getValue());
+            }
+            notice.setContent(content);
+        }
+
         noticeMapper.update(notice, noticeId);
     }
 

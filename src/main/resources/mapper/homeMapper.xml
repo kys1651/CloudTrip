@@ -46,8 +46,8 @@
         SELECT R.review_id, R.content, R.created_at, T.name, RI.image, count(RL.user_id) AS like_count
         FROM review R
         JOIN tour T ON R.tour_id = T.tour_id
-        JOIN review_images RI ON R.review_id = RI.review_id
-        JOIN review_like RL ON R.review_id = RL.review_id
+        LEFT JOIN review_images RI ON R.review_id = RI.review_id
+        LEFT JOIN review_like RL ON R.review_id = RL.review_id
         WHERE R.review_id = #{reviewId}
         GROUP BY R.review_id, R.content, R.created_at, T.name, RI.image
         LIMIT 1;

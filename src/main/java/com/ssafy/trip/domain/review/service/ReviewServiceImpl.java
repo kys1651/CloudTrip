@@ -76,10 +76,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void updateReview(Long userId,Long reviewId, Update update, List<MultipartFile> images, List<String> removeImages) {
         // 사용하지 않는 기존 이미지 제거
-        removeImages.forEach(imgUrl -> {
-            reviewMapper.deleteImg(reviewId,imgUrl);// db
-            s3UploadService.deleteImageFromS3(imgUrl);// s3
-        });
+        if(Objects.nonNull(removeImages) && !removeImages.isEmpty()) {
+            removeImages.forEach(imgUrl -> {
+                reviewMapper.deleteImg(reviewId,imgUrl);// db
+                s3UploadService.deleteImageFromS3(imgUrl);// s3
+            });
+        }
+
 
         // 새로 들어온 이미지 추가
         if(Objects.nonNull(images) && !images.isEmpty()){
