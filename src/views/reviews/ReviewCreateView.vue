@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { reviewCreateRequest } from '@/api/review'
 import { reviewRecommendRequest } from '@/api/chat'
+import { reviewCreateRequest } from '@/api/review'
 import { searchTripRequest } from '@/api/trip'
-import Button from '@/components/ui/button/Button.vue'
-import Dialog from '@/components/ui/dialog/Dialog.vue'
-import DialogContent from '@/components/ui/dialog/DialogContent.vue'
-import DialogDescription from '@/components/ui/dialog/DialogDescription.vue'
-import DialogTitle from '@/components/ui/dialog/DialogTitle.vue'
-import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import CreateRating from '@/components/review/CreateRating.vue'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +14,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import Button from '@/components/ui/button/Button.vue'
+import Dialog from '@/components/ui/dialog/Dialog.vue'
+import DialogContent from '@/components/ui/dialog/DialogContent.vue'
+import DialogDescription from '@/components/ui/dialog/DialogDescription.vue'
+import DialogTitle from '@/components/ui/dialog/DialogTitle.vue'
+import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/toast'
@@ -31,7 +32,6 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
-import CreateRating from '@/components/review/CreateRating.vue'
 
 const imageIndex = ref<number>(-1)
 const images = ref<File[]>([])
@@ -51,7 +51,7 @@ const open = ref(false)
 const toast = useToast()
 const router = useRouter()
 
-const { mutate: searchLocation } = useMutation({
+const { mutate: searchLocation, isPending } = useMutation({
   mutationKey: ['reviews', 'searchLocation'],
   mutationFn: async (query: string) => searchTripRequest({ query: query, city: 0 }),
   onSuccess: (data) => {
@@ -191,7 +191,10 @@ const updateRating = (rating: number) => {
   <form @submit.prevent="onSubmit" class="container flex flex-col py-10 space-y- w-1/2 space-y-4">
     <div class="flex flex-row justify-between">
       <h2 class="text-2xl font-bold">여행 후기 작성</h2>
-      <Button class="w-24 h-10" variant="outline" type="submit">작성하기</Button>
+      <Button class="w-24 h-10" :disabled="isPending" variant="outline" type="submit">
+        <LoaderCircle v-if="isPending" class="mr-2 h-4 w-4 animate-spin" />
+        <span v-else>작성하기</span>
+      </Button>
     </div>
     <div class="flex flex-row space-x-4">
       <!-- 위치 선택 부분 -->

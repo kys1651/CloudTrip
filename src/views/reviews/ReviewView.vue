@@ -7,8 +7,12 @@ import { useInfiniteScroll } from '@vueuse/core'
 import { Pencil } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { LoaderCircle } from 'lucide-vue-next'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 const scrollRef = ref<HTMLElement | null>(null)
 
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
 const {
   data: pages,
   fetchNextPage,
@@ -37,7 +41,12 @@ useInfiniteScroll(
   <div class="container flex flex-col items-center w-full py-7 relative">
     <h2 class="text-4xl font-bold mb-3">여행지 후기</h2>
     <div class="flex justify-center mb-4">
-      <Button variant="outline" class="rounded-xl" @click="$router.push({ name: 'review-create' })">
+      <Button
+        v-if="isLogin && profile"
+        variant="outline"
+        class="rounded-xl"
+        @click="$router.push({ name: 'review-create' })"
+      >
         <Pencil class="mr-2 h-4 w-4" />
         신규 글 작성
       </Button>

@@ -1,4 +1,6 @@
+import { useAuthenticationStore } from '@/stores/authentication'
 import HomeView from '@/views/HomeView.vue'
+import { storeToRefs } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -53,12 +55,26 @@ const router = createRouter({
     {
       path: '/review/create',
       name: 'review-create',
-      component: () => import('@/views/reviews/ReviewCreateView.vue')
+      component: () => import('@/views/reviews/ReviewCreateView.vue'),
+      beforeEnter: (to, from, next) => {
+        if (signInCheck()) {
+          next()
+        } else {
+          next({ name: 'sign-in' })
+        }
+      }
     },
     {
       path: '/review/update/:reviewId',
       name: 'review-update',
-      component: () => import('@/views/reviews/ReviewUpdateView.vue')
+      component: () => import('@/views/reviews/ReviewUpdateView.vue'),
+      beforeEnter: (to, from, next) => {
+        if (signInCheck()) {
+          next()
+        } else {
+          next({ name: 'sign-in' })
+        }
+      }
     },
     {
       path: '/review/:id',
@@ -83,17 +99,26 @@ const router = createRouter({
     {
       path: '/notice/modify/:noticeId',
       name: 'notice-modify',
-      component: () => import('@/views/notice/NoticeUpdateView.vue')
+      component: () => import('@/views/notice/NoticeUpdateView.vue'),
+      beforeEnter: (to, from, next) => {
+        if (adminCheck()) {
+          next()
+        } else {
+          next({ name: 'sign-in' })
+        }
+      }
     },
     {
       path: '/notice/create/',
       name: 'notice-create',
-      component: () => import('@/views/notice/NoticeCreateView.vue')
-    },
-    {
-      path: '/user',
-      name: 'user',
-      component: () => import('@/views/user/UserListView.vue')
+      component: () => import('@/views/notice/NoticeCreateView.vue'),
+      beforeEnter: (to, from, next) => {
+        if (adminCheck()) {
+          next()
+        } else {
+          next({ name: 'sign-in' })
+        }
+      }
     },
     {
       path: '/user/:userId',
@@ -137,6 +162,13 @@ const router = createRouter({
       name: 'setting',
       component: () => import('@/views/SettingView.vue'),
       redirect: { name: 'myProfile' }, // 기본 경로로 리디렉션 추가
+      beforeEnter: (to, from, next) => {
+        if (signInCheck()) {
+          next()
+        } else {
+          next({ name: 'sign-in' })
+        }
+      },
       children: [
         {
           path: '',
@@ -166,21 +198,60 @@ const router = createRouter({
         {
           path: 'admin/user',
           name: 'adminUser',
-          component: () => import('@/views/user/UserListView.vue')
+          component: () => import('@/views/user/UserListView.vue'),
+          beforeEnter: (to, from, next) => {
+            if (adminCheck()) {
+              next()
+            } else {
+              next({ name: 'sign-in' })
+            }
+          }
         },
         {
           path: 'admin/notice',
           name: 'adminNotice',
-          component: () => import('@/views/notice/AdminNoticeView.vue')
+          component: () => import('@/views/notice/AdminNoticeView.vue'),
+          beforeEnter: (to, from, next) => {
+            if (adminCheck()) {
+              next()
+            } else {
+              next({ name: 'sign-in' })
+            }
+          }
         },
         {
           path: 'admin/review',
           name: 'adminReview',
-          component: () => import('@/views/notice/AdminReviewView.vue')
+          component: () => import('@/views/notice/AdminReviewView.vue'),
+          beforeEnter: (to, from, next) => {
+            if (adminCheck()) {
+              next()
+            } else {
+              next({ name: 'sign-in' })
+            }
+          }
         }
       ]
     }
   ]
 })
+
+const signInCheck = (): boolean => {
+  const authenticationStore = useAuthenticationStore()
+  const { isLogin, profile } = storeToRefs(authenticationStore)
+  if (!isLogin.value || profile.value === undefined) {
+    return false
+  }
+  return true
+}
+
+const adminCheck = (): boolean => {
+  const authenticationStore = useAuthenticationStore()
+  const { isLogin, profile } = storeToRefs(authenticationStore)
+  if (!isLogin.value || profile.value === undefined || profile.value.roleType !== 'ADMIN') {
+    return false
+  }
+  return true
+}
 
 export default router

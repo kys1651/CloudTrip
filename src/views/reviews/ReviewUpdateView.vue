@@ -27,11 +27,16 @@ import type { ReviewForm } from '@/types/board.type'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { Image, Locate, MapPin, WandSparkles } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import * as yup from 'yup'
 import { LoaderCircle } from 'lucide-vue-next'
 import CreateRating from '@/components/review/CreateRating.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+
+const authenticationStore = useAuthenticationStore()
+const { isLogin, profile } = storeToRefs(authenticationStore)
 
 const open = ref(false)
 const toast = useToast()
@@ -85,6 +90,14 @@ const pickAddress = (name: string, tourId: number) => {
 const { data: review } = useQuery({
   queryKey: ['reviews', reviewId],
   queryFn: () => reviewRequest(Number(reviewId))
+})
+
+watchEffect(() => {
+  if (review.value) {
+    if (profile.value?.roleType !== 'ADMIN' && review.value.user.userId !== profile.value?.id) {
+      router.push({ name: 'home' })
+    }
+  }
 })
 
 // 이미지 관련 변수 선언
