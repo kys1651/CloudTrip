@@ -37,8 +37,8 @@ const updateCurrentPage = (pageIdx: number) => {
 }
 
 const displayedPosts = computed(() => {
-  const startIndex = (pageNumber.value - 1) * postsPerPage.value
-  const endIndex = startIndex + postsPerPage.value
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value || 0
+  const endIndex = startIndex + postsPerPage.value || postsPerPage.value
   return notices.value?.slice(startIndex, endIndex)
 })
 
