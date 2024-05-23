@@ -1,16 +1,11 @@
 package com.ssafy.trip.domain.user.service;
 
-import com.ssafy.trip.core.exception.CustomException;
-import com.ssafy.trip.core.exception.ErrorCode;
-import com.ssafy.trip.domain.review.dto.ReviewData.SimpleReview;
 import com.ssafy.trip.core.service.S3UploadService;
 import com.ssafy.trip.domain.review.entity.Comment.SimpleComment;
 import com.ssafy.trip.domain.user.dto.UserData;
-import com.ssafy.trip.domain.user.entity.SimpleUser;
-import com.ssafy.trip.domain.user.entity.User;
-import com.ssafy.trip.core.service.S3UploadService;
 import com.ssafy.trip.domain.user.dto.UserData.Password;
 import com.ssafy.trip.domain.user.dto.UserData.Update;
+import com.ssafy.trip.domain.user.entity.SimpleUser;
 import com.ssafy.trip.domain.user.entity.User;
 import com.ssafy.trip.domain.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +39,7 @@ public class UserServiceImpl implements UserService {
         if (update.isDefaultImage()) {
             imageSrc = User.DEFAULT_IMAGE;
         }
-        if (!originSrc.equals(imageSrc)) {
+        if (!originSrc.equals(imageSrc) && imageSrc.equals(User.DEFAULT_IMAGE)) {
             s3UploadService.deleteImageFromS3(originSrc);
         }
         user.updateProfile(update.getNickname(), update.getCityCode(), update.getTownCode(), imageSrc);
@@ -82,7 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User user) {
         String profileImagesSrc = userMapper.getProfileImage(user.getUserId());
-        if(Objects.nonNull(profileImagesSrc)){
+        if (Objects.nonNull(profileImagesSrc) && !profileImagesSrc.equals(User.DEFAULT_IMAGE)) {
             s3UploadService.deleteImageFromS3(profileImagesSrc);
         }
         userMapper.delete(user.getUserId());
@@ -104,13 +99,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserData.SimpleProfile findById(Long userId,Long currentId) {
-        return userMapper.findById(userId,currentId);
+    public UserData.SimpleProfile findById(Long userId, Long currentId) {
+        return userMapper.findById(userId, currentId);
     }
 
     @Override
     public boolean isFollow(Long followeeId, Long followerId) {
-        return userMapper.isFollow(followeeId,followerId);
+        return userMapper.isFollow(followeeId, followerId);
     }
 
     @Override
