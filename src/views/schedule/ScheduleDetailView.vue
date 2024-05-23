@@ -5,6 +5,8 @@ import {
   scheduleTripAndVehicleRequest
 } from '@/api/schedule'
 import CircularLoading from '@/components/common/CircularLoading.vue'
+import HomeNavigation from '@/components/common/HomeNavigation.vue'
+import ScheduleShare from '@/components/schedule/ScheduleShare.vue'
 import ChatMessage from '@/components/trip/ChatMessage.vue'
 import ScheduleInvite from '@/components/trip/ScheduleInvite.vue'
 import TripMainTab from '@/components/trip/TripMainTab.vue'
@@ -192,7 +194,7 @@ watchEffect(() => {
   if (schedule.value) {
     if (
       schedule.value.private &&
-      !schedule.value.invitedUsers.map((user) => user.username).includes(profile.value!!.username)
+      !schedule.value.invitedUsers.map((user) => user.username).includes(profile.value?.username || '')
     ) {
       router.push({ name: 'home' }).then(() => {
         toast.toast({
@@ -283,12 +285,22 @@ onBeforeRouteLeave((to, from) => {
     <CircularLoading />
   </div>
   <div v-else class="flex flex-row max-h-screen h-screen overflow-hidden">
-    <div v-if="!schedule.finished" class="w-[450px] max-w-[450px] h-full flex flex-col px-3 py-5">
+    <div
+      v-if="!schedule.finished"
+      class="w-[450px] max-w-[450px] h-full flex flex-col px-3 py-5"
+    >
       <div class="flex relative flex-row justify-center space-x-2 items-end pb-3">
         <ChevronLeft
           class="absolute left-0 top-0 cursor-pointer"
-          v-if="step !== TripStep.PLAN"
-          @click="step = step - 1"
+          @click="
+            () => {
+              if (step === TripStep.PLAN) {
+                router.back();
+              } else {
+                step = step - 1;
+              }
+            }
+          "
           :size="16"
         />
         <Dialog>
@@ -313,7 +325,7 @@ onBeforeRouteLeave((to, from) => {
               :key="i"
               :class="{
                 'bg-blue-500': i <= step,
-                'bg-gray-300': i > step
+                'bg-gray-300': i > step,
               }"
             />
           </div>
@@ -403,6 +415,9 @@ onBeforeRouteLeave((to, from) => {
       </div>
     </KakaoMap>
     <div v-if="schedule.finished" class="z-50">
+      <div class="fixed top-2 left-2 bg-white px-2 py-1 rounded-md">
+        <HomeNavigation />
+      </div>
       <div class="fixed top-3 left-1/2 -translate-x-1/2 flex flex-row space-x-5">
         <div v-for="(day, index) in schedule.day" :key="day">
           <div
@@ -413,8 +428,8 @@ onBeforeRouteLeave((to, from) => {
               class="text-sm font-semibold text-gray-700"
               @click="
                 () => {
-                  days = day
-                  tripIndex = -1
+                  days = day;
+                  tripIndex = -1;
                 }
               "
               >{{ day }}일차</span
@@ -427,11 +442,18 @@ onBeforeRouteLeave((to, from) => {
         class="fixed right-0 top-1/2 -translate-y-1/2 bg-white flex flex-col w-96 p-3 rounded-xl"
       >
         <div v-if="schedulePath && schedulePath[days - 1]">
-          <div class="flex flex-row items-center space-x-2 mb-5">
-            <span class="text-lg font-semibold">{{ days }}일차</span>
-            <span class="text-gray-400 text-sm">({{ toDate(new Date(schedule.startDate)) }})</span>
+          <div class="flex flex-row justify-between items-center space-x-2 mb-5 pr-4">
+            <div class="space-x-2">
+              <span class="text-lg font-semibold">{{ days }}일차</span>
+              <span class="text-gray-400 text-sm"
+                >({{ toDate(new Date(schedule.startDate)) }})</span
+              >
+            </div>
+            <ScheduleShare v-if="!schedule.private" :schedule="schedule" />
           </div>
-          <div class="flex z-50 flex-col w-full max-h-[65vh] overflow-scroll scrollbar-hide">
+          <div
+            class="flex z-50 flex-col w-full max-h-[65vh] overflow-scroll scrollbar-hide"
+          >
             <div
               v-for="(trip, index) in schedulePath[days - 1]"
               :key="index"
@@ -442,7 +464,7 @@ onBeforeRouteLeave((to, from) => {
                 class="flex flex-row items-start justify-between hover:border hover:border-gray-200 p-2 hover:rounded-md cursor-pointer"
                 @click="onTripClick(trip.trip.order)"
                 :class="{
-                  'border border-gray-200 rounded-md': tripIndex === trip.trip.order
+                  'border border-gray-200 rounded-md': tripIndex === trip.trip.order,
                 }"
               >
                 <div class="flex flex-col space-y-1">
@@ -451,8 +473,8 @@ onBeforeRouteLeave((to, from) => {
                     :class="TEXT_COLORS[(days - 1) % TEXT_COLORS.length]"
                     >{{
                       trip.trip.order === scheduleTrips[days - 1].length - 1
-                        ? days + '일차 숙소'
-                        : trip.trip.order + 1 + '번 여행지'
+                        ? days + "일차 숙소"
+                        : trip.trip.order + 1 + "번 여행지"
                     }}</span
                   >
                   <span class="text-xs">{{ trip.trip.tour.name }}</span>
@@ -463,11 +485,16 @@ onBeforeRouteLeave((to, from) => {
                 <div
                   class="w-24 h-24 bg-cover bg-center rounded-md"
                   :style="{
-                    backgroundImage: `url(${imageOrDefault(trip.trip.tour.backgroundImage)})`
+                    backgroundImage: `url(${imageOrDefault(
+                      trip.trip.tour.backgroundImage
+                    )})`,
                   }"
                 />
               </div>
-              <div v-else-if="trip.type === 'vehicle' && trip.vehicle" class="flex flex-col">
+              <div
+                v-else-if="trip.type === 'vehicle' && trip.vehicle"
+                class="flex flex-col"
+              >
                 <div class="flex w-full text-gray-400 justify-center items-center h-10">
                   <ChevronDown />
                 </div>
@@ -475,17 +502,21 @@ onBeforeRouteLeave((to, from) => {
                   class="flex flex-row items-center space-x-2 px-2 cursor-pointer hover:border-gray-200 p-2 hover:rounded-md"
                   @click="onRoadClick(trip.vehicle.order)"
                   :class="{
-                    'border border-gray-200 rounded-md': roadIndex === trip.vehicle.order
+                    'border border-gray-200 rounded-md': roadIndex === trip.vehicle.order,
                   }"
                 >
                   <div class="flex flex-col space-y-1 items-center px-5">
-                    <div class="text-black w-full font-light flex space-x-2 justify-center">
+                    <div
+                      class="text-black w-full font-light flex space-x-2 justify-center"
+                    >
                       <div
                         v-if="trip.vehicle.type === 'car'"
                         class="flex flex-row items-end space-x-1"
                       >
                         <Car :size="24" />
-                        <span class="font-medium text-xs text-gray-400">자동차로 이동</span>
+                        <span class="font-medium text-xs text-gray-400"
+                          >자동차로 이동</span
+                        >
                       </div>
                       <div
                         v-else-if="trip.vehicle.type === 'bus'"
@@ -499,7 +530,9 @@ onBeforeRouteLeave((to, from) => {
                         class="flex flex-row items-end space-x-1"
                       >
                         <TramFront :size="24" />
-                        <span class="font-medium text-xs text-gray-400">지하철로 이동</span>
+                        <span class="font-medium text-xs text-gray-400"
+                          >지하철로 이동</span
+                        >
                       </div>
                       <div
                         v-else-if="trip.vehicle.type === 'walk'"
@@ -514,7 +547,9 @@ onBeforeRouteLeave((to, from) => {
                         class="flex flex-row items-end space-x-1"
                       >
                         <Bike :size="24" />
-                        <span class="font-medium text-xs text-gray-400">자전거로 이동</span>
+                        <span class="font-medium text-xs text-gray-400"
+                          >자전거로 이동</span
+                        >
                       </div>
                     </div>
                     <div class="flex flex-col text-gray-500">
@@ -522,7 +557,8 @@ onBeforeRouteLeave((to, from) => {
                         >소요시간: {{ convertTime(trip.vehicle.vehicle.spentTime) }}</span
                       >
                       <span class="text-xs"
-                        >이동거리: {{ convertDistance(trip.vehicle.vehicle.distance) }}</span
+                        >이동거리:
+                        {{ convertDistance(trip.vehicle.vehicle.distance) }}</span
                       >
                       <span v-show="trip.vehicle.vehicle.fare > 0" class="text-xs"
                         >비용: {{ trip.vehicle.vehicle.fare }}원</span
@@ -530,15 +566,20 @@ onBeforeRouteLeave((to, from) => {
                       <span class="text-xs" v-show="trip.vehicle.vehicle.walkTime > 0"
                         >도보 시간: {{ convertTime(trip.vehicle.vehicle.walkTime) }}</span
                       >
-                      <span class="text-xs" v-show="trip.vehicle.vehicle.transferCount > 0"
+                      <span
+                        class="text-xs"
+                        v-show="trip.vehicle.vehicle.transferCount > 0"
                         >환승 횟수: {{ trip.vehicle.vehicle.transferCount }}회</span
                       >
                       <span class="text-xs" v-show="trip.vehicle.vehicle.walkDistance > 0"
-                        >도보 거리: {{ convertDistance(trip.vehicle.vehicle.walkDistance) }}</span
+                        >도보 거리:
+                        {{ convertDistance(trip.vehicle.vehicle.walkDistance) }}</span
                       >
                     </div>
                   </div>
-                  <div class="flex mt-3 flex-col text-xs space-y-2 flex-1 items-center px-5">
+                  <div
+                    class="flex mt-3 flex-col text-xs space-y-2 flex-1 items-center px-5"
+                  >
                     <div
                       v-for="(step, index) in trip.vehicle.vehicle.steps"
                       :key="step.stepId"
@@ -546,7 +587,7 @@ onBeforeRouteLeave((to, from) => {
                     >
                       <div class="w-full flex justify-start">
                         {{ index + 1 }}.
-                        {{ step.routeName === 'WALK' ? '도보 이동' : step.routeName }}
+                        {{ step.routeName === "WALK" ? "도보 이동" : step.routeName }}
                       </div>
                       <div class="flex flex-row space-x-2 items-center">
                         <span>{{ step.startName }}</span>

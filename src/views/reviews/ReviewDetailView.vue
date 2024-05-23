@@ -26,7 +26,7 @@ import { toast } from "@/components/ui/toast";
 import { useAuthenticationStore } from "@/stores/authentication";
 import { useReview } from "@/stores/review";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import { Heart, MapPin } from "lucide-vue-next";
+import { Heart, LoaderCircle, MapPin } from "lucide-vue-next";
 import { storeToRefs } from "pinia";
 import { nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -77,7 +77,7 @@ watch(review, (newReview) => {
   isLiked.value = newReview.isLiked;
 });
 
-const { mutate: mutateLike } = useMutation({
+const { mutate: mutateLike, isPending: likePending } = useMutation({
   mutationKey: ["reviews", "like", reviewId],
   mutationFn: () =>
     isLiked.value ? reviewDisLikeRequest(reviewId) : reviewLikeRequest(reviewId),
@@ -94,7 +94,7 @@ watch(review, (newReview) => {
   isFollowing.value = newReview.isFollowing;
 });
 
-const { mutate: followMutate } = useMutation({
+const { mutate: followMutate, isPending: followPending } = useMutation({
   mutationKey: ["reviews", "follow", review.value.user.userId],
   mutationFn: () =>
     isFollowing.value
@@ -114,7 +114,7 @@ const { mutate: followMutate } = useMutation({
   },
 });
 
-const { mutate: mutateComment } = useMutation({
+const { mutate: mutateComment, isPending: commentPending } = useMutation({
   mutationKey: ["reviews", "comments", reviewId],
   mutationFn: (content: string) => commentCreateRequest(reviewId, content),
   onSuccess: () => {
@@ -194,9 +194,17 @@ const scrollToBottom = () => {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="flex items-center">
-              <Button size="icon" variant="ghost" @click="mutateLike">
-                <Heart v-if="isLiked" fill="red" stroke="red" :size="24" />
-                <Heart v-else :size="20" />
+              <Button
+                size="icon"
+                variant="ghost"
+                @click="mutateLike"
+                :disabled="likePending"
+              >
+                <LoaderCircle v-if="likePending" class="mr-2 h-4 w-4 animate-spin" />
+                <div v-else>
+                  <Heart v-if="isLiked" fill="red" stroke="red" :size="24" />
+                  <Heart v-else :size="20" />
+                </div>
               </Button>
               <div v-if="review.likeCount != 0" class="ml-1 text-sm font-semibold">
                 ( {{ review.likeCount }} )
@@ -250,12 +258,15 @@ const scrollToBottom = () => {
             </div>
           </div>
           <Button
+            :disabled="followPending"
             @click="followMutate"
             v-if="profile && review.user.userId !== profile.id"
             class="mr-auto ml-2"
             :variant="isFollowing ? 'outline' : 'default'"
             size="xs"
-            >{{ isFollowing ? "팔로잉" : "팔로우" }}
+          >
+            <LoaderCircle v-if="followPending" class="mr-2 h-4 w-4 animate-spin" />
+            <span v-else>{{ isFollowing ? "팔로잉" : "팔로우" }}</span>
           </Button>
         </div>
       </div>
@@ -291,9 +302,12 @@ const scrollToBottom = () => {
             class="flex-1 w-full bg-transparent border-none focus:border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="댓글을 입력해주세요."
             v-model="comment"
+            :disabled="commentPending"
             @keyup.enter.prevent.stop="onSubmit"
           />
+          <LoaderCircle v-if="commentPending" class="mr-2 h-4 w-4 animate-spin" />
           <span
+            v-else
             @click.enter.prevent.stop="onSubmit"
             class="text-sm pr-2"
             :class="
