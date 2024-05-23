@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { Facebook, Instagram, Twitter, Youtube } from 'lucide-vue-next'
-import { Link, BracketsIcon, ArrowUpIcon } from 'lucide-vue-next'
-import Button from '@/components/ui/button/Button.vue'
+import Button from "@/components/ui/button/Button.vue";
+import { Facebook, Instagram, Twitter, Youtube } from "lucide-vue-next";
 const hiddenRoute = [
-  'sign-in',
-  'sign-up',
-  'oauth2-redirect',
-  'confirm-email',
-  'schedule-detail',
-  'schedule'
-]
+  "sign-in",
+  "sign-up",
+  "oauth2-redirect",
+  "confirm-email",
+  "schedule-detail",
+  "schedule",
+];
 </script>
 
 <template>
@@ -21,13 +20,15 @@ const hiddenRoute = [
       >
         <div className="flex items-center">
           <div className="ml-4">
-            <p className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider">
+            <p
+              className="text-base text-[#00B4E6] font-semibold uppercase tracking-wider"
+            >
               Cloud Trip
             </p>
-            <p className="text-sm text-gray-500">주식회사 클라우드트립 | 대표 민보수</p>
-            <p className="text-sm text-gray-500">서울시 동작구 노량진로 64길 88-10102</p>
-            <p className="text-sm text-gray-500">서울특별시 강남구 역삼로 217, 4F</p>
-            <p className="text-sm text-gray-500">contact@minbosu.co.kr</p>
+            <p className="text-sm text-gray-500">주식회사 클라우드트립 | 대표 남보우</p>
+            <p className="text-sm text-gray-500">광주광역시 하남삼단 6번로</p>
+            <p className="text-sm text-gray-500">SSAFY 11기 광주 5반 1팀</p>
+            <p className="text-sm text-gray-500">sunsuking@gmail.com</p>
             <div className="mt-2 flex space-x-4">
               <Button className="text-sm text-gray-500 hover:text-gray-900" href="#">
                 이용약관
