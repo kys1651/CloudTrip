@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <div
-      v-if="userLikedReviews && userLikedReviews?.length > 0"
+      v-if="scheduleList && scheduleList.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5"
     >
-      <SimpleReviewCard
-        v-for="review in userLikedReviews"
-        :key="review.reviewId"
-        :review="review"
+      <ScheduleCard
+        v-for="schedule in scheduleList"
+        :key="schedule.scheduleId"
+        :schedule="schedule"
       />
     </div>
     <div v-else class="flex flex-col items-center justify-center min-h-screen">
@@ -21,11 +21,15 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
-import SimpleReviewCard from '../card/SimpleReviewCard.vue'
 import { userScheduleListRequest } from '@/api/schedule'
+import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
+
+const { profile } = storeToRefs(useAuthenticationStore())
 const route = useRoute()
-const { data: userLikedReviews } = useQuery({
-  queryKey: ['userScheduleListRequest', route.params.userId],
+const { data: scheduleList } = useQuery({
+  queryKey: ['scheduleList', route.params.userId],
   queryFn: () => userScheduleListRequest(Number(route.params.userId))
 })
 </script>

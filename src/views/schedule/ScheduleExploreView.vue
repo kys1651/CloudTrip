@@ -2,10 +2,8 @@
 import { scheduleSearchRequest } from '@/api/schedule'
 import { citiesRequest } from '@/api/trip'
 import ScheduleCard from '@/components/schedule/ScheduleCard.vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Button from '@/components/ui/button/Button.vue'
 import { Calendar } from '@/components/ui/calendar'
-import { Card, CardContent } from '@/components/ui/card'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
 import Input from '@/components/ui/input/Input.vue'
@@ -29,31 +27,16 @@ import {
   TagsInputItemText
 } from '@/components/ui/tags-input'
 import { useToast } from '@/components/ui/toast'
-import { toMonthDay } from '@/lib/formatter'
-import { imageOrCityImage, imageOrDefault } from '@/lib/image-load'
 import { cn } from '@/lib/utils'
-import { useAuthenticationStore } from '@/stores/authentication'
 import { DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
 import { useQuery } from '@tanstack/vue-query'
-import {
-  Ban,
-  CalendarIcon,
-  CircleCheck,
-  Globe,
-  Lock,
-  LockOpen,
-  Luggage,
-  UserRound,
-  UsersRound
-} from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
+import { CalendarIcon } from 'lucide-vue-next'
 import { ComboboxAnchor, ComboboxInput, ComboboxPortal, ComboboxRoot } from 'radix-vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const currentPage = ref<number>(1)
 const maximumPage = computed(() => Math.ceil(schedules.value.length / 12))
-const { profile } = storeToRefs(useAuthenticationStore())
 
 const timestamp = ref<number>(0)
 const modelValue = ref<string[]>([])

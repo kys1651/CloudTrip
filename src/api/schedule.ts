@@ -156,3 +156,12 @@ export const scheduleSearchRequest = async (params: any): Promise<IScheduleSearc
   if (!isSuccess) throw new Error(message)
   return data
 }
+
+export const deleteScheduleListRequest = async (scheduleId: number): Promise<boolean> => {
+  try {
+    await client.delete<BaseResponse<void>>(`/schedule/${scheduleId}`)
+    return true
+  } catch (e) {
+    return false
+  }
+}
