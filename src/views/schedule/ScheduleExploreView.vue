@@ -92,7 +92,7 @@ const df = new DateFormatter('ko-kr', {
 const startDate = ref<DateValue>()
 const endDate = ref<DateValue>()
 
-const isPrivate = ref<boolean>(false)
+const isSingle = ref<boolean>(false)
 const isMulti = ref<boolean>(false)
 
 const minValue = ref<number>(0)
@@ -132,12 +132,21 @@ const onSubmit = () => {
     });
     return;
   }
+
+  let mode = undefined
+  if (isSingle.value && isMulti.value) {
+    mode = "both"
+  } else if (isSingle.value) {
+    mode = "single"
+  } else if (isMulti.value) {
+    mode = "multi"
+  }
+
   const params = {
     startDate: startDate.value?.toString(),
     endDate: endDate.value?.toString(),
     names: modelValue.value.length > 0 ? modelValue.value.toString() : undefined,
-    access: !isPrivate.value ? 'private' : 'public',
-    mode: isMulti.value ? 'multi' : 'single',
+    mode: mode,
     minCount: minValue.value.toString(),
     maxCount: maxValue.value.toString(),
   }
@@ -266,14 +275,14 @@ const onSubmit = () => {
       <div class="py-3 space-y-3 flex flex-col">
         <div>
           <Label class="flex items-center space-x-2">
-            <Checkbox id="is-private" v-model:checked="isPrivate" />
-            <span>공개 여부</span>
+            <Checkbox id="is-private" v-model:checked="isSingle" />
+            <span>싱글 모드</span>
           </Label>
         </div>
         <div>
           <Label class="flex items-center space-x-2">
             <Checkbox id="is-multimode" v-model:checked="isMulti" />
-            <span>멀티 모드 지원</span>
+            <span>멀티 모드</span>
           </Label>
         </div>
       </div>

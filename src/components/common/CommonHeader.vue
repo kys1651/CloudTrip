@@ -48,7 +48,7 @@ const ROUTES: { pathname: string; name: string }[] = [
   },
   {
     pathname: "schedule",
-    name: "여행지 추천",
+    name: "여행지 계획",
   },
   {
     pathname: "review",
