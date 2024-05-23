@@ -66,14 +66,11 @@ const isATagExists = (content: String) => {
             <Card
               class="h-[400px] p-2 overflow-y-auto"
               :class="{ aTag: isATagExists(notice.content) }"
-              v-html="notice.content"
-            ></Card>
+              ><p v-html="notice.content"></p>
+            </Card>
           </div>
         </form>
       </CardContent>
-      <div class="flex flex-col space-y-1.5 mt-10 px-10">
-        <Label for="framework">#공지사항</Label>
-      </div>
       <CardFooter class="flex justify-between px-6 pb-6 mt-10">
         <Button variant="outline" @click="goHome"> 목록으로 </Button>
         <Button @click="goUpdate">글 수정</Button>
