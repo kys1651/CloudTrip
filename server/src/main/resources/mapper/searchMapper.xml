@@ -9,6 +9,7 @@
     <resultMap id="reviewWithUser" type="com.ssafy.trip.domain.review.entity.ReviewWithUser">
         <id column="review_id" property="reviewId"/>
         <result column="is_liked" property="isLiked"/>
+        <result column="is_following" property="isFollowing"/>
         <result column="content" property="content"/>
         <result column="tour_id" property="tourId"/>
         <result column="like_count" property="likeCount"/>
