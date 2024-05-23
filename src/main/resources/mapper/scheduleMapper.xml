@@ -181,7 +181,6 @@
         SELECT S.schedule_id,
                S.name,
                S.user_id,
-               S.password,
                S.thumbnail_image,
                S.start_date,
                S.day,
@@ -244,12 +243,6 @@
             <if test="endDate != null">
                 AND end_date &lt;= #{endDate}
             </if>
-            <if test="access eq 'public'">
-                AND is_private = FALSE
-            </if>
-            <if test="access eq 'private'">
-                AND is_private = TRUE
-            </if>
             <if test="mode eq 'multi'">
                 AND is_multi = TRUE
             </if>
@@ -262,6 +255,7 @@
                     #{name}
                 </foreach>
             </if>
+            AND is_private = FALSE
             AND (SELECT COUNT(*)
             FROM schedule_trip ST
             WHERE ST.schedule_id = S.schedule_id) BETWEEN #{minCount} AND #{maxCount}
