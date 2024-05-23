@@ -6,6 +6,8 @@ import com.ssafy.trip.core.exception.ErrorCode;
 import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.auth.service.AuthService;
 import com.ssafy.trip.domain.review.entity.Comment.SimpleComment;
+import com.ssafy.trip.domain.schedule.dto.ScheduleData;
+import com.ssafy.trip.domain.schedule.service.ScheduleService;
 import com.ssafy.trip.domain.user.dto.UserData;
 import com.ssafy.trip.domain.user.dto.UserData.Password;
 import com.ssafy.trip.domain.user.dto.UserData.Update;
@@ -31,6 +33,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final ScheduleService scheduleService;
 
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
@@ -202,4 +205,11 @@ public class UserController {
         return SuccessResponse.of(userService.getFollowingCount(userId));
     }
 
+    @GetMapping("/{userId}/schedule")
+    public SuccessResponse<List<ScheduleData.ScheduleSearch>> getAllSchedule(
+            @PathVariable("userId") Long userId
+    ) {
+        log.debug("{}",userId);
+        return SuccessResponse.of(scheduleService.searchById(userId));
+    }
 }

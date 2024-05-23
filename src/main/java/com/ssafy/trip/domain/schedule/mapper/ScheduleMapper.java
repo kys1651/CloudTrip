@@ -16,6 +16,8 @@ public interface ScheduleMapper {
 
     List<ScheduleWithSearch> findAll(ScheduleData.SearchCondition condition);
 
+    List<ScheduleWithSearch> findByUserId(Long userId);
+
     List<VehicleDetail> findVehicleDetail(Long scheduleId);
 
     List<TripWithTour> findTripWithTour(Long scheduleId);
