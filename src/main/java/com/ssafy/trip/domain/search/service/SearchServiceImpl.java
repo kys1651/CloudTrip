@@ -1,7 +1,7 @@
 package com.ssafy.trip.domain.search.service;
 
 import com.ssafy.trip.domain.notice.entity.Notice;
-import com.ssafy.trip.domain.review.entity.ReviewWithUser;
+import com.ssafy.trip.domain.review.dto.ReviewData;
 import com.ssafy.trip.domain.schedule.dto.ScheduleData.ScheduleSearch;
 import com.ssafy.trip.domain.search.mapper.SearchMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class SearchServiceImpl implements SearchService {
     private final SearchMapper searchMapper;
 
     @Override
-    public List<ReviewWithUser> searchReviewsByKeyword(String searchKeyword, Long userId) {
-        return searchMapper.searchReviewsByKeyword(searchKeyword, userId);
+    public List<ReviewData.Review> searchReviewsByKeyword(String searchKeyword, Long userId) {
+        return searchMapper.searchReviewsByKeyword(searchKeyword, userId).stream().map(ReviewData.Review::of).toList();
     }
 
     @Override

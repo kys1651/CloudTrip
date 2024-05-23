@@ -3,7 +3,7 @@ package com.ssafy.trip.domain.search.controller;
 import com.ssafy.trip.core.annotation.CurrentUser;
 import com.ssafy.trip.core.response.SuccessResponse;
 import com.ssafy.trip.domain.notice.entity.Notice;
-import com.ssafy.trip.domain.review.entity.ReviewWithUser;
+import com.ssafy.trip.domain.review.dto.ReviewData;
 import com.ssafy.trip.domain.schedule.dto.ScheduleData.ScheduleSearch;
 import com.ssafy.trip.domain.search.service.SearchService;
 import com.ssafy.trip.domain.user.entity.User;
@@ -35,7 +35,7 @@ public class SearchController {
     ) {
         Long userId = user == null ? 0 : user.getUserId();
         // Review
-        List<ReviewWithUser> reviews = searchService.searchReviewsByKeyword(searchKeyword, userId);
+        List<ReviewData.Review> reviews = searchService.searchReviewsByKeyword(searchKeyword, userId);
         // Notice
         List<Notice> notices = searchService.searchNoticesByKeyword(searchKeyword);
         // User

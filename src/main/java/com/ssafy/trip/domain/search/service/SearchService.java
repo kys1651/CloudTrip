@@ -1,7 +1,7 @@
 package com.ssafy.trip.domain.search.service;
 
 import com.ssafy.trip.domain.notice.entity.Notice;
-import com.ssafy.trip.domain.review.entity.ReviewWithUser;
+import com.ssafy.trip.domain.review.dto.ReviewData;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import static com.ssafy.trip.domain.user.dto.UserData.Profile;
 public interface SearchService {
 
     // Review 검색
-    List<ReviewWithUser> searchReviewsByKeyword(String searchKeyword, Long userId);
+    List<ReviewData.Review> searchReviewsByKeyword(String searchKeyword, Long userId);
 
     // Notice 검색
     List<Notice> searchNoticesByKeyword(String searchKeyword);
