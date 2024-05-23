@@ -3,23 +3,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { imageOrDefault } from "@/lib/image-load";
 
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   userInfo: {
-    userId: number;
+    id: number;
     profileImage?: string;
     email: string;
     nickname: string;
   };
 }>();
 
-const route = useRoute();
 const router = useRouter();
-
-const goSocialDetail = () => {
-  router.push({ name: "social-detail", params: { socialId: props.userInfo.userId } });
-};
 </script>
 
 <template>

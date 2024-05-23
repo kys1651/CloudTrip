@@ -86,9 +86,9 @@ const goSearchSchedule = () => {
         <div className="grid grid-cols-3 gap-4 justify-center">
           <SearchCard
             v-for="user in datas.users"
-            @click="goUserProfile(user.userId)"
+            @click="goUserProfile(user.id)"
             :user-info="user"
-            :key="user.userId"
+            :key="user.id"
           />
         </div>
       </div>
