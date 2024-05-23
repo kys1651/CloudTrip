@@ -1,63 +1,63 @@
 <script setup lang="ts">
-import { noticeListRequest } from "@/api/notice";
-import CustomPagination from "@/components/common/CustomPagination.vue";
-import NoticeHeader from "@/components/notice/NoticeHeader.vue";
+import { noticeListRequest } from '@/api/notice'
+import CustomPagination from '@/components/common/CustomPagination.vue'
+import NoticeHeader from '@/components/notice/NoticeHeader.vue'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useAuthenticationStore } from "@/stores/authentication";
-import { useQuery } from "@tanstack/vue-query";
-import { storeToRefs } from "pinia";
-import { computed, onUpdated, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+  AccordionTrigger
+} from '@/components/ui/accordion'
+import { useAuthenticationStore } from '@/stores/authentication'
+import { useQuery } from '@tanstack/vue-query'
+import { storeToRefs } from 'pinia'
+import { computed, onUpdated, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const authentication = useAuthenticationStore();
-const { isLogin } = storeToRefs(authentication);
+const authentication = useAuthenticationStore()
+const { isLogin } = storeToRefs(authentication)
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 const { data: notices } = useQuery({
-  queryKey: ["notices"],
-  queryFn: () => noticeListRequest(),
-});
+  queryKey: ['notices'],
+  queryFn: () => noticeListRequest()
+})
 
 onUpdated(() => {
-  pageNumber.value = Number(route.query.page);
-});
+  pageNumber.value = Number(route.query.page)
+})
 
-const pageNumber = ref<number>(1);
-const postsPerPage = ref(7);
+const pageNumber = ref<number>(1)
+const postsPerPage = ref(7)
 
 const updateCurrentPage = (pageIdx: number) => {
-  router.push({ name: "notice", query: { page: pageIdx } });
-};
+  router.push({ name: 'notice', query: { page: pageIdx } })
+}
 
 const displayedPosts = computed(() => {
-  const startIndex = (pageNumber.value - 1) * postsPerPage.value;
-  const endIndex = startIndex + postsPerPage.value;
-  return notices.value?.slice(startIndex, endIndex);
-});
+  const startIndex = (pageNumber.value - 1) * postsPerPage.value
+  const endIndex = startIndex + postsPerPage.value
+  return notices.value?.slice(startIndex, endIndex)
+})
 
 const totalPages = computed(() => {
-  console.log(notices.value?.length + " " + postsPerPage.value);
-  return Math.ceil((notices.value?.length || 0) / postsPerPage.value);
-});
+  console.log(notices.value?.length + ' ' + postsPerPage.value)
+  return Math.ceil((notices.value?.length || 0) / postsPerPage.value)
+})
 
 const isATagExists = (content: string) => {
-  const htmlElement = document.createElement("div");
-  htmlElement.innerHTML = content;
-  return htmlElement.querySelector("a") !== null;
-};
+  const htmlElement = document.createElement('div')
+  htmlElement.innerHTML = content
+  return htmlElement.querySelector('a') !== null
+}
 
 // Define the formatDate function within the script setup block
 const formatDate = (dateString: string) => {
-  const options = { year: "numeric", month: "2-digit", day: "2-digit" };
-  return new Date(dateString).toLocaleDateString(undefined);
-};
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+  return new Date(dateString).toLocaleDateString(undefined)
+}
 </script>
 
 <template>
@@ -88,9 +88,7 @@ const formatDate = (dateString: string) => {
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-    <div class="w-full flex justify-center items-center mt-5">
-      <!-- v-if="isLogin" 추가 해야함 -->
-    </div>
+    <div class="w-full flex justify-center items-center mt-5"></div>
     <div class="w-full mt-6 flex justify-center">
       <CustomPagination
         @page-number="updateCurrentPage"

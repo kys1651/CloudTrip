@@ -16,6 +16,7 @@ import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { noticeCreate } from '@/api/notice'
 
 const route = useRoute()
 const router = useRouter()
@@ -34,35 +35,25 @@ onMounted(() => {
     modules: {
       toolbar: {
         container: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        [{ color: [] }, { background: [] }],
-        ['image', 'link']
-      ],
-      handlers: {
-        image: () => {
-          getLocalImage()
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ color: [] }, { background: [] }],
+          ['image', 'link']
+        ],
+        handlers: {
+          image: () => {
+            getLocalImage()
+          }
         }
       }
-      }
-      
     }
   })
 
   quill.on('text-change', () => {
     notice.value.content = quill.root.innerHTML
   })
-
-  // 이미지 핸들러 추가
-  // const toolbar = quill.getModule('toolbar')
-  // if (toolbar) {
-  //   toolbar.addHandler('image', () => {
-  //   getLocalImage()
-  // })
-  // }
-
 })
 
 const images = ref<File[]>([])
@@ -100,28 +91,19 @@ const goHome = () => {
   router.push({ name: 'adminNotice' })
 }
 
-const createAddr = `http://localhost:8080/api/v1/notice/create`
 const createNotice = () => {
   notice.value.content = quill.root.innerHTML
   const key = 'image-replace-key'
   imageSrcs.value.forEach((src, index) => {
     notice.value.content = notice.value.content.replace(src, `${key}-${index + 1}`)
   })
-  console.log(notice.value.content)
 
-  const form = new FormData()
-  images.value.forEach((image) => {
-    form.append('images', image)
+  console.log(notice.value)
+  noticeCreate({
+    images: images.value,
+    title: notice.value.title,
+    content: notice.value.content
   })
-  form.append('title', notice.value.title)
-  form.append('content', notice.value.content)
-
-  axios
-    .post(createAddr, form, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
     .then((response) => {
       console.log('등록 성공', response)
       router.push({ name: 'adminNotice' })
@@ -159,9 +141,6 @@ const createNotice = () => {
           </div>
         </form>
       </CardContent>
-      <div class="flex flex-col space-y-1.5 mt-10 px-10">
-        <Label for="framework">#공지사항</Label>
-      </div>
       <CardFooter class="flex justify-between px-6 pb-6 mt-10">
         <Button variant="outline" @click="goHome"> 목록으로 </Button>
         <Button @click="createNotice">글 작성하기</Button>
